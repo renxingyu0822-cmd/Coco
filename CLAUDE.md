@@ -2,6 +2,10 @@
 
 Read this first in every session. Update it when decisions change.
 
+**Working diary:** `DIARY.md` (newest on top). At session start read only the latest ~3 entries;
+grep it for older details. Add a short entry after each finished step or at session end
+(Did / Found / Decided / Corrections / Next).
+
 ## What Coco is
 Coco is a digital everyday-assistance service for older adults, staffed by AI agents.
 It's my semester project for the course **Frontier Systems** (L3S, Leibniz Universität Hannover, winter 2026/27).
@@ -48,8 +52,9 @@ NOT in scope for this demo: memory, tools, voice, evaluation. They come after.
 
 ## Repo structure
 ```
-coco/
+Coco/
 ├── CLAUDE.md
+├── DIARY.md     # working diary, newest on top
 ├── docs/        # proposal, feedback, notes (local only, not in git)
 ├── ios/         # Xcode project (SwiftUI app "Coco")
 └── server/      # Python back end (agent core, later tools, memory, eval)
