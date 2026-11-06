@@ -6,20 +6,33 @@ Public repo: no personal data here.
 ---
 
 ## 2026-11-06
-**Did:** repo frame (`ios/`, `server/`, `docs/`, `.gitignore`), git init, pushed to GitHub (public, renamed `coco` → `Coco`).
-Added this diary. Added public `README.md` (based on the proposal, no personal data).
-**Found:** git doesn't track empty folders. The proposal PDF contains name + student ID → `docs/` is git-ignored (local only).
-Claude Code sessions are saved per project folder in `~/.claude/projects/` and can be resumed or searched later.
-**Decided:** CLAUDE.md overrides the proposal where they disagree (e.g. evaluation not part of the 13 Nov demo).
-**Corrections:** Claude's `sed` edit with a `#` inside broke on macOS and created a junk file that got pushed;
-removed in the next commit. Lesson: use exact file edits, not sed, for text with special characters.
-(Xcode project was moved into `ios/` by hand before Claude did it.)
-Claude built the whole back end in one go instead of step by step (against CLAUDE.md) → reverted, rebuilding
-it together. Lesson: one small step at a time, explain first, wait for OK.
-While reverting, a failed `git revert -q` + `--amend` mislabelled a commit locally; fixed before pushing.
-Rebuilt the back end step by step: venv + pinned requirements, `.env` (key checked, never printed),
-`prompt.py`, `main.py` with `/health` + `/chat`. First reply: "Hello! How are you today?"
-**Decided (later):** Coco's tone = warm, cheerful young helper, fond of the person, never babyish.
-NOT "like their real child": would blur the AI boundary and raise the dependency risk (instructor question 4).
-Coco nudges toward real family instead. Commit locally after each step, push only when asked.
-**Next:** behaviour tests (emergency, scam, medical, "are you human?"), then the iOS chat screen.
+**Did:**
+- Repo frame (`ios/`, `server/`, `docs/`, `.gitignore`), git init, GitHub (public, renamed `coco` → `Coco`).
+  Added this diary and a public `README.md` (based on the proposal, no personal data).
+- Back end, step by step: venv + pinned requirements, `.env` (key checked, never printed), `prompt.py`
+  (Coco's personality), `main.py` with `GET /health` + `POST /chat`. First reply: "Hello! How are you today?"
+- `chat_cli.py`: terminal chat with Coco. `coco` shortcut (`~/.zshrc` → `server/coco.sh`): starts the server
+  if it's off, then opens the chat. Tested both cases.
+
+**Found:**
+- git doesn't track empty folders. The proposal PDF has name + student ID → `docs/` is git-ignored.
+- Claude Code sessions are saved per project folder in `~/.claude/projects/`, can be resumed or searched later.
+- How the server works: `uvicorn main:app` loads `main.py` once at start; the `@app.get/post` lines build the
+  "menu" of endpoints; clients only use the URL (`localhost:8000/health`). `/docs` = FastAPI's auto test page.
+  From the iPhone, `localhost` won't work → need the Mac's Wi-Fi IP.
+
+**Decided:**
+- CLAUDE.md overrides the proposal where they disagree (e.g. evaluation not part of the 13 Nov demo).
+- Coco's tone: warm, cheerful young helper, fond of the person, never babyish. NOT "like their real child"
+  (blurs the AI boundary, raises the dependency risk from instructor question 4). Coco nudges toward real family.
+- Model: `gpt-4o-mini` for now (cheap), changeable in `.env`.
+- Commit locally after each step, push only when asked.
+
+**Corrections:**
+- Claude built the whole back end in one go instead of step by step → reverted and rebuilt together.
+  Lesson: one small step at a time, explain first, wait for OK.
+- Claude's `sed` edit with a `#` inside created a junk file that got pushed; removed. Lesson: exact edits, not sed.
+- A failed `git revert -q` + `--amend` mislabelled a commit locally; fixed before pushing.
+- Server README lost its run instructions in the revert; noticed and restored.
+
+**Next:** behaviour tests (fall, bank PIN, pills, "are you human?"), then the iOS chat screen.
