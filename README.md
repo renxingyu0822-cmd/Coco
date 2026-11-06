@@ -10,8 +10,13 @@ Many older adults live on their own and want to stay independent, but everyday l
 scam messages, getting lost without a navigation app, forgotten appointments, medication, or a pot left on the stove.
 Usually the only help is calling the family, and often no one is available.
 
-In Germany, 31% of the population is aged 60+, and 10% of people aged 65–74 have never used the internet.
-Up to 690,000 care workers could be missing by 2049. Families and carers can't cover the growing need for everyday support.
+Germany and China face the same trend:
+- **Germany:** 31% of the population is aged 60+, and 10% of people aged 65–74 have never used the internet.
+  Up to 690,000 care workers could be missing by 2049.
+- **China:** 323 million people are aged 60+ (about 23%), expected to exceed 400 million by 2035.
+  Only 53.7% of them use the internet, and about 60% live alone or only with a spouse.
+
+In both countries, families and carers can't cover the growing need for everyday support.
 
 Coco's idea: a team of AI agents that remembers each person's needs, routines and family can take over routine digital
 and daily tasks, so older adults stay independent, safe from scams and less lonely, and scarce human time goes to the care
