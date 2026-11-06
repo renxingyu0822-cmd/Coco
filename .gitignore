@@ -20,3 +20,6 @@ build/
 
 # docs stay local (personal data, public repo)
 docs/
+
+# server log
+server/server.log
