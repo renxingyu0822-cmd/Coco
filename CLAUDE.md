@@ -4,7 +4,7 @@ Read this first in every session. Update it when decisions change.
 
 **Working diary:** `DIARY.md` (newest on top). At session start read only the latest ~3 entries;
 grep it for older details. Add a short entry after each finished step or at session end
-(Did / Found / Decided / Corrections / Next).
+(Did / Found / Decided / Corrections). Only add a "Next" line when I say what's next, never decide it yourself.
 
 ## What Coco is
 Coco is a digital everyday-assistance service for older adults, staffed by AI agents.

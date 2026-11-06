@@ -34,5 +34,4 @@ Public repo: no personal data here.
 - Claude's `sed` edit with a `#` inside created a junk file that got pushed; removed. Lesson: exact edits, not sed.
 - A failed `git revert -q` + `--amend` mislabelled a commit locally; fixed before pushing.
 - Server README lost its run instructions in the revert; noticed and restored.
-
-**Next:** behaviour tests (fall, bank PIN, pills, "are you human?"), then the iOS chat screen.
+- Claude wrote a "Next" step into the diary on its own; removed. Next steps are only written when the user says them.
