@@ -14,4 +14,7 @@ Claude Code sessions are saved per project folder in `~/.claude/projects/` and c
 **Corrections:** Claude's `sed` edit with a `#` inside broke on macOS and created a junk file that got pushed;
 removed in the next commit. Lesson: use exact file edits, not sed, for text with special characters.
 (Xcode project was moved into `ios/` by hand before Claude did it.)
-**Next:** back end, basic chat endpoint (FastAPI + OpenAI) — waiting for OK + API key.
+Claude built the whole back end in one go instead of step by step (against CLAUDE.md) → reverted, rebuilding
+it together. Lesson: one small step at a time, explain first, wait for OK.
+While reverting, a failed `git revert -q` + `--amend` mislabelled a commit locally; fixed before pushing.
+**Next:** back end again, step by step: 1) venv + requirements, 2) .env, 3) prompt, 4) /chat endpoint.
