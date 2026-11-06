@@ -72,6 +72,8 @@ Coco/
 - Code comments: short, informal English, casual is fine. No long formal docstrings.
 - Explanations: concise, plain English.
 - Never commit secrets. `.env` goes in `.gitignore`.
+- Commit locally after each finished step (small commits, clear messages).
+  **Only push to GitHub when I ask for it.**
 
 ## Open points from the instructors' feedback (for later updates)
 1. Choose a first market and meet real older users: 5 conversations each with older adults and their children.
@@ -83,6 +85,6 @@ Coco/
 ## Status
 - [x] Xcode project `Coco` created (SwiftUI)
 - [x] Repo frame + GitHub (public: https://github.com/renxingyu0822-cmd/Coco)
-- [ ] Back end: basic chat endpoint
+- [x] Back end: basic chat endpoint (`server/`, FastAPI + gpt-4o-mini, run cmd in `server/README.md`)
 - [ ] iOS chat screen
 - [ ] Running on iPhone

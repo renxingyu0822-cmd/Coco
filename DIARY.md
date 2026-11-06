@@ -17,4 +17,9 @@ removed in the next commit. Lesson: use exact file edits, not sed, for text with
 Claude built the whole back end in one go instead of step by step (against CLAUDE.md) → reverted, rebuilding
 it together. Lesson: one small step at a time, explain first, wait for OK.
 While reverting, a failed `git revert -q` + `--amend` mislabelled a commit locally; fixed before pushing.
-**Next:** back end again, step by step: 1) venv + requirements, 2) .env, 3) prompt, 4) /chat endpoint.
+Rebuilt the back end step by step: venv + pinned requirements, `.env` (key checked, never printed),
+`prompt.py`, `main.py` with `/health` + `/chat`. First reply: "Hello! How are you today?"
+**Decided (later):** Coco's tone = warm, cheerful young helper, fond of the person, never babyish.
+NOT "like their real child": would blur the AI boundary and raise the dependency risk (instructor question 4).
+Coco nudges toward real family instead. Commit locally after each step, push only when asked.
+**Next:** behaviour tests (emergency, scam, medical, "are you human?"), then the iOS chat screen.
