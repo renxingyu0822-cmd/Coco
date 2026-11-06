@@ -77,7 +77,7 @@ coco/
 
 ## Status
 - [x] Xcode project `Coco` created (SwiftUI)
-- [x] Repo frame + GitHub (public: https://github.com/renxingyu0822-cmd/coco)
+- [x] Repo frame + GitHub (public: https://github.com/renxingyu0822-cmd/Coco)
 - [ ] Back end: basic chat endpoint
 - [ ] iOS chat screen
 - [ ] Running on iPhone
