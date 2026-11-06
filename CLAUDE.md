@@ -21,7 +21,8 @@ Course theme: "AI for Good" — build an AI-driven startup with coding agents.
 - **Boundaries:** users always know they talk to an AI; emergencies ("I fell") go to family / 112;
   the agent never enters passwords or makes payments; health info is only used for reminders, never for advice.
 
-The full proposal (two-pager) and the instructors' feedback are in `docs/`.
+The full proposal (two-pager) and the instructors' feedback are in `docs/` (local only, git-ignored: contains personal data).
+Where the proposal and this file disagree, **this file wins** (it's newer).
 
 ## Current goal (first presentation: Fri 13 Nov 2026)
 A working demo: **chat with Coco in the app on my iPhone.**
@@ -49,7 +50,7 @@ NOT in scope for this demo: memory, tools, voice, evaluation. They come after.
 ```
 coco/
 ├── CLAUDE.md
-├── docs/        # proposal, feedback, notes
+├── docs/        # proposal, feedback, notes (local only, not in git)
 ├── ios/         # Xcode project (SwiftUI app "Coco")
 └── server/      # Python back end (agent core, later tools, memory, eval)
 ```

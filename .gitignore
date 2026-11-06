@@ -17,3 +17,6 @@ build/
 
 # mac
 .DS_Store
+
+# docs stay local (personal data, public repo)
+docs/
