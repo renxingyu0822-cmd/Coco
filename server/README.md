@@ -5,6 +5,14 @@ and opens a terminal chat (`chat_cli.py`). Alias lives in `~/.zshrc` → `server
 
 Python back end for Coco. Talks to the OpenAI API, holds the API key (in `.env`, never committed).
 
+## Files
+- `main.py` — the "menu": creates the server, plugs in the parts, `/health`
+- `settings.py` — reads `.env`, model names, shared OpenAI connection
+- `chat.py` — `/chat`
+- `voice.py` — `/speak` (and `/transcribe` next)
+- `prompt.py` — Coco's personality + how her voice should sound
+- `chat_cli.py`, `coco.sh` — terminal chat for testing (not part of the server)
+
 ## Setup (once)
 ```
 cd server
@@ -21,4 +29,5 @@ cp .env.example .env      # then put your OpenAI key in .env
 
 ## Endpoints
 - `GET /health` → `{"ok": true, "model": "..."}`
+- `POST /speak` with `{"text": "Hello"}` → mp3 audio
 - `POST /chat` with `{"messages": [{"role": "user", "content": "Hi"}]}` → `{"reply": "..."}`

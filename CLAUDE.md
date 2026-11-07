@@ -36,7 +36,9 @@ Done means:
 3. App: simple SwiftUI chat screen that talks to the server
 4. Runs on my iPhone over home Wi-Fi (simulator as backup for the presentation)
 
-NOT in scope for this demo: memory, tools, voice, evaluation. They come after.
+NOT in scope for this demo: memory, tools, evaluation. They come after.
+**Voice brought forward (decided 7 Nov):** OpenAI speech via the server (`/transcribe` + `/speak`),
+not Apple's on-device speech. Added after the 4 demo steps were done.
 
 ## Decisions so far
 - **Language / market:** English first, Germany as first market. (Instructors flagged that few older adults in Germany
