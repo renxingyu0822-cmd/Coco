@@ -87,4 +87,5 @@ Coco/
 - [x] Repo frame + GitHub (public: https://github.com/renxingyu0822-cmd/Coco)
 - [x] Back end: basic chat endpoint (`server/`, FastAPI + gpt-4o-mini, run cmd in `server/README.md`)
 - [x] iOS chat screen, connected to the server (tested in Xcode Preview; Simulator renders blank on this Mac)
-- [ ] Running on iPhone
+- [x] Running on iPhone over home Wi-Fi (server address: `http://dafeideMacBook-Pro.local:8000`,
+      bundle ID `com.renxingyu0822.Coco`, free Apple ID → reinstall from Xcode every 7 days)

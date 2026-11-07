@@ -13,6 +13,8 @@ Public repo: no personal data here.
   "Coco is thinking…" bubble, send button off while waiting, friendly error message if the server can't be reached.
   `Coco-Info.plist` allows plain http on the local network only (internet stays https).
 - Tested in Xcode's live Preview: real replies from Coco, she remembers the conversation.
+- **Coco runs on the iPhone** (iOS 26.6.1) over home Wi-Fi, installed from Xcode by cable.
+  Setup done once: trust computer, Developer Mode, trust developer app in VPN & Device Management, allow local network.
 
 **Big picture (how one message travels):**
 ```
@@ -41,6 +43,12 @@ Same thing `chat_cli.py` does in the terminal, just in Swift with a screen.
   with the Info.plist Xcode generates.
 - What's sent to the server: the conversation from the first user message on, without the on-screen greeting and
   without error notes (so Coco never "remembers" saying sorry).
+- iPhone can't use `localhost` (that's the phone itself) → app uses the Mac's network name
+  `dafeideMacBook-Pro.local`, which stays the same when the IP changes.
+- Bundle ID `com.renxingyu.Coco` was already taken by another Apple account → changed to `com.renxingyu0822.Coco`.
+- Free Apple ID: the app stops opening after 7 days → reinstall from Xcode shortly before a demo.
+- University Wi-Fi (eduroam) usually blocks device-to-device traffic → iPhone hotspot with the Mac on it is the
+  likely fix for presentations. Not tested yet.
 
 **Corrections:**
 - First Simulator screenshots were taken too early / blank; checked with Settings app to confirm it's the Simulator,

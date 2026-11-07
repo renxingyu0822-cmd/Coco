@@ -9,8 +9,9 @@
 import Foundation
 
 enum ChatService {
-    // localhost = this Mac. Works in Preview + Simulator. On the iPhone we'll need the Mac's Wi-Fi IP (step 3).
-    static let baseURL = URL(string: "http://localhost:8000")!
+    // the Mac's network name (doesn't change like an IP does). Works from the iPhone on the same Wi-Fi/hotspot,
+    // and in Xcode Preview. Check it on the Mac with: scutil --get LocalHostName
+    static let baseURL = URL(string: "http://dafeideMacBook-Pro.local:8000")!
 
     // what the server expects / sends back (same shapes as in main.py)
     private struct Message: Codable { let role: String; let content: String }
