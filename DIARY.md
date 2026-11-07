@@ -14,6 +14,22 @@ Public repo: no personal data here.
   `Coco-Info.plist` allows plain http on the local network only (internet stays https).
 - Tested in Xcode's live Preview: real replies from Coco, she remembers the conversation.
 
+**Big picture (how one message travels):**
+```
+You type "Hi"
+   ↓
+ContentView: shows your bubble + "Coco is thinking…"
+   ↓
+ChatService: packs the conversation as JSON, sends it to http://localhost:8000/chat
+   ↓
+Server (main.py): adds Coco's personality (prompt.py), asks OpenAI
+   ↓
+ChatService: unpacks {"reply": "..."} and hands back the text
+   ↓
+ContentView: removes "thinking", shows Coco's bubble
+```
+Same thing `chat_cli.py` does in the terminal, just in Swift with a screen.
+
 **Found:**
 - Two Xcodes: the one in use is 26.3 in `~/Downloads`; `/Applications` has an old 13.4.1 that the terminal points to.
   Terminal builds work by pointing at the new one (`DEVELOPER_DIR`), no system change.
