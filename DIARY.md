@@ -50,6 +50,11 @@ Same thing `chat_cli.py` does in the terminal, just in Swift with a screen.
 - University Wi-Fi (eduroam) usually blocks device-to-device traffic → iPhone hotspot with the Mac on it is the
   likely fix for presentations. Not tested yet.
 
+**Open for the presentation (Fri 13 Nov):**
+- Test the iPhone-hotspot setup (Mac on the iPhone's hotspot) in case university Wi-Fi blocks the connection.
+- Reinstall the app from Xcode shortly before Friday (7-day limit).
+- Decide on a backup, since the Simulator doesn't work on this Mac.
+
 **Corrections:**
 - First Simulator screenshots were taken too early / blank; checked with Settings app to confirm it's the Simulator,
   not our code.
