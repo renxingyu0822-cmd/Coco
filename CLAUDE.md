@@ -86,5 +86,5 @@ Coco/
 - [x] Xcode project `Coco` created (SwiftUI)
 - [x] Repo frame + GitHub (public: https://github.com/renxingyu0822-cmd/Coco)
 - [x] Back end: basic chat endpoint (`server/`, FastAPI + gpt-4o-mini, run cmd in `server/README.md`)
-- [ ] iOS chat screen
+- [x] iOS chat screen, connected to the server (tested in Xcode Preview; Simulator renders blank on this Mac)
 - [ ] Running on iPhone
