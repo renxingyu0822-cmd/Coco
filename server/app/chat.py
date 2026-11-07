@@ -3,8 +3,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from prompt import SYSTEM_PROMPT
-from settings import MODEL, client
+from .prompt import SYSTEM_PROMPT
+from .settings import MODEL, client
 
 router = APIRouter()
 

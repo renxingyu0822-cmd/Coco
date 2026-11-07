@@ -3,9 +3,8 @@
 
 from fastapi import FastAPI
 
-import chat
-import voice
-from settings import MODEL
+from . import chat, voice
+from .settings import MODEL
 
 app = FastAPI(title="Coco")
 

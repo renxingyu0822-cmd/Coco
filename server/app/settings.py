@@ -5,7 +5,8 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+# .env sits one folder up, in server/
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 TTS_MODEL = os.getenv("OPENAI_TTS_MODEL", "gpt-4o-mini-tts")

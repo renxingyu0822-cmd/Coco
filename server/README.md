@@ -6,12 +6,16 @@ and opens a terminal chat (`chat_cli.py`). Alias lives in `~/.zshrc` → `server
 Python back end for Coco. Talks to the OpenAI API, holds the API key (in `.env`, never committed).
 
 ## Files
-- `main.py` — the "menu": creates the server, plugs in the parts, `/health`
-- `settings.py` — reads `.env`, model names, shared OpenAI connection
-- `chat.py` — `/chat`
-- `voice.py` — `/speak` (and `/transcribe` next)
-- `prompt.py` — Coco's personality + how her voice should sound
-- `chat_cli.py`, `coco.sh` — terminal chat for testing (not part of the server)
+Server code is in `app/`:
+- `app/main.py` — the "menu": creates the server, plugs in the parts, `/health`
+- `app/settings.py` — reads `.env`, model names, shared OpenAI connection
+- `app/chat.py` — `/chat`
+- `app/voice.py` — `/speak` (and `/transcribe` next)
+- `app/prompt.py` — Coco's personality + how her voice should sound
+
+Outside `app/` (not part of the server):
+- `chat_cli.py`, `coco.sh` — terminal chat for testing
+- `requirements.txt`, `.env.example`, `.env` (your key, git-ignored)
 
 ## Setup (once)
 ```
@@ -23,7 +27,8 @@ cp .env.example .env      # then put your OpenAI key in .env
 
 ## Run the server by hand
 ```
-.venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+cd server
+.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 `--host 0.0.0.0` makes it reachable from the iPhone on the same Wi-Fi. Test page: http://localhost:8000/docs
 

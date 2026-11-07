@@ -3,8 +3,8 @@
 from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel
 
-from prompt import VOICE_INSTRUCTIONS
-from settings import TTS_MODEL, TTS_VOICE, client
+from .prompt import VOICE_INSTRUCTIONS
+from .settings import TTS_MODEL, TTS_VOICE, client
 
 router = APIRouter()
 
