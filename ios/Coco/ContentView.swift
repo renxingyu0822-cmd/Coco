@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  Coco
 //
-//  Chat screen. Step 1: looks only, Coco gives a fake reply (no server yet).
+//  Chat screen. Sends messages to our server (ChatService) and shows Coco's replies.
 //
 
 import SwiftUI
@@ -12,6 +12,7 @@ struct ChatMessage: Identifiable {
     let id = UUID()
     let fromUser: Bool
     let text: String
+    var isError = false  // error notes are shown, but never sent to the server
 }
 
 struct ContentView: View {
@@ -19,6 +20,7 @@ struct ContentView: View {
         ChatMessage(fromUser: false, text: "Hello! I'm Coco. How are you today?")
     ]
     @State private var input = ""
+    @State private var waiting = false  // true while Coco is "thinking"
 
     var body: some View {
         VStack(spacing: 0) {
@@ -36,6 +38,11 @@ struct ContentView: View {
                         ForEach(messages) { msg in
                             Bubble(message: msg).id(msg.id)
                         }
+                        if waiting {
+                            Bubble(message: ChatMessage(fromUser: false, text: "Coco is thinking…"))
+                                .opacity(0.6)
+                                .id("thinking")
+                        }
                     }
                     .padding()
                 }
@@ -43,6 +50,9 @@ struct ContentView: View {
                     if let last = messages.last {
                         withAnimation { proxy.scrollTo(last.id, anchor: .bottom) }
                     }
+                }
+                .onChange(of: waiting) {
+                    if waiting { withAnimation { proxy.scrollTo("thinking", anchor: .bottom) } }
                 }
             }
 
@@ -61,7 +71,7 @@ struct ContentView: View {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.system(size: 44))
                 }
-                .disabled(trimmed.isEmpty)
+                .disabled(trimmed.isEmpty || waiting)  // no double sends
                 .accessibilityLabel("Send")
             }
             .padding()
@@ -71,11 +81,26 @@ struct ContentView: View {
     private var trimmed: String { input.trimmingCharacters(in: .whitespacesAndNewlines) }
 
     private func send() {
-        guard !trimmed.isEmpty else { return }
+        guard !trimmed.isEmpty, !waiting else { return }
         messages.append(ChatMessage(fromUser: true, text: trimmed))
         input = ""
-        // fake reply for now, the real one comes from the server in step 2
-        messages.append(ChatMessage(fromUser: false, text: "(Coco will answer here soon)"))
+        waiting = true
+
+        // the greeting is only on screen, the server doesn't need it, so send from the first user message on
+        let history = messages.drop(while: { !$0.fromUser }).filter { !$0.isError }
+
+        Task {
+            do {
+                let reply = try await ChatService.send(history)
+                messages.append(ChatMessage(fromUser: false, text: reply))
+            } catch {
+                print("Chat error:", error)  // details for us in Xcode's console
+                messages.append(ChatMessage(fromUser: false,
+                    text: "Sorry, I can't reach my brain right now. Please try again in a moment.",
+                    isError: true))
+            }
+            waiting = false
+        }
     }
 }
 
