@@ -21,13 +21,30 @@ struct ContentView: View {
     ]
     @State private var input = ""
     @State private var waiting = false  // true while Coco is "thinking"
+    @State private var voiceOn = true   // read Coco's replies aloud?
+    @State private var voice = VoicePlayer()
 
     var body: some View {
         VStack(spacing: 0) {
-            // header
-            Text("Coco")
-                .font(.title.bold())
-                .padding(.vertical, 12)
+            // header: name in the middle, speaker on/off button on the right
+            ZStack {
+                Text("Coco")
+                    .font(.title.bold())
+                HStack {
+                    Spacer()
+                    Button {
+                        voiceOn.toggle()
+                        if !voiceOn { voice.stop() }  // turning off also stops her mid-sentence
+                    } label: {
+                        Image(systemName: voiceOn ? "speaker.wave.2.fill" : "speaker.slash.fill")
+                            .font(.system(size: 28))
+                            .frame(width: 44, height: 44)  // big enough to hit
+                    }
+                    .accessibilityLabel(voiceOn ? "Voice on" : "Voice off")
+                }
+                .padding(.horizontal)
+            }
+            .padding(.vertical, 8)
 
             Divider()
 
@@ -93,6 +110,7 @@ struct ContentView: View {
             do {
                 let reply = try await ChatService.send(history)
                 messages.append(ChatMessage(fromUser: false, text: reply))
+                if voiceOn { say(reply) }  // text shows first, voice follows
             } catch {
                 print("Chat error:", error)  // details for us in Xcode's console
                 messages.append(ChatMessage(fromUser: false,
@@ -100,6 +118,18 @@ struct ContentView: View {
                     isError: true))
             }
             waiting = false
+        }
+    }
+
+    // get Coco's voice from the server and play it. If it fails: no sound, text is still there.
+    private func say(_ text: String) {
+        Task {
+            do {
+                let mp3 = try await ChatService.speak(text)
+                if voiceOn { voice.play(mp3) }  // check again: maybe turned off while loading
+            } catch {
+                print("Speak error:", error)
+            }
         }
     }
 }

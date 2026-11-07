@@ -35,4 +35,21 @@ enum ChatService {
         }
         return try JSONDecoder().decode(Reply.self, from: data).reply
     }
+
+    // text in -> Coco's voice out (mp3 data), via the server's /speak
+    private struct SpeakRequest: Codable { let text: String }
+
+    static func speak(_ text: String) async throws -> Data {
+        var req = URLRequest(url: baseURL.appendingPathComponent("speak"))
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.timeoutInterval = 30
+        req.httpBody = try JSONEncoder().encode(SpeakRequest(text: text))
+
+        let (data, resp) = try await URLSession.shared.data(for: req)
+        guard (resp as? HTTPURLResponse)?.statusCode == 200 else {
+            throw URLError(.badServerResponse)
+        }
+        return data
+    }
 }
