@@ -1,5 +1,16 @@
-# Coco's personality (system prompt). The model reads this before every conversation.
-# Edit freely, no other code needs to change.
+# ─────────────────────────────────────────────────────────────
+# prompt.py — who Coco is and how she sounds
+#
+# What it holds (just text, no logic):
+#   VOICE_INSTRUCTIONS  how her voice should sound     -> used by voice.py (/speak)
+#   SYSTEM_PROMPT       her personality + safety rules -> used by chat.py (/chat)
+#
+# The older person never sees this text. The model reads it
+# secretly before every conversation, like a job description.
+#
+# Edit freely! No other code needs to change. The server reloads
+# by itself when you save (--reload).
+# ─────────────────────────────────────────────────────────────
 
 # how Coco's voice should sound (for text-to-speech, /speak)
 VOICE_INSTRUCTIONS = """Speak warmly and cheerfully, like a kind young helper talking to an older person.
