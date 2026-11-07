@@ -5,6 +5,33 @@ Public repo: no personal data here.
 
 ---
 
+## 2026-11-07
+**Did:**
+- iOS chat screen (`ContentView.swift`): title, bubbles (Coco left, user right), big text field + send button,
+  large text, auto-scroll to newest message, Coco greets first.
+- Connected the app to the server: `ChatService.swift` packs the conversation as JSON → `POST /chat` → reads the reply.
+  "Coco is thinking…" bubble, send button off while waiting, friendly error message if the server can't be reached.
+  `Coco-Info.plist` allows plain http on the local network only (internet stays https).
+- Tested in Xcode's live Preview: real replies from Coco, she remembers the conversation.
+
+**Found:**
+- Two Xcodes: the one in use is 26.3 in `~/Downloads`; `/Applications` has an old 13.4.1 that the terminal points to.
+  Terminal builds work by pointing at the new one (`DEVELOPER_DIR`), no system change.
+- The Simulator app renders blank on this Intel Mac (even Apple's Settings app) → use Xcode's Preview instead.
+  Simulator as presentation backup is still open.
+- A stray copy of `Coco.xcodeproj` showed up in the repo root (13:06, not from Claude); moved to Trash.
+  Always open `ios/Coco.xcodeproj`.
+- `Coco-Info.plist` sits in `ios/`, not `ios/Coco/`: Xcode auto-includes everything in `Coco/`, which would clash
+  with the Info.plist Xcode generates.
+- What's sent to the server: the conversation from the first user message on, without the on-screen greeting and
+  without error notes (so Coco never "remembers" saying sorry).
+
+**Corrections:**
+- First Simulator screenshots were taken too early / blank; checked with Settings app to confirm it's the Simulator,
+  not our code.
+
+---
+
 ## 2026-11-06
 **Did:**
 - Repo frame (`ios/`, `server/`, `docs/`, `.gitignore`), git init, GitHub (public, renamed `coco` → `Coco`).
