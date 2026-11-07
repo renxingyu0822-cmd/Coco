@@ -15,6 +15,12 @@ Public repo: no personal data here.
 - Tested in Xcode's live Preview: real replies from Coco, she remembers the conversation.
 - **Coco runs on the iPhone** (iOS 26.6.1) over home Wi-Fi, installed from Xcode by cable.
   Setup done once: trust computer, Developer Mode, trust developer app in VPN & Device Management, allow local network.
+- **Voice mode** (brought forward from January), OpenAI speech through the server:
+  - Server: `/speak` (gpt-4o-mini-tts, voice "coral", tone in `VOICE_INSTRUCTIONS`) and `/transcribe`
+    (gpt-4o-mini-transcribe, m4a upload). Both tested from the terminal. New dependency: `python-multipart`.
+  - Server split into `server/app/` (main = menu, settings, chat, voice, prompt), with notes in every file.
+  - App: Coco reads replies aloud (speaker on/off button), mic button (tap to talk, tap to send).
+    Built without errors, **not yet tested on the iPhone**.
 
 **Big picture (how one message travels):**
 ```
@@ -49,6 +55,11 @@ Same thing `chat_cli.py` does in the terminal, just in Swift with a screen.
 - Free Apple ID: the app stops opening after 7 days → reinstall from Xcode shortly before a demo.
 - University Wi-Fi (eduroam) usually blocks device-to-device traffic → iPhone hotspot with the Mac on it is the
   likely fix for presentations. Not tested yet.
+
+**Decided:**
+- Voice: OpenAI (option B) over Apple's on-device speech: more natural voice, better recognition. Costs per use.
+  Same API key. Tap-to-talk instead of hold-to-talk (easier for older hands).
+- Server code lives in `server/app/`; start command is now `uvicorn app.main:app`.
 
 **Open for the presentation (Fri 13 Nov):**
 - Test the iPhone-hotspot setup (Mac on the iPhone's hotspot) in case university Wi-Fi blocks the connection.
