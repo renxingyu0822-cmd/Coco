@@ -8,6 +8,7 @@
 #   GET  /health  -> here       ("are you alive?")
 #   POST /chat    -> chat.py    (text in, Coco's reply out)
 #   POST /speak   -> voice.py   (text in, Coco's voice out)
+#   POST /transcribe -> voice.py (your voice in, text out)
 #
 # Started by: uvicorn app.main:app  (see coco.sh / README)
 #   "app.main" = this file, ":app" = the `app` variable below.
@@ -23,7 +24,7 @@ app = FastAPI(title="Coco")
 
 # plug in the endpoints that live in other files
 app.include_router(chat.router)   # adds /chat
-app.include_router(voice.router)  # adds /speak
+app.include_router(voice.router)  # adds /speak + /transcribe
 
 
 # "are you alive?" check. Cheap: no OpenAI call, costs nothing.

@@ -10,7 +10,7 @@ Server code is in `app/`:
 - `app/main.py` — the "menu": creates the server, plugs in the parts, `/health`
 - `app/settings.py` — reads `.env`, model names, shared OpenAI connection
 - `app/chat.py` — `/chat`
-- `app/voice.py` — `/speak` (and `/transcribe` next)
+- `app/voice.py` — `/speak` + `/transcribe`
 - `app/prompt.py` — Coco's personality + how her voice should sound
 
 Outside `app/` (not part of the server):
@@ -35,4 +35,5 @@ cd server
 ## Endpoints
 - `GET /health` → `{"ok": true, "model": "..."}`
 - `POST /speak` with `{"text": "Hello"}` → mp3 audio
+- `POST /transcribe` with an audio file upload (field `audio`, e.g. m4a) → `{"text": "..."}`
 - `POST /chat` with `{"messages": [{"role": "user", "content": "Hi"}]}` → `{"reply": "..."}`
