@@ -52,4 +52,32 @@ enum ChatService {
         }
         return data
     }
+
+    // your recording in -> text out, via the server's /transcribe
+    private struct TranscribeReply: Codable { let text: String }
+
+    static func transcribe(_ fileURL: URL) async throws -> String {
+        var req = URLRequest(url: baseURL.appendingPathComponent("transcribe"))
+        req.httpMethod = "POST"
+        req.timeoutInterval = 30
+
+        // upload as a "form with a file" (multipart), like a file upload on a website.
+        // the boundary is just a unique separator line between the parts.
+        let boundary = "coco-\(UUID().uuidString)"
+        req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        var body = Data()
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"audio\"; filename=\"recording.m4a\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: audio/m4a\r\n\r\n".data(using: .utf8)!)
+        body.append(try Data(contentsOf: fileURL))
+        body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+        req.httpBody = body
+
+        let (data, resp) = try await URLSession.shared.data(for: req)
+        guard (resp as? HTTPURLResponse)?.statusCode == 200 else {
+            throw URLError(.badServerResponse)
+        }
+        return try JSONDecoder().decode(TranscribeReply.self, from: data).text
+    }
 }

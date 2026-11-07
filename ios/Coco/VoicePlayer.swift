@@ -15,9 +15,11 @@ final class VoicePlayer {
 
     func play(_ mp3: Data) {
         do {
-            // .playback = play even when the iPhone's silent switch is on
-            // (older users may not know about the switch). Volume buttons still work.
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
+            // playAndRecord = same setting as the mic uses (no switching back and forth),
+            // and like .playback it plays even when the silent switch is on (older users may
+            // not know about the switch). defaultToSpeaker = loud speaker, not the earpiece.
+            try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .spokenAudio,
+                                                            options: [.defaultToSpeaker])
             try AVAudioSession.sharedInstance().setActive(true)
 
             player = try AVAudioPlayer(data: mp3)

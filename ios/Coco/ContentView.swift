@@ -20,9 +20,12 @@ struct ContentView: View {
         ChatMessage(fromUser: false, text: "Hello! I'm Coco. How are you today?")
     ]
     @State private var input = ""
-    @State private var waiting = false  // true while Coco is "thinking"
+    @State private var waiting = false  // true while Coco is "thinking" (or turning your voice into text)
+    @State private var waitingText = "Coco is thinking…"
     @State private var voiceOn = true   // read Coco's replies aloud?
     @State private var voice = VoicePlayer()
+    @State private var recorder = VoiceRecorder()
+    @State private var recording = false  // true while the mic is listening
 
     var body: some View {
         VStack(spacing: 0) {
@@ -56,7 +59,7 @@ struct ContentView: View {
                             Bubble(message: msg).id(msg.id)
                         }
                         if waiting {
-                            Bubble(message: ChatMessage(fromUser: false, text: "Coco is thinking…"))
+                            Bubble(message: ChatMessage(fromUser: false, text: waitingText))
                                 .opacity(0.6)
                                 .id("thinking")
                         }
@@ -75,20 +78,40 @@ struct ContentView: View {
 
             Divider()
 
-            // input row: big text field + big send button
+            // input row: big mic button + big text field + big send button
             HStack(alignment: .bottom, spacing: 10) {
-                TextField("Type a message…", text: $input, axis: .vertical)
-                    .font(.title3)
-                    .lineLimit(1...4)
-                    .padding(12)
-                    .background(Color(.secondarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                // tap once = start listening, tap again = stop and send (tap is easier than holding)
+                Button(action: micTapped) {
+                    Image(systemName: recording ? "stop.circle.fill" : "mic.circle.fill")
+                        .font(.system(size: 44))
+                        .foregroundStyle(recording ? .red : .accentColor)
+                }
+                .disabled(waiting)
+                .accessibilityLabel(recording ? "Stop and send" : "Talk to Coco")
 
-                Button(action: send) {
+                if recording {
+                    // while listening: a clear hint instead of the text field
+                    Text("Listening… tap ■ when you're done")
+                        .font(.title3)
+                        .foregroundStyle(.red)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(12)
+                        .background(Color.red.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                } else {
+                    TextField("Type a message…", text: $input, axis: .vertical)
+                        .font(.title3)
+                        .lineLimit(1...4)
+                        .padding(12)
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                }
+
+                Button(action: { send(trimmed) }) {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.system(size: 44))
                 }
-                .disabled(trimmed.isEmpty || waiting)  // no double sends
+                .disabled(trimmed.isEmpty || waiting || recording)  // no double sends
                 .accessibilityLabel("Send")
             }
             .padding()
@@ -97,10 +120,12 @@ struct ContentView: View {
 
     private var trimmed: String { input.trimmingCharacters(in: .whitespacesAndNewlines) }
 
-    private func send() {
-        guard !trimmed.isEmpty, !waiting else { return }
-        messages.append(ChatMessage(fromUser: true, text: trimmed))
+    // send a message to Coco: used by the send button (typed text) and the mic (spoken text)
+    private func send(_ text: String) {
+        guard !text.isEmpty, !waiting else { return }
+        messages.append(ChatMessage(fromUser: true, text: text))
         input = ""
+        waitingText = "Coco is thinking…"
         waiting = true
 
         // the greeting is only on screen, the server doesn't need it, so send from the first user message on
@@ -118,6 +143,52 @@ struct ContentView: View {
                     isError: true))
             }
             waiting = false
+        }
+    }
+
+    // mic button: 1st tap starts listening, 2nd tap stops -> text -> send to Coco
+    private func micTapped() {
+        if !recording {
+            Task {
+                guard await recorder.askPermission() else {
+                    messages.append(ChatMessage(fromUser: false,
+                        text: "I need the microphone to hear you. You can allow it in Settings → Coco.",
+                        isError: true))
+                    return
+                }
+                do {
+                    voice.stop()        // don't record Coco's own voice
+                    try recorder.start()
+                    recording = true
+                } catch {
+                    print("Record error:", error)
+                }
+            }
+        } else {
+            recording = false
+            let length = recorder.stop()
+            guard length > 0.5 else { return }  // too short = probably a mis-tap, ignore
+
+            waitingText = "Coco is listening…"
+            waiting = true
+            Task {
+                do {
+                    let text = try await ChatService.transcribe(recorder.fileURL)
+                    waiting = false
+                    if text.isEmpty {
+                        messages.append(ChatMessage(fromUser: false,
+                            text: "Sorry, I didn't catch that. Could you say it again?", isError: true))
+                    } else {
+                        send(text)  // your words appear as your bubble, Coco answers as usual
+                    }
+                } catch {
+                    print("Transcribe error:", error)
+                    waiting = false
+                    messages.append(ChatMessage(fromUser: false,
+                        text: "Sorry, I couldn't hear that properly. Please try again or type it.",
+                        isError: true))
+                }
+            }
         }
     }
 
