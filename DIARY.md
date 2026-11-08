@@ -5,6 +5,51 @@ Public repo: no personal data here.
 
 ---
 
+## 2026-11-08
+**Did:**
+- Voice tested on the iPhone: Coco speaks, mic works (after the crash fix below).
+- **Hands-free voice chat** (like ChatGPT voice mode, simple version): the app notices when you stop talking
+  (1.5 s of quiet after speech), sends by itself, Coco answers out loud, then listens again. Ends via
+  "Stop voice chat" or after 10 s of silence. Mic is off while Coco speaks, so she can't hear herself.
+  Tuning knobs at the top of `VoiceRecorder.swift` (`speechLevel`, `pauseToFinish`, `giveUpAfter`).
+- **New look, from hand-drawn sketches:**
+  - Text mode: header "Coco" + speaker button; big start card (green phone icon + "Call Coco" panda,
+    "Tap Coco to start voice chat"); bubbles; text field + send.
+  - Voice mode: "Stop voice chat" on top, bubbles, big panda + status text below.
+  - Panda pictures (hand-drawn, transparent PNGs in Assets): `panda-idle` (Call Coco), `panda-listening`,
+    `panda-thinking`, `panda-talking` (keeps its "Talking…" lettering). Each moves a little per state.
+  - Colours: black and white (accent = black in light mode, white in dark mode).
+  - App icon: the "Call Coco" panda on white.
+- **English only for the demo:** transcription language fixed to `en` (`OPENAI_STT_LANGUAGE`), and
+  Coco always replies in English.
+
+**Found:**
+- iOS kills an app instantly (`__abort_with_payload`) if it touches the mic without a permission text.
+- Xcode can overwrite the project file with its own older copy → our mic permission text vanished.
+  Fix: such settings go into `Coco-Info.plist`, which Xcode doesn't rewrite. When Xcode asks about
+  changed files: always "Read from disk", never "Keep Xcode version".
+- "Killed for too much memory" after locking the phone = iOS closing a background app, not a bug.
+- "attach… already being debugged" = Xcode's debugger stuck on an old run; the app itself is installed.
+  Stop, close Coco on the phone, run again (or restart iPhone / Xcode).
+- Transcription guessed the language and sometimes picked Chinese → fixing the language solves it.
+- The drawing PNG has a transparent background → no white boxes, works in dark mode.
+
+**Decided:**
+- Hands-free with on-device silence detection now (option A); OpenAI Realtime API (interruptions,
+  lower delay) later, fits the January voice milestone.
+- Mascot: panda (polar bear / grizzly maybe later as options). Panda drawn by hand, not in code
+  (the code-drawn one looked creepy).
+- Thinking and speaking have their own pictures now; more emotions later (needs a mood from the server).
+- Left out for now: the "+" upload button and the person icon from the sketch (no function yet).
+- No coral, no hexagon frame: black and white, panda only.
+
+**Corrections:**
+- Claude edited the project file while Xcode was open; Xcode overwrote it → crash. Now in `Coco-Info.plist`.
+- Diary edit put 2026-11-07 decisions into the 2026-11-06 entry by mistake; moved back.
+- Cutting the pandas: first used a wrong file path, and the first tool turned transparency black. Both fixed.
+
+---
+
 ## 2026-11-07
 **Did:**
 - iOS chat screen (`ContentView.swift`): title, bubbles (Coco left, user right), big text field + send button,
