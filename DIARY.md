@@ -49,6 +49,8 @@ Public repo: no personal data here.
 - No no-memory baseline: memory always on, the first task run is the baseline, improve via conversation logs.
 - Hallucination tasks kept, written as "broken twins" of base tasks (like CAR-bench).
 - Development plan and marketing/business plan kept separate; business questions still open.
+- Tool rule: tools built this year must work in both China and Germany (calendar, reminders, weather,
+  Apple Music). Country-specific pairs in January: WeChat/WhatsApp, Bilibili/YouTube, Baidu/Google Maps.
 
 **Corrections:**
 - Claude edited the project file while Xcode was open; Xcode overwrote it → crash. Now in `Coco-Info.plist`.
