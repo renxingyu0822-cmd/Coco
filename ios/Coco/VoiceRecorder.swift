@@ -2,8 +2,13 @@
 //  VoiceRecorder.swift
 //  Coco
 //
-//  Records your voice when you tap the mic (saved as a small .m4a file),
-//  so we can send it to the server's /transcribe.
+//  Records your voice (a small .m4a file) and notices by itself when you've
+//  stopped talking, so you never have to press "send" (hands-free mode).
+//
+//  How it notices: every 0.1 s it checks how loud the mic is.
+//    loud            -> you're talking
+//    quiet for 1.5 s -> after talking = you're done, stop
+//    quiet for 10 s  -> without talking at all = nobody's there, stop
 //  Uses Apple's built-in AVAudioRecorder, no extra libraries.
 //
 
@@ -11,7 +16,15 @@ import AVFoundation
 
 @MainActor
 final class VoiceRecorder {
+    enum Result { case spoke, silent, cancelled }
+
+    // ── tuning knobs (we may adjust these after testing in a real room) ──
+    var speechLevel: Float = -35      // dB. Louder than this = talking. (0 = max, -60 = very quiet)
+    var pauseToFinish: Double = 1.5   // seconds of quiet after talking = done
+    var giveUpAfter: Double = 10      // seconds without any talking = stop listening
+
     private var recorder: AVAudioRecorder?
+    private var cancelled = false
 
     // where the recording goes (a temp file, overwritten each time)
     let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("coco-recording.m4a")
@@ -21,8 +34,9 @@ final class VoiceRecorder {
         await AVAudioApplication.requestRecordPermission()
     }
 
-    func start() throws {
-        // playAndRecord: we need the mic AND want Coco's voice afterwards.
+    // start recording and wait until you're done (or nobody talks, or cancel() is called)
+    func listen() async throws -> Result {
+        // playAndRecord: we need the mic AND Coco's voice afterwards.
         // defaultToSpeaker: otherwise sound comes from the quiet phone-call earpiece
         let session = AVAudioSession.sharedInstance()
         try session.setCategory(.playAndRecord, mode: .spokenAudio, options: [.defaultToSpeaker])
@@ -35,14 +49,46 @@ final class VoiceRecorder {
             AVNumberOfChannelsKey: 1,
             AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,
         ]
-        recorder = try AVAudioRecorder(url: fileURL, settings: settings)
-        recorder?.record(forDuration: 60)  // safety: stops by itself after 60 s
+        let rec = try AVAudioRecorder(url: fileURL, settings: settings)
+        rec.isMeteringEnabled = true      // lets us read the loudness
+        recorder = rec
+        cancelled = false
+        rec.record(forDuration: 60)       // safety: never longer than 60 s
+
+        let began = Date()
+        var heardSpeech = false
+        var quietSince: Date?
+
+        while true {
+            try await Task.sleep(for: .milliseconds(100))
+
+            if cancelled { rec.stop(); return .cancelled }
+            if !rec.isRecording { return heardSpeech ? .spoke : .silent }  // hit the 60 s limit
+
+            rec.updateMeters()
+            let level = rec.averagePower(forChannel: 0)
+
+            if level > speechLevel {
+                heardSpeech = true          // talking
+                quietSince = nil
+            } else if heardSpeech {
+                quietSince = quietSince ?? Date()   // quiet after talking: start the pause clock
+                if Date().timeIntervalSince(quietSince!) >= pauseToFinish {
+                    rec.stop()
+                    return .spoke
+                }
+            }
+
+            if !heardSpeech && Date().timeIntervalSince(began) >= giveUpAfter {
+                rec.stop()
+                return .silent
+            }
+        }
     }
 
-    // stops and tells us how long it was (very short = probably a mis-tap)
-    func stop() -> TimeInterval {
-        let length = recorder?.currentTime ?? 0
+    // stop listening right away (e.g. "End conversation" button)
+    func cancel() {
+        cancelled = true
         recorder?.stop()
-        return length
     }
 }

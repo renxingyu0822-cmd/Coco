@@ -2,7 +2,10 @@
 //  ContentView.swift
 //  Coco
 //
-//  Chat screen. Sends messages to our server (ChatService) and shows Coco's replies.
+//  Chat screen. Two ways to talk to Coco:
+//    1. type + send button
+//    2. tap the mic = hands-free conversation: you talk, Coco notices when you stop,
+//       answers out loud, then listens again by herself. Until you tap "End".
 //
 
 import SwiftUI
@@ -15,17 +18,20 @@ struct ChatMessage: Identifiable {
     var isError = false  // error notes are shown, but never sent to the server
 }
 
+// what the hands-free conversation is doing right now
+enum Phase { case idle, listening, thinking, speaking }
+
 struct ContentView: View {
     @State private var messages: [ChatMessage] = [
         ChatMessage(fromUser: false, text: "Hello! I'm Coco. How are you today?")
     ]
     @State private var input = ""
-    @State private var waiting = false  // true while Coco is "thinking" (or turning your voice into text)
-    @State private var waitingText = "Coco is thinking…"
+    @State private var waiting = false  // true while Coco is "thinking" (shows the grey bubble)
     @State private var voiceOn = true   // read Coco's replies aloud?
     @State private var voice = VoicePlayer()
     @State private var recorder = VoiceRecorder()
-    @State private var recording = false  // true while the mic is listening
+    @State private var inConversation = false  // hands-free mode on?
+    @State private var phase = Phase.idle
 
     var body: some View {
         VStack(spacing: 0) {
@@ -59,7 +65,7 @@ struct ContentView: View {
                             Bubble(message: msg).id(msg.id)
                         }
                         if waiting {
-                            Bubble(message: ChatMessage(fromUser: false, text: waitingText))
+                            Bubble(message: ChatMessage(fromUser: false, text: "Coco is thinking…"))
                                 .opacity(0.6)
                                 .id("thinking")
                         }
@@ -78,130 +84,178 @@ struct ContentView: View {
 
             Divider()
 
-            // input row: big mic button + big text field + big send button
-            HStack(alignment: .bottom, spacing: 10) {
-                // tap once = start listening, tap again = stop and send (tap is easier than holding)
-                Button(action: micTapped) {
-                    Image(systemName: recording ? "stop.circle.fill" : "mic.circle.fill")
-                        .font(.system(size: 44))
-                        .foregroundStyle(recording ? .red : .accentColor)
-                }
-                .disabled(waiting)
-                .accessibilityLabel(recording ? "Stop and send" : "Talk to Coco")
-
-                if recording {
-                    // while listening: a clear hint instead of the text field
-                    Text("Listening… tap ■ when you're done")
-                        .font(.title3)
-                        .foregroundStyle(.red)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(12)
-                        .background(Color.red.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                } else {
-                    TextField("Type a message…", text: $input, axis: .vertical)
-                        .font(.title3)
-                        .lineLimit(1...4)
-                        .padding(12)
-                        .background(Color(.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                }
-
-                Button(action: { send(trimmed) }) {
-                    Image(systemName: "arrow.up.circle.fill")
-                        .font(.system(size: 44))
-                }
-                .disabled(trimmed.isEmpty || waiting || recording)  // no double sends
-                .accessibilityLabel("Send")
+            if inConversation {
+                conversationPanel   // big status + End button
+            } else {
+                inputRow            // mic + text field + send
             }
-            .padding()
+        }
+    }
+
+    // ── bottom area, normal mode: big mic button + text field + big send button ──
+    private var inputRow: some View {
+        HStack(alignment: .bottom, spacing: 10) {
+            Button(action: startConversation) {
+                Image(systemName: "mic.circle.fill")
+                    .font(.system(size: 44))
+            }
+            .disabled(waiting)
+            .accessibilityLabel("Talk to Coco")
+
+            TextField("Type a message…", text: $input, axis: .vertical)
+                .font(.title3)
+                .lineLimit(1...4)
+                .padding(12)
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+
+            Button(action: sendTyped) {
+                Image(systemName: "arrow.up.circle.fill")
+                    .font(.system(size: 44))
+            }
+            .disabled(trimmed.isEmpty || waiting)  // no double sends
+            .accessibilityLabel("Send")
+        }
+        .padding()
+    }
+
+    // ── bottom area, hands-free mode: what's happening + a big End button ──
+    private var conversationPanel: some View {
+        VStack(spacing: 14) {
+            HStack(spacing: 12) {
+                Image(systemName: phaseIcon)
+                    .font(.system(size: 34))
+                    .symbolEffect(.pulse, isActive: phase == .listening)  // gentle pulse = "I'm listening"
+                Text(phaseText)
+                    .font(.title2.bold())
+            }
+            .foregroundStyle(phase == .listening ? .green : .primary)
+
+            Button(action: endConversation) {
+                Text("End conversation")
+                    .font(.title3.bold())
+                    .frame(maxWidth: .infinity, minHeight: 56)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.red)
+        }
+        .padding()
+    }
+
+    private var phaseText: String {
+        switch phase {
+        case .listening: "Listening… just talk"
+        case .thinking: "Coco is thinking…"
+        case .speaking: "Coco is speaking…"
+        case .idle: ""
+        }
+    }
+
+    private var phaseIcon: String {
+        switch phase {
+        case .listening: "mic.fill"
+        case .thinking: "ellipsis.bubble.fill"
+        case .speaking: "speaker.wave.2.fill"
+        case .idle: "mic"
         }
     }
 
     private var trimmed: String { input.trimmingCharacters(in: .whitespacesAndNewlines) }
 
-    // send a message to Coco: used by the send button (typed text) and the mic (spoken text)
-    private func send(_ text: String) {
-        guard !text.isEmpty, !waiting else { return }
-        messages.append(ChatMessage(fromUser: true, text: text))
+    // ── typed message ──
+    private func sendTyped() {
+        let text = trimmed
         input = ""
-        waitingText = "Coco is thinking…"
+        Task {
+            if let reply = await ask(text), voiceOn {
+                if let mp3 = try? await ChatService.speak(reply) { await voice.play(mp3) }
+            }
+        }
+    }
+
+    // ask Coco: adds your bubble, waits for her reply, adds her bubble. nil = something failed.
+    private func ask(_ text: String) async -> String? {
+        guard !text.isEmpty, !waiting else { return nil }
+        messages.append(ChatMessage(fromUser: true, text: text))
         waiting = true
+        defer { waiting = false }
 
         // the greeting is only on screen, the server doesn't need it, so send from the first user message on
         let history = messages.drop(while: { !$0.fromUser }).filter { !$0.isError }
+        do {
+            let reply = try await ChatService.send(history)
+            messages.append(ChatMessage(fromUser: false, text: reply))
+            return reply
+        } catch {
+            print("Chat error:", error)  // details for us in Xcode's console
+            messages.append(ChatMessage(fromUser: false,
+                text: "Sorry, I can't reach my brain right now. Please try again in a moment.",
+                isError: true))
+            return nil
+        }
+    }
 
+    // ── hands-free conversation: listen -> think -> speak -> listen again ... ──
+    private func startConversation() {
         Task {
-            do {
-                let reply = try await ChatService.send(history)
-                messages.append(ChatMessage(fromUser: false, text: reply))
-                if voiceOn { say(reply) }  // text shows first, voice follows
-            } catch {
-                print("Chat error:", error)  // details for us in Xcode's console
+            guard await recorder.askPermission() else {
                 messages.append(ChatMessage(fromUser: false,
-                    text: "Sorry, I can't reach my brain right now. Please try again in a moment.",
+                    text: "I need the microphone to hear you. You can allow it in Settings → Coco.",
                     isError: true))
+                return
             }
-            waiting = false
-        }
-    }
+            inConversation = true
 
-    // mic button: 1st tap starts listening, 2nd tap stops -> text -> send to Coco
-    private func micTapped() {
-        if !recording {
-            Task {
-                guard await recorder.askPermission() else {
+            while inConversation {
+                // 1. listen until you stop talking
+                phase = .listening
+                let heard: VoiceRecorder.Result
+                do { heard = try await recorder.listen() } catch {
+                    print("Record error:", error); break
+                }
+                if heard == .cancelled || !inConversation { break }
+                if heard == .silent {
+                    // nobody talked for a while: stop, so the mic isn't on forever
                     messages.append(ChatMessage(fromUser: false,
-                        text: "I need the microphone to hear you. You can allow it in Settings → Coco.",
+                        text: "I'll be right here. Tap the microphone whenever you want to talk.",
                         isError: true))
-                    return
+                    break
                 }
-                do {
-                    voice.stop()        // don't record Coco's own voice
-                    try recorder.start()
-                    recording = true
-                } catch {
-                    print("Record error:", error)
-                }
-            }
-        } else {
-            recording = false
-            let length = recorder.stop()
-            guard length > 0.5 else { return }  // too short = probably a mis-tap, ignore
 
-            waitingText = "Coco is listening…"
-            waiting = true
-            Task {
-                do {
-                    let text = try await ChatService.transcribe(recorder.fileURL)
-                    waiting = false
-                    if text.isEmpty {
-                        messages.append(ChatMessage(fromUser: false,
-                            text: "Sorry, I didn't catch that. Could you say it again?", isError: true))
-                    } else {
-                        send(text)  // your words appear as your bubble, Coco answers as usual
-                    }
-                } catch {
+                // 2. your voice -> text
+                phase = .thinking
+                let text: String
+                do { text = try await ChatService.transcribe(recorder.fileURL) } catch {
                     print("Transcribe error:", error)
-                    waiting = false
                     messages.append(ChatMessage(fromUser: false,
-                        text: "Sorry, I couldn't hear that properly. Please try again or type it.",
-                        isError: true))
+                        text: "Sorry, I couldn't hear that properly. Please try again.", isError: true))
+                    break
+                }
+                if text.isEmpty { continue }  // nothing understood: just listen again
+
+                // 3. ask Coco
+                guard let reply = await ask(text), inConversation else { break }
+
+                // 4. Coco speaks; the mic stays off until she's done (so she doesn't hear herself)
+                if voiceOn {
+                    phase = .speaking
+                    if let mp3 = try? await ChatService.speak(reply), inConversation {
+                        await voice.play(mp3)
+                    }
                 }
             }
+
+            // conversation over
+            inConversation = false
+            phase = .idle
         }
     }
 
-    // get Coco's voice from the server and play it. If it fails: no sound, text is still there.
-    private func say(_ text: String) {
-        Task {
-            do {
-                let mp3 = try await ChatService.speak(text)
-                if voiceOn { voice.play(mp3) }  // check again: maybe turned off while loading
-            } catch {
-                print("Speak error:", error)
-            }
-        }
+    private func endConversation() {
+        inConversation = false
+        recorder.cancel()   // stop listening
+        voice.stop()        // stop her mid-sentence
+        phase = .idle
     }
 }
 
