@@ -16,7 +16,7 @@ from fastapi import APIRouter, File, HTTPException, Response, UploadFile
 from pydantic import BaseModel
 
 from .prompt import VOICE_INSTRUCTIONS
-from .settings import STT_MODEL, TTS_MODEL, TTS_VOICE, client
+from .settings import STT_LANGUAGE, STT_MODEL, TTS_MODEL, TTS_VOICE, client
 
 # a "router" = a small group of endpoints; main.py plugs it into the server
 router = APIRouter()
@@ -63,6 +63,7 @@ async def transcribe(audio: UploadFile = File(...)):
             model=STT_MODEL,
             # OpenAI wants (filename, bytes, type); the name's ending tells it the format (.m4a)
             file=(audio.filename or "recording.m4a", data, audio.content_type or "audio/m4a"),
+            language=STT_LANGUAGE,  # "en": don't guess the language (see settings.py)
         )
     except Exception as e:
         print("OpenAI transcribe error:", e)

@@ -23,6 +23,9 @@ MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")              # for chatting
 TTS_MODEL = os.getenv("OPENAI_TTS_MODEL", "gpt-4o-mini-tts")  # TTS = text-to-speech
 TTS_VOICE = os.getenv("OPENAI_TTS_VOICE", "coral")            # which voice Coco has
 STT_MODEL = os.getenv("OPENAI_STT_MODEL", "gpt-4o-mini-transcribe")  # STT = speech-to-text
+# which language people speak. Fixed to English for the demo, otherwise it guesses
+# (and with an accent it sometimes guesses wrong, e.g. Chinese). Later: "de" for German.
+STT_LANGUAGE = os.getenv("OPENAI_STT_LANGUAGE", "en")
 
 # the shared OpenAI connection. It finds OPENAI_API_KEY from .env by itself.
 client = OpenAI()
