@@ -15,8 +15,8 @@
 //  Voice mode = hands-free: you talk, Coco notices when you stop, answers out
 //  loud, then listens again by herself. Until you tap "Stop voice chat".
 //
-//  Panda pictures live in Assets: panda-idle ("Call Coco"), panda-listening, panda-thinking
-//  (drawn by hand, handwritten words removed; thinking + speaking share one picture for now).
+//  Panda pictures live in Assets: panda-idle ("Call Coco"), panda-listening, panda-thinking,
+//  panda-talking (hand-drawn, transparent background; words removed except on "Talking…").
 //  Colour: "AccentColor" in Assets = black (light mode) / white (dark mode).
 //  Things drawn ON the accent colour use Color(.systemBackground), the opposite,
 //  so they stay readable in both modes.
@@ -102,7 +102,6 @@ struct ContentView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(height: 130)
-                        .blendMode(.multiply)   // makes the white paper of the drawing disappear on the card
 
                     HStack {
                         Image(systemName: "phone.fill")
@@ -318,7 +317,8 @@ struct ContentView: View {
 
 // ── the big panda in voice mode (no frame, just the panda) ──
 //   listening:          "panda-listening", gently pulsing (= I'm all ears)
-//   thinking, speaking: "panda-thinking", thinking sways slowly, speaking bobs a little
+//   thinking:           "panda-thinking", sways slowly
+//   speaking:           "panda-talking", bobs a little
 struct PandaStage: View {
     let phase: Phase
 
@@ -326,7 +326,11 @@ struct PandaStage: View {
         // TimelineView redraws ~60x per second; we use the time `t` for the small movements
         TimelineView(.animation) { timeline in
             let t = timeline.date.timeIntervalSinceReferenceDate
-            let picture = phase == .listening ? "panda-listening" : "panda-thinking"
+            let picture = switch phase {
+                case .listening: "panda-listening"
+                case .speaking: "panda-talking"
+                default: "panda-thinking"
+            }
 
             let scale = phase == .listening ? 1 + 0.03 * sin(t * 4) : 1       // pulse
             let bob = phase == .speaking ? -4 * abs(sin(t * 6)) : 0            // little hops while talking
@@ -336,7 +340,6 @@ struct PandaStage: View {
                 Image(picture)
                     .resizable()
                     .scaledToFit()
-                    .blendMode(.multiply)   // hides the white paper behind the drawing
                     .padding(8)
                     .scaleEffect(scale)
                     .rotationEffect(.degrees(sway))
