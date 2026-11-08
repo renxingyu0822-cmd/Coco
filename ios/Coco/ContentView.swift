@@ -7,6 +7,8 @@
 //    2. tap the mic = hands-free conversation: you talk, Coco notices when you stop,
 //       answers out loud, then listens again by herself. Until you tap "End".
 //
+//  Colour: "AccentColor" in Assets = Coco's warm coral. Change it there, everything follows.
+//
 
 import SwiftUI
 
@@ -46,8 +48,10 @@ struct ContentView: View {
                         if !voiceOn { voice.stop() }  // turning off also stops her mid-sentence
                     } label: {
                         Image(systemName: voiceOn ? "speaker.wave.2.fill" : "speaker.slash.fill")
-                            .font(.system(size: 28))
-                            .frame(width: 44, height: 44)  // big enough to hit
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(voiceOn ? Color.accentColor : .secondary)
+                            .frame(width: 48, height: 48)  // big enough to hit
+                            .background(Circle().fill(Color(.secondarySystemBackground)))
                     }
                     .accessibilityLabel(voiceOn ? "Voice on" : "Voice off")
                 }
@@ -85,59 +89,52 @@ struct ContentView: View {
             Divider()
 
             if inConversation {
-                conversationPanel   // big status + End button
+                conversationPanel   // big orb + status + End button
             } else {
                 inputRow            // mic + text field + send
             }
         }
+        .animation(.easeInOut(duration: 0.25), value: inConversation)  // smooth switch between the two
     }
 
-    // ── bottom area, normal mode: big mic button + text field + big send button ──
+    // ── bottom area, normal mode: round mic button + text field + round send button ──
     private var inputRow: some View {
         HStack(alignment: .bottom, spacing: 10) {
-            Button(action: startConversation) {
-                Image(systemName: "mic.circle.fill")
-                    .font(.system(size: 44))
-            }
-            .disabled(waiting)
-            .accessibilityLabel("Talk to Coco")
+            RoundButton(systemName: "mic.fill", enabled: !waiting, action: startConversation)
+                .accessibilityLabel("Talk to Coco")
 
             TextField("Type a message…", text: $input, axis: .vertical)
                 .font(.title3)
                 .lineLimit(1...4)
-                .padding(12)
-                .background(Color(.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(Capsule().fill(Color(.secondarySystemBackground)))
 
-            Button(action: sendTyped) {
-                Image(systemName: "arrow.up.circle.fill")
-                    .font(.system(size: 44))
-            }
-            .disabled(trimmed.isEmpty || waiting)  // no double sends
-            .accessibilityLabel("Send")
+            RoundButton(systemName: "arrow.up", enabled: !trimmed.isEmpty && !waiting, action: sendTyped)
+                .accessibilityLabel("Send")
         }
         .padding()
     }
 
-    // ── bottom area, hands-free mode: what's happening + a big End button ──
+    // ── bottom area, hands-free mode: the orb, what's happening, a big End button ──
     private var conversationPanel: some View {
-        VStack(spacing: 14) {
-            HStack(spacing: 12) {
-                Image(systemName: phaseIcon)
-                    .font(.system(size: 34))
-                    .symbolEffect(.pulse, isActive: phase == .listening)  // gentle pulse = "I'm listening"
-                Text(phaseText)
-                    .font(.title2.bold())
-            }
-            .foregroundStyle(phase == .listening ? .green : .primary)
+        VStack(spacing: 16) {
+            CocoOrb(phase: phase)
+                .frame(height: 150)
+
+            Text(phaseText)
+                .font(.title2.bold())
+                .foregroundStyle(phase == .listening ? .green : .primary)
+                .contentTransition(.opacity)
+                .animation(.easeInOut, value: phase)
 
             Button(action: endConversation) {
-                Text("End conversation")
+                Label("End conversation", systemImage: "xmark")
                     .font(.title3.bold())
+                    .foregroundStyle(.white)
                     .frame(maxWidth: .infinity, minHeight: 56)
+                    .background(Capsule().fill(Color.red))
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.red)
         }
         .padding()
     }
@@ -147,16 +144,7 @@ struct ContentView: View {
         case .listening: "Listening… just talk"
         case .thinking: "Coco is thinking…"
         case .speaking: "Coco is speaking…"
-        case .idle: ""
-        }
-    }
-
-    private var phaseIcon: String {
-        switch phase {
-        case .listening: "mic.fill"
-        case .thinking: "ellipsis.bubble.fill"
-        case .speaking: "speaker.wave.2.fill"
-        case .idle: "mic"
+        case .idle: " "
         }
     }
 
@@ -259,6 +247,91 @@ struct ContentView: View {
     }
 }
 
+// ── a solid round button with a white symbol (mic, send) ──
+// coral when it can be pressed, light grey when not
+struct RoundButton: View {
+    let systemName: String
+    var enabled = true
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 22, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(width: 50, height: 50)
+                .background(Circle().fill(enabled ? Color.accentColor : Color(.systemGray4)))
+        }
+        .disabled(!enabled)
+        .animation(.easeInOut(duration: 0.2), value: enabled)
+    }
+}
+
+// ── the big animated circle in conversation mode, shows what Coco is doing ──
+//   listening: green, soft rings pulsing outward
+//   thinking:  coral, slowly "breathing"
+//   speaking:  coral, little sound bars moving
+struct CocoOrb: View {
+    let phase: Phase
+
+    var body: some View {
+        // TimelineView redraws ~60x per second; we use the time `t` to animate
+        TimelineView(.animation) { timeline in
+            let t = timeline.date.timeIntervalSinceReferenceDate
+            let color: Color = phase == .listening ? .green : .accentColor
+
+            ZStack {
+                if phase == .listening {
+                    // 3 rings growing and fading, one after another
+                    ForEach(0..<3) { i in
+                        let p = (t / 2 + Double(i) / 3).truncatingRemainder(dividingBy: 1)  // 0 -> 1
+                        Circle()
+                            .stroke(color.opacity(0.5 * (1 - p)), lineWidth: 3)
+                            .frame(width: 90 + 60 * p, height: 90 + 60 * p)
+                    }
+                }
+
+                // the main circle; "breathes" while thinking
+                let breathe = phase == .thinking ? 1 + 0.06 * sin(t * 3) : 1
+                Circle()
+                    .fill(color.gradient)
+                    .frame(width: 90, height: 90)
+                    .scaleEffect(breathe)
+                    .shadow(color: color.opacity(0.4), radius: 12)
+
+                // what's inside the circle
+                switch phase {
+                case .listening:
+                    Image(systemName: "mic.fill")
+                        .font(.system(size: 36, weight: .bold))
+                        .foregroundStyle(.white)
+                case .thinking:
+                    // three dots lighting up one after another
+                    HStack(spacing: 8) {
+                        ForEach(0..<3) { i in
+                            Circle()
+                                .fill(.white.opacity(0.4 + 0.6 * max(0, sin(t * 4 - Double(i)))))
+                                .frame(width: 10, height: 10)
+                        }
+                    }
+                case .speaking:
+                    // 5 sound bars going up and down
+                    HStack(spacing: 5) {
+                        ForEach(0..<5) { i in
+                            Capsule()
+                                .fill(.white)
+                                .frame(width: 6, height: 12 + 22 * abs(sin(t * 5 + Double(i) * 0.9)))
+                        }
+                    }
+                case .idle:
+                    EmptyView()
+                }
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
+}
+
 // a single speech bubble: user on the right, Coco on the left
 struct Bubble: View {
     let message: ChatMessage
@@ -280,6 +353,15 @@ struct Bubble: View {
     }
 }
 
-#Preview {
+#Preview("Chat") {
     ContentView()
+}
+
+// preview of the orb in each state, to see the animations in Xcode without talking
+#Preview("Orb") {
+    VStack(spacing: 30) {
+        CocoOrb(phase: .listening).frame(height: 150)
+        CocoOrb(phase: .thinking).frame(height: 150)
+        CocoOrb(phase: .speaking).frame(height: 150)
+    }
 }
