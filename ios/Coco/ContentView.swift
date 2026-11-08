@@ -57,13 +57,12 @@ struct ContentView: View {
                 startVoiceCard      // big panda button
             }
 
-            Divider()
             chatList                // the bubbles (both modes)
-            Divider()
 
             if inConversation {
                 pandaPanel          // big panda + "Listening…"
             } else {
+                Divider()           // thin line above the text field (text mode only)
                 inputRow            // text field + send
             }
         }
