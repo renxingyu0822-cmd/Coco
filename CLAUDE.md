@@ -2,7 +2,8 @@
 
 Read this first in every session. Update it when decisions change.
 
-**Working diary:** `DIARY.md` (newest on top). At session start read only the latest ~3 entries;
+**Working diary:** `DIARY.md` (development plan table at the top, then entries newest first;
+keep the plan table's Status column up to date). At session start read the plan + the latest ~3 entries;
 grep it for older details. Add a short entry after each finished step or at session end
 (Did / Found / Decided / Corrections). Only add a "Next" line when I say what's next, never decide it yourself.
 
@@ -32,16 +33,11 @@ The full proposal (two-pager) and the instructors' feedback are in `docs/` (loca
 Where the proposal and this file disagree, **this file wins** (it's newer).
 
 ## Current goal (first presentation: Fri 13 Nov 2026)
-A working demo: **chat with Coco in the app on my iPhone.**
-Done means:
-1. Repo frame: `ios/`, `server/`, `CLAUDE.md`, pushed to GitHub
-2. Back end: small Python server on my Mac -> OpenAI API with Coco's personality prompt -> reply
-3. App: simple SwiftUI chat screen that talks to the server
-4. Runs on my iPhone over home Wi-Fi (simulator as backup for the presentation)
-
-NOT in scope for this demo: memory, tools, evaluation. They come after.
+The demo is **done**: chat with Coco on my iPhone, by text and hands-free voice (see Status).
+Still open before Friday: test the iPhone-hotspot setup (university Wi-Fi may block it), reinstall the app
+shortly before (7-day limit), decide on a backup (the Simulator doesn't work on this Mac).
 **Voice brought forward (decided 7 Nov):** OpenAI speech via the server (`/transcribe` + `/speak`),
-not Apple's on-device speech. Added after the 4 demo steps were done.
+not Apple's on-device speech.
 
 ## Development plan (decided 8 Nov; marketing/business plan is separate, see "Open points")
 | When | What |
@@ -72,8 +68,9 @@ Coco/
 ├── CLAUDE.md
 ├── DIARY.md     # working diary, newest on top
 ├── docs/        # proposal, feedback, notes (local only, not in git)
-├── ios/         # Xcode project (SwiftUI app "Coco")
-└── server/      # Python back end (agent core, later tools, memory, eval)
+├── ios/         # Xcode project (SwiftUI app "Coco"), open ios/Coco.xcodeproj
+├── screenshots/ # app screenshots for the README
+└── server/      # Python back end, code in server/app/ (later tools, memory, eval)
 ```
 
 ## Dev environment

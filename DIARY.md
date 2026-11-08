@@ -3,6 +3,17 @@
 Newest entry on top. Short entries: what we did, what we found, decisions, corrections, next.
 Public repo: no personal data here.
 
+## Development plan (decided 2026-11-08, details in CLAUDE.md)
+
+| When | What | Status |
+|---|---|---|
+| by 15 Nov | Basic question-answering agent (text + voice chat) | ✅ mostly done |
+| Nov – Dec | Long-term memory + basic tools for China and Germany: calendar, reminders, weather, Apple Music | ⬜ |
+| mid Dec + Christmas | Tasks: base (tools work?), long-term memory (memory works?), hallucination ("broken twins" of base tasks). First run = baseline, improve via conversation logs. | ⬜ |
+| January | Advanced: scam detection, email, China/Germany pairs (WeChat/WhatsApp, Bilibili/YouTube, Baidu/Google Maps). Then their tasks. | ⬜ |
+
+Marketing/business plan (first market, interviews, trust model): separate, not planned yet.
+
 ---
 
 ## 2026-11-08

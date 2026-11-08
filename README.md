@@ -46,11 +46,9 @@ Coco is an iPhone app (Apple Watch later for reminders), set up once by the fami
 
 **Front office**: agents that talk to the older person, built one by one:
 1. **Companion** with long-term memory
-2. **Reminder assistant** for medication, appointments and short-term things ("the pot on the stove")
-3. **Scam guard**
-4. **Info helper** with plain-language answers and sources
-5. **Video helper** for YouTube and saved links
-6. **Voice version**
+2. **Everyday tools**: reminders (medication, appointments, "the pot on the stove"), calendar, weather, music
+3. **Voice**: hands-free voice chat ✅
+4. **Advanced helpers**: scam guard, email, messaging, videos and maps (in versions for China and Germany)
 
 **Back office**: agents that run the company: engineer, code review, QA, and later a scam analyst and support.
 
@@ -87,5 +85,17 @@ Working now:
 - **Hands-free voice chat:** tap the panda, just talk. Coco notices when you stop, answers out loud,
   then listens again (OpenAI speech-to-text and text-to-speech, through the back end).
 
-Coming next: long-term memory, reminders, scam check, and evaluation against a no-memory baseline in a simulated
-environment (simulated older users + LLM evaluator).
+Coming next: see the development plan below.
+
+## Development plan
+
+| When | What |
+|---|---|
+| **by 15 Nov** | Basic question-answering agent: text and voice chat ✅ |
+| **Nov – Dec** | Long-term memory + basic tools that work in both China and Germany: calendar, reminders, weather, Apple Music |
+| **mid Dec + Christmas** | Evaluation: design and run **base** tasks (do the tools work?), **long-term memory** tasks (does memory work?) and **hallucination** tasks (does Coco admit what she can't do?). Improve the score using the conversation logs. |
+| **January** | Advanced features: scam detection, email, and country-specific pairs (WeChat / WhatsApp, Bilibili / YouTube, Baidu Maps / Google Maps). Then their tasks, and improve the score again. |
+
+**Evaluation** is adapted from [CAR-bench](https://arxiv.org/abs/2601.22027): a simulated older user (LLM with a persona)
+talks to Coco, an evaluator checks the conversation (rule-based + LLM-as-judge), and every task runs 3 times
+(Pass^3 = reliable, Pass@3 = solvable). The first run is the baseline.
