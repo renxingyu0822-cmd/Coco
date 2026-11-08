@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!-- extra app settings, merged with the ones Xcode generates.
-     NSAllowsLocalNetworking: allow plain http:// to our server on the local network only (internet stays https-only). -->
+     NSAllowsLocalNetworking: allow plain http:// to our server on the local network only (internet stays https-only).
+     NSMicrophoneUsageDescription: the text iOS shows when asking for the mic. Without it, iOS kills the app
+     the moment it touches the mic. (Kept here, not in the project file, because Xcode can overwrite that.) -->
 <plist version="1.0">
 <dict>
 	<key>NSAppTransportSecurity</key>
@@ -9,5 +11,7 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Coco listens when you tap the microphone, so you can talk instead of typing.</string>
 </dict>
 </plist>
