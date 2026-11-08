@@ -2,12 +2,22 @@
 //  ContentView.swift
 //  Coco
 //
-//  Chat screen. Two ways to talk to Coco:
-//    1. type + send button
-//    2. tap the mic = hands-free conversation: you talk, Coco notices when you stop,
-//       answers out loud, then listens again by herself. Until you tap "End".
+//  Chat screen, layout from the hand-drawn sketches:
 //
-//  Colour: "AccentColor" in Assets = Coco's warm coral. Change it there, everything follows.
+//  Text mode                         Voice mode
+//  ┌──────────────────────┐          ┌──────────────────────┐
+//  │ Coco             🔊  │          │ (✕) Stop voice chat  │
+//  │ [C][panda] Tap Coco  │          │  bubbles …           │
+//  │  bubbles …           │          │     [ panda ]        │
+//  │ [Type a message…] ↑  │          │  Listening… just talk│
+//  └──────────────────────┘          └──────────────────────┘
+//
+//  Voice mode = hands-free: you talk, Coco notices when you stop, answers out
+//  loud, then listens again by herself. Until you tap "Stop voice chat".
+//
+//  Panda pictures live in Assets: panda-idle, panda-listening, panda-normal
+//  (cut from the sketches, to be replaced by the real drawings later).
+//  Colour: "AccentColor" in Assets = Coco's warm coral.
 //
 
 import SwiftUI
@@ -20,7 +30,7 @@ struct ChatMessage: Identifiable {
     var isError = false  // error notes are shown, but never sent to the server
 }
 
-// what the hands-free conversation is doing right now
+// what the voice chat is doing right now
 enum Phase { case idle, listening, thinking, speaking }
 
 struct ContentView: View {
@@ -32,109 +42,150 @@ struct ContentView: View {
     @State private var voiceOn = true   // read Coco's replies aloud?
     @State private var voice = VoicePlayer()
     @State private var recorder = VoiceRecorder()
-    @State private var inConversation = false  // hands-free mode on?
+    @State private var inConversation = false  // voice mode on?
     @State private var phase = Phase.idle
 
     var body: some View {
         VStack(spacing: 0) {
-            // header: name in the middle, speaker on/off button on the right
-            ZStack {
-                Text("Coco")
-                    .font(.title.bold())
-                HStack {
-                    Spacer()
-                    Button {
-                        voiceOn.toggle()
-                        if !voiceOn { voice.stop() }  // turning off also stops her mid-sentence
-                    } label: {
-                        Image(systemName: voiceOn ? "speaker.wave.2.fill" : "speaker.slash.fill")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(voiceOn ? Color.accentColor : .secondary)
-                            .frame(width: 48, height: 48)  // big enough to hit
-                            .background(Circle().fill(Color(.secondarySystemBackground)))
-                    }
-                    .accessibilityLabel(voiceOn ? "Voice on" : "Voice off")
-                }
-                .padding(.horizontal)
+            if inConversation {
+                stopBar             // (✕) Stop voice chat
+            } else {
+                header              // Coco + speaker button
+                Divider()
+                startVoiceCard      // big panda button
             }
-            .padding(.vertical, 8)
 
             Divider()
-
-            // the conversation, jumps to the newest message
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 14) {
-                        ForEach(messages) { msg in
-                            Bubble(message: msg).id(msg.id)
-                        }
-                        if waiting {
-                            Bubble(message: ChatMessage(fromUser: false, text: "Coco is thinking…"))
-                                .opacity(0.6)
-                                .id("thinking")
-                        }
-                    }
-                    .padding()
-                }
-                .onChange(of: messages.count) {
-                    if let last = messages.last {
-                        withAnimation { proxy.scrollTo(last.id, anchor: .bottom) }
-                    }
-                }
-                .onChange(of: waiting) {
-                    if waiting { withAnimation { proxy.scrollTo("thinking", anchor: .bottom) } }
-                }
-            }
-
+            chatList                // the bubbles (both modes)
             Divider()
 
             if inConversation {
-                conversationPanel   // big orb + status + End button
+                pandaPanel          // big panda + "Listening…"
             } else {
-                inputRow            // mic + text field + send
+                inputRow            // text field + send
             }
         }
-        .animation(.easeInOut(duration: 0.25), value: inConversation)  // smooth switch between the two
+        .animation(.easeInOut(duration: 0.3), value: inConversation)  // smooth switch between modes
     }
 
-    // ── bottom area, normal mode: round mic button + text field + round send button ──
-    private var inputRow: some View {
-        HStack(alignment: .bottom, spacing: 10) {
-            RoundButton(systemName: "mic.fill", enabled: !waiting, action: startConversation)
-                .accessibilityLabel("Talk to Coco")
-
-            TextField("Type a message…", text: $input, axis: .vertical)
-                .font(.title3)
-                .lineLimit(1...4)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(Capsule().fill(Color(.secondarySystemBackground)))
-
-            RoundButton(systemName: "arrow.up", enabled: !trimmed.isEmpty && !waiting, action: sendTyped)
-                .accessibilityLabel("Send")
+    // ── text mode: header ──
+    private var header: some View {
+        HStack {
+            Text("Coco")
+                .font(.largeTitle.bold())
+            Spacer()
+            Button {
+                voiceOn.toggle()
+                if !voiceOn { voice.stop() }  // turning off also stops her mid-sentence
+            } label: {
+                Image(systemName: voiceOn ? "speaker.wave.2.fill" : "speaker.slash.fill")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(voiceOn ? Color.accentColor : .secondary)
+                    .frame(width: 48, height: 48)  // big enough to hit
+                    .background(Circle().fill(Color(.secondarySystemBackground)))
+            }
+            .accessibilityLabel(voiceOn ? "Voice on" : "Voice off")
         }
-        .padding()
+        .padding(.horizontal)
+        .padding(.vertical, 6)
     }
 
-    // ── bottom area, hands-free mode: the orb, what's happening, a big End button ──
-    private var conversationPanel: some View {
-        VStack(spacing: 16) {
-            CocoOrb(phase: phase)
-                .frame(height: 150)
+    // ── text mode: the giant "start voice chat" button (easy to find) ──
+    private var startVoiceCard: some View {
+        Button(action: startConversation) {
+            HStack(spacing: 14) {
+                // the round "C" logo
+                Text("C")
+                    .font(.system(size: 44, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+                    .frame(width: 72, height: 72)
+                    .background(Circle().fill(Color.accentColor))
+
+                Image("panda-idle")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 90)
+                    .blendMode(.multiply)   // makes the white paper of the sketch disappear on the card
+
+                Spacer(minLength: 0)
+            }
+            .overlay(alignment: .bottom) {
+                Text("Tap Coco to start voice chat")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                    .offset(y: 24)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 10)
+            .padding(.bottom, 34)
+            .frame(maxWidth: .infinity)
+            .background(RoundedRectangle(cornerRadius: 24).fill(Color.accentColor.opacity(0.08)))
+        }
+        .buttonStyle(.plain)
+        .disabled(waiting)
+        .padding(.horizontal)
+        .padding(.vertical, 10)
+        .accessibilityLabel("Tap Coco to start voice chat")
+    }
+
+    // ── voice mode: big stop button at the top ──
+    private var stopBar: some View {
+        Button(action: endConversation) {
+            HStack(spacing: 14) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 26, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 56, height: 56)
+                    .background(Circle().fill(Color.red))
+                Text("Stop voice chat")
+                    .font(.title2.bold())
+                    .foregroundStyle(.primary)
+                Spacer()
+            }
+            .padding()
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Stop voice chat")
+    }
+
+    // ── the bubbles, jumps to the newest message ──
+    private var chatList: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 14) {
+                    ForEach(messages) { msg in
+                        Bubble(message: msg).id(msg.id)
+                    }
+                    if waiting {
+                        Bubble(message: ChatMessage(fromUser: false, text: "Coco is thinking…"))
+                            .opacity(0.6)
+                            .id("thinking")
+                    }
+                }
+                .padding()
+            }
+            .onChange(of: messages.count) {
+                if let last = messages.last {
+                    withAnimation { proxy.scrollTo(last.id, anchor: .bottom) }
+                }
+            }
+            .onChange(of: waiting) {
+                if waiting { withAnimation { proxy.scrollTo("thinking", anchor: .bottom) } }
+            }
+        }
+    }
+
+    // ── voice mode: the big panda + what's happening ──
+    private var pandaPanel: some View {
+        VStack(spacing: 10) {
+            PandaStage(phase: phase)
+                .frame(height: 200)
 
             Text(phaseText)
                 .font(.title2.bold())
                 .foregroundStyle(phase == .listening ? .green : .primary)
                 .contentTransition(.opacity)
                 .animation(.easeInOut, value: phase)
-
-            Button(action: endConversation) {
-                Label("End conversation", systemImage: "xmark")
-                    .font(.title3.bold())
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity, minHeight: 56)
-                    .background(Capsule().fill(Color.red))
-            }
         }
         .padding()
     }
@@ -146,6 +197,22 @@ struct ContentView: View {
         case .speaking: "Coco is speaking…"
         case .idle: " "
         }
+    }
+
+    // ── text mode: text field + round send button ──
+    private var inputRow: some View {
+        HStack(alignment: .bottom, spacing: 10) {
+            TextField("Type a message…", text: $input, axis: .vertical)
+                .font(.title3)
+                .lineLimit(1...4)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(Capsule().fill(Color(.secondarySystemBackground)))
+
+            RoundButton(systemName: "arrow.up", enabled: !trimmed.isEmpty && !waiting, action: sendTyped)
+                .accessibilityLabel("Send")
+        }
+        .padding()
     }
 
     private var trimmed: String { input.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -183,7 +250,7 @@ struct ContentView: View {
         }
     }
 
-    // ── hands-free conversation: listen -> think -> speak -> listen again ... ──
+    // ── voice chat: listen -> think -> speak -> listen again ... ──
     private func startConversation() {
         Task {
             guard await recorder.askPermission() else {
@@ -205,7 +272,7 @@ struct ContentView: View {
                 if heard == .silent {
                     // nobody talked for a while: stop, so the mic isn't on forever
                     messages.append(ChatMessage(fromUser: false,
-                        text: "I'll be right here. Tap the microphone whenever you want to talk.",
+                        text: "I'll be right here. Tap me whenever you want to talk.",
                         isError: true))
                     break
                 }
@@ -233,7 +300,7 @@ struct ContentView: View {
                 }
             }
 
-            // conversation over
+            // voice chat over
             inConversation = false
             phase = .idle
         }
@@ -247,7 +314,61 @@ struct ContentView: View {
     }
 }
 
-// ── a solid round button with a white symbol (mic, send) ──
+// ── the big panda in voice mode, in a soft hexagon (like the sketch) ──
+//   listening:          "panda-listening", gently pulsing (= I'm all ears)
+//   thinking, speaking: "panda-normal", thinking sways slowly, speaking bobs a little
+struct PandaStage: View {
+    let phase: Phase
+
+    var body: some View {
+        // TimelineView redraws ~60x per second; we use the time `t` for the small movements
+        TimelineView(.animation) { timeline in
+            let t = timeline.date.timeIntervalSinceReferenceDate
+            let picture = phase == .listening ? "panda-listening" : "panda-normal"
+
+            let scale = phase == .listening ? 1 + 0.03 * sin(t * 4) : 1       // pulse
+            let bob = phase == .speaking ? -4 * abs(sin(t * 6)) : 0            // little hops while talking
+            let sway = phase == .thinking ? 3 * sin(t * 1.5) : 0               // slow tilt while thinking
+
+            ZStack {
+                Hexagon()
+                    .fill(Color.accentColor.opacity(0.10))
+                Hexagon()
+                    .stroke(Color.accentColor.opacity(0.35),
+                            style: StrokeStyle(lineWidth: 3, lineJoin: .round))  // round corners = softer
+
+                Image(picture)
+                    .resizable()
+                    .scaledToFit()
+                    .blendMode(.multiply)   // hides the white paper behind the sketch
+                    .padding(28)
+                    .scaleEffect(scale)
+                    .rotationEffect(.degrees(sway))
+                    .offset(y: bob)
+            }
+            .aspectRatio(1.1, contentMode: .fit)
+            .frame(maxWidth: .infinity)
+        }
+    }
+}
+
+// a soft hexagon, flat on top and bottom
+struct Hexagon: Shape {
+    func path(in r: CGRect) -> Path {
+        let inset = r.width * 0.22  // how far the top/bottom edges are pulled in
+        var p = Path()
+        p.move(to: CGPoint(x: r.minX + inset, y: r.minY))
+        p.addLine(to: CGPoint(x: r.maxX - inset, y: r.minY))
+        p.addLine(to: CGPoint(x: r.maxX, y: r.midY))
+        p.addLine(to: CGPoint(x: r.maxX - inset, y: r.maxY))
+        p.addLine(to: CGPoint(x: r.minX + inset, y: r.maxY))
+        p.addLine(to: CGPoint(x: r.minX, y: r.midY))
+        p.closeSubpath()
+        return p
+    }
+}
+
+// ── a solid round button with a white symbol (send) ──
 // coral when it can be pressed, light grey when not
 struct RoundButton: View {
     let systemName: String
@@ -264,71 +385,6 @@ struct RoundButton: View {
         }
         .disabled(!enabled)
         .animation(.easeInOut(duration: 0.2), value: enabled)
-    }
-}
-
-// ── the big animated circle in conversation mode, shows what Coco is doing ──
-//   listening: green, soft rings pulsing outward
-//   thinking:  coral, slowly "breathing"
-//   speaking:  coral, little sound bars moving
-struct CocoOrb: View {
-    let phase: Phase
-
-    var body: some View {
-        // TimelineView redraws ~60x per second; we use the time `t` to animate
-        TimelineView(.animation) { timeline in
-            let t = timeline.date.timeIntervalSinceReferenceDate
-            let color: Color = phase == .listening ? .green : .accentColor
-
-            ZStack {
-                if phase == .listening {
-                    // 3 rings growing and fading, one after another
-                    ForEach(0..<3) { i in
-                        let p = (t / 2 + Double(i) / 3).truncatingRemainder(dividingBy: 1)  // 0 -> 1
-                        Circle()
-                            .stroke(color.opacity(0.5 * (1 - p)), lineWidth: 3)
-                            .frame(width: 90 + 60 * p, height: 90 + 60 * p)
-                    }
-                }
-
-                // the main circle; "breathes" while thinking
-                let breathe = phase == .thinking ? 1 + 0.06 * sin(t * 3) : 1
-                Circle()
-                    .fill(color.gradient)
-                    .frame(width: 90, height: 90)
-                    .scaleEffect(breathe)
-                    .shadow(color: color.opacity(0.4), radius: 12)
-
-                // what's inside the circle
-                switch phase {
-                case .listening:
-                    Image(systemName: "mic.fill")
-                        .font(.system(size: 36, weight: .bold))
-                        .foregroundStyle(.white)
-                case .thinking:
-                    // three dots lighting up one after another
-                    HStack(spacing: 8) {
-                        ForEach(0..<3) { i in
-                            Circle()
-                                .fill(.white.opacity(0.4 + 0.6 * max(0, sin(t * 4 - Double(i)))))
-                                .frame(width: 10, height: 10)
-                        }
-                    }
-                case .speaking:
-                    // 5 sound bars going up and down
-                    HStack(spacing: 5) {
-                        ForEach(0..<5) { i in
-                            Capsule()
-                                .fill(.white)
-                                .frame(width: 6, height: 12 + 22 * abs(sin(t * 5 + Double(i) * 0.9)))
-                        }
-                    }
-                case .idle:
-                    EmptyView()
-                }
-            }
-            .frame(maxWidth: .infinity)
-        }
     }
 }
 
@@ -357,11 +413,12 @@ struct Bubble: View {
     ContentView()
 }
 
-// preview of the orb in each state, to see the animations in Xcode without talking
-#Preview("Orb") {
-    VStack(spacing: 30) {
-        CocoOrb(phase: .listening).frame(height: 150)
-        CocoOrb(phase: .thinking).frame(height: 150)
-        CocoOrb(phase: .speaking).frame(height: 150)
+// the panda in each voice-mode state, to see the movements in Xcode without talking
+#Preview("Panda") {
+    VStack(spacing: 20) {
+        PandaStage(phase: .listening).frame(height: 180)
+        PandaStage(phase: .thinking).frame(height: 180)
+        PandaStage(phase: .speaking).frame(height: 180)
     }
+    .padding()
 }
