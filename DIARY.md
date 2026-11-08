@@ -42,6 +42,13 @@ Public repo: no personal data here.
 - Thinking and speaking have their own pictures now; more emotions later (needs a mood from the server).
 - Left out for now: the "+" upload button and the person icon from the sketch (no function yet).
 - No coral, no hexagon frame: black and white, panda only.
+- **New development plan** (details in CLAUDE.md): basic QA agent by 15 Nov → basic tools (calendar, weather,
+  music, reminders) + long-term memory in Nov/Dec → base, memory and hallucination tasks mid-Dec/Christmas →
+  advanced features (videos, scam detection, Maps, email) in January.
+- Scam detection moved from core to January (harder to build).
+- No no-memory baseline: memory always on, the first task run is the baseline, improve via conversation logs.
+- Hallucination tasks kept, written as "broken twins" of base tasks (like CAR-bench).
+- Development plan and marketing/business plan kept separate; business questions still open.
 
 **Corrections:**
 - Claude edited the project file while Xcode was open; Xcode overwrote it → crash. Now in `Coco-Info.plist`.

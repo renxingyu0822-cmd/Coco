@@ -15,12 +15,11 @@ Course theme: "AI for Good" — build an AI-driven startup with coding agents.
 - **Paying customers:** their adult children (family plan).
 - **Front-office agents** (talk to the older person), in priority order:
   1. Companion with long-term memory
-  2. Reminder assistant (medication, appointments, short-term like "pot on the stove")
-  3. Scam guard
-  4. Info helper (web search, plain-language answers with sources)
-  5. Video helper (YouTube / saved TikTok links via embedded players)
-  6. Voice version
-  7. Later, if time: Navigator (Google Maps), Mail helper (Gmail), Family liaison
+  2. Basic tools: reminders (medication, appointments, "pot on the stove"), calendar, weather, music
+  3. Voice version (done early, Nov)
+  4. Advanced, January (need skills): video helper, scam guard, Navigator (Google Maps), Mail helper (Gmail)
+  5. Later, if time: info helper (web search), Family liaison
+  (Changed 8 Nov: scam guard moved from core to January because it's harder to build.)
 - **Back-office agents** (run the company): engineer, code-review, QA, scam analyst, later research/marketing and support.
 - **Boundaries:** users always know they talk to an AI; emergencies ("I fell") go to family / 112;
   the agent never enters passwords or makes payments; health info is only used for reminders, never for advice.
@@ -40,16 +39,27 @@ NOT in scope for this demo: memory, tools, evaluation. They come after.
 **Voice brought forward (decided 7 Nov):** OpenAI speech via the server (`/transcribe` + `/speak`),
 not Apple's on-device speech. Added after the 4 demo steps were done.
 
+## Development plan (decided 8 Nov; marketing/business plan is separate, see "Open points")
+| When | What |
+|---|---|
+| by 15 Nov | Basic question-answering agent (text + voice chat — mostly done) |
+| rest of Nov + Dec | Basic tools (calendar, weather, music, reminders) + long-term memory |
+| mid Dec + Christmas break | Design + run tasks: **base** (do the tools work?), **long-term memory** (does memory work?), **hallucination** (as "broken twins" of base tasks, e.g. weather tool down; plus no-tool ones like medical advice). Improve the score by reading the conversation logs. |
+| January (if memory works) | Advanced features that need skills: videos, scam detection, Google Maps, email. Then their tasks, improve the score again. |
+
 ## Decisions so far
 - **Language / market:** English first, Germany as first market. (Instructors flagged that few older adults in Germany
   will use an English app — keep a German output mode in mind for later.)
 - **LLM:** OpenAI / OpenAI-compatible API, model chosen after early tests.
 - **Architecture:** thin iPhone app + Python back end. The API key lives ONLY in the back end, never in the app.
 - **Back end runs on my Mac for now**; moves to an EU-hosted cloud server later (GDPR, health data).
-- **Memory (later, M2):** try open-source GBrain first, custom memory module as fallback.
+- **Memory (Nov/Dec):** try open-source GBrain first, custom memory module as fallback.
   Four memory types: personal profile, recent events, health info (separate + protected), short-term reminders.
-- **Evaluation (later):** simulated environment adapted from CAR-bench — three LLMs (assistant, simulated older user,
-  evaluator) + rule-based checks. Task types: base, long-term memory, hallucination. Compare against a no-memory baseline.
+  Memory is **always on** (no switch to turn it off).
+- **Evaluation (Dec):** adapted from CAR-bench (the student version is at
+  github.com/renxingyu0822-cmd/Car_Bench_Jet2Holiday): simulated older user + Coco + evaluator, rule-based + LLM-judge
+  checks, each task run k=3 times (Pass^3 / Pass@3). Task types: base, long-term memory, hallucination.
+  **No no-memory baseline:** the first run of the tasks is the baseline; improve from there using the conversation logs.
   Metrics include task success, memory recall, hallucination rate, cost per task.
 
 ## Repo structure
@@ -77,7 +87,7 @@ Coco/
 - Commit locally after each finished step (small commits, clear messages).
   **Only push to GitHub when I ask for it.**
 
-## Open points from the instructors' feedback (for later updates)
+## Open points from the instructors' feedback (marketing/business plan — separate, still thinking, no dates yet)
 1. Choose a first market and meet real older users: 5 conversations each with older adults and their children.
 2. Resolve the trust conflict: define exactly what the paying children see (conversations are private),
    and what happens when the service fails (missed "I fell", missed medication reminder).
@@ -91,3 +101,4 @@ Coco/
 - [x] iOS chat screen, connected to the server (tested in Xcode Preview; Simulator renders blank on this Mac)
 - [x] Running on iPhone over home Wi-Fi (server address: `http://dafeideMacBook-Pro.local:8000`,
       bundle ID `com.renxingyu0822.Coco`, free Apple ID → reinstall from Xcode every 7 days)
+- [x] Voice: hands-free voice chat (OpenAI speech), panda design, English only
