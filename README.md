@@ -13,6 +13,15 @@ Coco is a panda (hand-drawn). In the app, her picture shows what she's doing:
 | <img src="ios/Coco/Assets.xcassets/panda-idle.imageset/panda-idle.png" width="160" alt="Call Coco"> | <img src="ios/Coco/Assets.xcassets/panda-listening.imageset/panda-listening.png" width="160" alt="Listening"> | <img src="ios/Coco/Assets.xcassets/panda-thinking.imageset/panda-thinking.png" width="160" alt="Thinking"> | <img src="ios/Coco/Assets.xcassets/panda-talking.imageset/panda-talking.png" width="160" alt="Talking"> |
 | tap to start a voice chat | while you talk | while she works on an answer | while she answers out loud |
 
+## Screenshots
+
+The current prototype on an iPhone:
+
+| Text chat | Voice: listening | Voice: thinking | Voice: talking |
+|:---:|:---:|:---:|:---:|
+| <img src="screenshots/text-mode.jpg" width="200" alt="Text chat"> | <img src="screenshots/voice-listening.jpg" width="200" alt="Voice chat, listening"> | <img src="screenshots/voice-thinking.jpg" width="200" alt="Voice chat, thinking"> | <img src="screenshots/voice-talking.jpg" width="200" alt="Voice chat, talking"> |
+| type, or tap the panda to talk | just talk, no button needed | Coco works on her answer | Coco answers out loud |
+
 ## Why
 
 Many older adults live on their own and want to stay independent, but everyday life is full of small digital barriers:
@@ -64,8 +73,9 @@ iPhone app (SwiftUI)  ⇄  Python back end  ⇄  LLM API
 The app stays thin. The API key and all agent logic live in the back end, which will later move to an EU-hosted server (GDPR).
 
 ```
-ios/      SwiftUI app
-server/   Python back end (agent core, later tools, memory, evaluation)
+ios/          SwiftUI app
+server/       Python back end (agent core, later tools, memory, evaluation)
+screenshots/  pictures of the app for this README
 ```
 
 ## Status
