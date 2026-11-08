@@ -95,31 +95,31 @@ struct ContentView: View {
     // ── text mode: the giant "start voice chat" button (easy to find) ──
     private var startVoiceCard: some View {
         Button(action: startConversation) {
-            HStack(spacing: 14) {
-                // the round "C" logo
-                Text("C")
-                    .font(.system(size: 44, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(.systemBackground))
-                    .frame(width: 72, height: 72)
-                    .background(Circle().fill(Color.accentColor))
+            VStack(spacing: 6) {
+                // panda big and in the middle, green "call" button on the left
+                ZStack {
+                    Image("panda-idle")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 130)
+                        .blendMode(.multiply)   // makes the white paper of the drawing disappear on the card
 
-                Image("panda-idle")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 90)
-                    .blendMode(.multiply)   // makes the white paper of the sketch disappear on the card
+                    HStack {
+                        Image(systemName: "phone.fill")
+                            .font(.system(size: 30, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 64, height: 64)
+                            .background(Circle().fill(Color.green))
+                        Spacer()
+                    }
+                }
 
-                Spacer(minLength: 0)
-            }
-            .overlay(alignment: .bottom) {
                 Text("Tap Coco to start voice chat")
                     .font(.headline)
                     .foregroundStyle(.primary)
-                    .offset(y: 24)
             }
             .padding(.horizontal, 16)
-            .padding(.top, 10)
-            .padding(.bottom, 34)
+            .padding(.vertical, 12)
             .frame(maxWidth: .infinity)
             .background(RoundedRectangle(cornerRadius: 24).fill(Color.accentColor.opacity(0.08)))
         }
@@ -316,7 +316,7 @@ struct ContentView: View {
     }
 }
 
-// ── the big panda in voice mode, in a soft hexagon (like the sketch) ──
+// ── the big panda in voice mode (no frame, just the panda) ──
 //   listening:          "panda-listening", gently pulsing (= I'm all ears)
 //   thinking, speaking: "panda-thinking", thinking sways slowly, speaking bobs a little
 struct PandaStage: View {
@@ -333,17 +333,11 @@ struct PandaStage: View {
             let sway = phase == .thinking ? 3 * sin(t * 1.5) : 0               // slow tilt while thinking
 
             ZStack {
-                Hexagon()
-                    .fill(Color.accentColor.opacity(0.10))
-                Hexagon()
-                    .stroke(Color.accentColor.opacity(0.35),
-                            style: StrokeStyle(lineWidth: 3, lineJoin: .round))  // round corners = softer
-
                 Image(picture)
                     .resizable()
                     .scaledToFit()
-                    .blendMode(.multiply)   // hides the white paper behind the sketch
-                    .padding(28)
+                    .blendMode(.multiply)   // hides the white paper behind the drawing
+                    .padding(8)
                     .scaleEffect(scale)
                     .rotationEffect(.degrees(sway))
                     .offset(y: bob)
@@ -351,22 +345,6 @@ struct PandaStage: View {
             .aspectRatio(1.1, contentMode: .fit)
             .frame(maxWidth: .infinity)
         }
-    }
-}
-
-// a soft hexagon, flat on top and bottom
-struct Hexagon: Shape {
-    func path(in r: CGRect) -> Path {
-        let inset = r.width * 0.22  // how far the top/bottom edges are pulled in
-        var p = Path()
-        p.move(to: CGPoint(x: r.minX + inset, y: r.minY))
-        p.addLine(to: CGPoint(x: r.maxX - inset, y: r.minY))
-        p.addLine(to: CGPoint(x: r.maxX, y: r.midY))
-        p.addLine(to: CGPoint(x: r.maxX - inset, y: r.maxY))
-        p.addLine(to: CGPoint(x: r.minX + inset, y: r.maxY))
-        p.addLine(to: CGPoint(x: r.minX, y: r.midY))
-        p.closeSubpath()
-        return p
     }
 }
 
