@@ -17,7 +17,9 @@
 //
 //  Panda pictures live in Assets: panda-idle, panda-listening, panda-normal
 //  (cut from the sketches, to be replaced by the real drawings later).
-//  Colour: "AccentColor" in Assets = Coco's warm coral.
+//  Colour: "AccentColor" in Assets = black (light mode) / white (dark mode).
+//  Things drawn ON the accent colour use Color(.systemBackground), the opposite,
+//  so they stay readable in both modes.
 //
 
 import SwiftUI
@@ -97,7 +99,7 @@ struct ContentView: View {
                 // the round "C" logo
                 Text("C")
                     .font(.system(size: 44, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Color(.systemBackground))
                     .frame(width: 72, height: 72)
                     .background(Circle().fill(Color.accentColor))
 
@@ -369,7 +371,7 @@ struct Hexagon: Shape {
 }
 
 // ── a solid round button with a white symbol (send) ──
-// coral when it can be pressed, light grey when not
+// accent (black/white) when it can be pressed, light grey when not
 struct RoundButton: View {
     let systemName: String
     var enabled = true
@@ -379,7 +381,7 @@ struct RoundButton: View {
         Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(Color(.systemBackground))
                 .frame(width: 50, height: 50)
                 .background(Circle().fill(enabled ? Color.accentColor : Color(.systemGray4)))
         }
@@ -400,7 +402,7 @@ struct Bubble: View {
                 .font(.title3)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
-                .foregroundStyle(message.fromUser ? .white : .primary)
+                .foregroundStyle(message.fromUser ? Color(.systemBackground) : .primary)
                 .background(message.fromUser ? Color.accentColor : Color(.secondarySystemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 20))
 
