@@ -70,6 +70,12 @@ server/   Python back end (agent core, later tools, memory, evaluation)
 
 ## Status
 
-🚧 Early development. First milestone: chat with Coco in the app on an iPhone.
-Next: long-term memory, reminders, scam check, and evaluation against a no-memory baseline in a simulated
+🚧 Early development (prototype, English only).
+
+Working now:
+- **Chat with Coco** in the iPhone app, by text, with her personality and safety rules.
+- **Hands-free voice chat:** tap the panda, just talk. Coco notices when you stop, answers out loud,
+  then listens again (OpenAI speech-to-text and text-to-speech, through the back end).
+
+Coming next: long-term memory, reminders, scam check, and evaluation against a no-memory baseline in a simulated
 environment (simulated older users + LLM evaluator).
