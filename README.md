@@ -4,6 +4,15 @@
 
 Semester project for the course *Frontier Systems* (L3S, Leibniz Universität Hannover, winter 2026/27), theme "AI for Good".
 
+## Meet Coco
+
+Coco is a panda (hand-drawn). In the app, her picture shows what she's doing:
+
+| Call Coco | Listening | Thinking | Talking |
+|:---:|:---:|:---:|:---:|
+| <img src="ios/Coco/Assets.xcassets/panda-idle.imageset/panda-idle.png" width="160" alt="Call Coco"> | <img src="ios/Coco/Assets.xcassets/panda-listening.imageset/panda-listening.png" width="160" alt="Listening"> | <img src="ios/Coco/Assets.xcassets/panda-thinking.imageset/panda-thinking.png" width="160" alt="Thinking"> | <img src="ios/Coco/Assets.xcassets/panda-talking.imageset/panda-talking.png" width="160" alt="Talking"> |
+| tap to start a voice chat | while you talk | while she works on an answer | while she answers out loud |
+
 ## Why
 
 Many older adults live on their own and want to stay independent, but everyday life is full of small digital barriers:
