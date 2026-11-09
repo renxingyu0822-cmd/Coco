@@ -18,8 +18,14 @@ build/
 # mac
 .DS_Store
 
-# docs stay local (personal data, public repo)
-docs/
+# latex build leftovers (slides)
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.synctex.gz
 
 # server log
 server/server.log
