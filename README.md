@@ -46,9 +46,9 @@ Coco is an iPhone app (Apple Watch later for reminders), set up once by the fami
 
 **Front office**: agents that talk to the older person, built one by one:
 1. **Companion** with long-term memory
-2. **Everyday tools**: reminders (medication, appointments, "the pot on the stove"), calendar, weather, music
+2. **Everyday tools**: reminders (medication, appointments, "the pot on the stove"), calendar, weather, music, web search
 3. **Voice**: hands-free voice chat ✅
-4. **Advanced helpers**: scam guard, email, messaging, videos and maps (in versions for China and Germany)
+4. **Advanced helpers**: scam guard, email, family liaison, messaging, videos and maps (in versions for China and Germany)
 
 **Back office**: agents that run the company: engineer, code review, QA, and later a scam analyst and support.
 
@@ -92,9 +92,9 @@ Coming next: see the development plan below.
 | When | What |
 |---|---|
 | **by 15 Nov** | Basic question-answering agent: text and voice chat ✅ |
-| **Nov – Dec** | Long-term memory + basic tools that work in both China and Germany: calendar, reminders, weather, Apple Music |
+| **Nov – Dec** | Long-term memory + basic tools that work in both China and Germany: calendar, reminders, weather, Apple Music, web search |
 | **mid Dec + Christmas** | Evaluation: design and run **base** tasks (do the tools work?), **long-term memory** tasks (does memory work?) and **hallucination** tasks (does Coco admit what she can't do?). Improve the score using the conversation logs. |
-| **January** | Advanced features: scam detection, email, and country-specific pairs (WeChat / WhatsApp, Bilibili / YouTube, Baidu Maps / Google Maps). Then their tasks, and improve the score again. |
+| **January** | Advanced features: scam detection, email, family liaison, and country-specific pairs (WeChat / WhatsApp, Bilibili / YouTube, Baidu Maps / Google Maps). Then their tasks, and improve the score again. |
 
 **Evaluation** is adapted from [CAR-bench](https://arxiv.org/abs/2601.22027): a simulated older user (LLM with a persona)
 talks to Coco, an evaluator checks the conversation (rule-based + LLM-as-judge), and every task runs 3 times

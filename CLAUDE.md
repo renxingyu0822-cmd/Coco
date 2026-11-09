@@ -16,14 +16,14 @@ Course theme: "AI for Good" — build an AI-driven startup with coding agents.
 - **Paying customers:** their adult children (family plan).
 - **Front-office agents** (talk to the older person), in priority order:
   1. Companion with long-term memory
-  2. Basic tools: reminders (medication, appointments, "pot on the stove"), calendar, weather, music (Apple Music)
+  2. Basic tools: reminders (medication, appointments, "pot on the stove"), calendar, weather, music (Apple Music), web search
   3. Voice version (done early, Nov)
-  4. Advanced, January (need skills): scam guard, Mail helper, and the **country-specific pairs**:
+  4. Advanced, January (need skills): scam guard, Mail helper, Family liaison, and the **country-specific pairs**:
      messaging (WeChat / WhatsApp), video (Bilibili / YouTube), maps (Baidu Maps / Google Maps)
-  5. Later, if time: info helper (web search), Family liaison
-  (Changed 8 Nov: scam guard moved from core to January because it's harder to build.)
+  (Changed 8 Nov: scam guard moved from core to January because it's harder to build.
+  Changed 9 Nov: web search is a basic tool, Family liaison moved to January.)
 - **Tool rule (decided 8 Nov):** tools built this year must work the same in **China and Germany**
-  (calendar, reminders, Apple Music are built into the iPhone; weather via a service that covers both).
+  (calendar, reminders, Apple Music are built into the iPhone; weather and web search via services that cover both).
   Country-specific tools come in January, as pairs (China / Germany).
 - **Back-office agents** (run the company): engineer, code-review, QA, scam analyst, later research/marketing and support.
 - **Boundaries:** users always know they talk to an AI; emergencies ("I fell") go to family / 112;
@@ -43,9 +43,9 @@ not Apple's on-device speech.
 | When | What |
 |---|---|
 | by 15 Nov | Basic question-answering agent (text + voice chat — mostly done) |
-| rest of Nov + Dec | Basic tools that work in both China and Germany (calendar, weather, Apple Music, reminders) + long-term memory |
+| rest of Nov + Dec | Basic tools that work in both China and Germany (calendar, weather, Apple Music, reminders, web search) + long-term memory |
 | mid Dec + Christmas break | Design + run tasks: **base** (do the tools work?), **long-term memory** (does memory work?), **hallucination** (as "broken twins" of base tasks, e.g. weather tool down; plus no-tool ones like medical advice). Improve the score by reading the conversation logs. |
-| January (if memory works) | Advanced features that need skills: scam detection, email, and the China/Germany pairs (WeChat/WhatsApp, Bilibili/YouTube, Baidu/Google Maps). Then their tasks, improve the score again. |
+| January (if memory works) | Advanced features that need skills: scam detection, email, Family liaison, and the China/Germany pairs (WeChat/WhatsApp, Bilibili/YouTube, Baidu/Google Maps). Then their tasks, improve the score again. |
 
 ## Decisions so far
 - **Language / market:** English first, Germany as first market. (Instructors flagged that few older adults in Germany
