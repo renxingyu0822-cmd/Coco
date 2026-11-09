@@ -19,7 +19,7 @@ The current prototype on an iPhone:
 
 | Text chat | Voice: listening | Voice: thinking | Voice: talking |
 |:---:|:---:|:---:|:---:|
-| <img src="screenshots/text-mode.jpg" width="200" alt="Text chat"> | <img src="screenshots/voice-listening.jpg" width="200" alt="Voice chat, listening"> | <img src="screenshots/voice-thinking.jpg" width="200" alt="Voice chat, thinking"> | <img src="screenshots/voice-talking.jpg" width="200" alt="Voice chat, talking"> |
+| <img src="docs/app-pictures/text-mode.jpg" width="200" alt="Text chat"> | <img src="docs/app-pictures/voice-listening.jpg" width="200" alt="Voice chat, listening"> | <img src="docs/app-pictures/voice-thinking.jpg" width="200" alt="Voice chat, thinking"> | <img src="docs/app-pictures/voice-talking.jpg" width="200" alt="Voice chat, talking"> |
 | type, or tap the panda to talk | just talk, no button needed | Coco works on her answer | Coco answers out loud |
 
 ## Why
@@ -73,7 +73,7 @@ The app stays thin. The API key and all agent logic live in the back end, which 
 ```
 ios/          SwiftUI app
 server/       Python back end (agent core, later tools, memory, evaluation)
-screenshots/  pictures of the app for this README
+docs/         proposal, feedback, slides, app-pictures (app screenshots)
 ```
 
 ## Status

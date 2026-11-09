@@ -67,9 +67,8 @@ not Apple's on-device speech.
 Coco/
 ├── CLAUDE.md
 ├── DIARY.md     # working diary, newest on top
-├── docs/        # proposal, feedback, slides (slides/presentation_1: LaTeX Beamer)
+├── docs/        # proposal, feedback, app-pictures/ (app screenshots for README + slides), slides/ (LaTeX Beamer)
 ├── ios/         # Xcode project (SwiftUI app "Coco"), open ios/Coco.xcodeproj
-├── screenshots/ # app screenshots for the README
 └── server/      # Python back end, code in server/app/ (later tools, memory, eval)
 ```
 

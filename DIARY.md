@@ -19,11 +19,13 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 ## 2026-11-09
 **Did:**
 - Slides for the first presentation (Fri 13 Nov, due to Dren Thu 4 pm): LaTeX Beamer in
-  `docs/slides/presentation_1/coco.tex`. 8 slides: title, problem (Germany + China numbers), Coco + planned
-  features (hub diagram), design, development plan, evaluation (user simulator / Coco / judge triangle + three
-  task types), status (iPhone screenshots), what's next. Black and white like the app, grey cards, panda.
+  `docs/slides/presentation_1/coco.tex`. 8 slides: title, problem (Germany + China numbers), Coco as a service
+  company (front office / back office hubs, from the proposal), design (architecture + workflow), evaluation
+  (user simulator / Coco / judge triangle + three task types), development plan, status (iPhone screenshots),
+  what's next (+ GitHub link). Black and white like the app, grey cards, left bar on headlines, panda.
   "Agents as employees" slide hidden for now (`<0>`).
 - VS Code: LaTeX Workshop builds on save with pdflatex (settings in `.vscode/`, not in git).
+- App screenshots moved from `screenshots/` to `docs/app-pictures/` (README + slides updated).
 
 **Found:**
 - TikZ: `step` and `name` are reserved keys, don't use them as style names.
@@ -33,8 +35,10 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 - `docs/` (proposal, feedback, slides) is now in the public repo. LaTeX build leftovers stay ignored.
 - Cartoon people (Twemoji) instead of photos on the problem slide.
 
-**Still open for the slides:** which basic tools go in "What's next", users/customers line after hiding slide 4,
-"health detection and alert" vs. the no-medical-advice boundary.
+- What's next (until 27 Nov): try GBrain and start building our own LTM system; first simple tools, e.g. reminders.
+
+**Still open:** CLAUDE.md still says "GBrain first, custom module as fallback" (slides now say build our own
+alongside); who pays (users/customers) is no longer on any slide since slide 4 is hidden; slides due Thu 4 pm.
 
 **Decided (earlier today):**
 - Web search is now a basic tool (Nov/Dec); it must work in both China and Germany, like the other basic tools.

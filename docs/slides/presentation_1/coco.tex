@@ -7,12 +7,12 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning,calc,arrows.meta}
 
-% images live in the app + screenshots folders, no copies
+% images live in the app + app-pictures folders, no copies
 \graphicspath{{../../../ios/Coco/Assets.xcassets/panda-idle.imageset/}
               {../../../ios/Coco/Assets.xcassets/panda-listening.imageset/}
               {../../../ios/Coco/Assets.xcassets/panda-thinking.imageset/}
               {../../../ios/Coco/Assets.xcassets/panda-talking.imageset/}
-              {../../../screenshots/}}
+              {../../app-pictures/}}
 
 % black and white + the app's soft grey cards
 \definecolor{card}{gray}{0.945}
@@ -118,21 +118,28 @@
 % 3. what coco is
 \begin{frame}[t]{Coco: an AI helper with LTM that can help them}
   \vspace*{-0.25cm}
-  {\large An iPhone app, set up once by the family, opened with one tap.
-  Coco remembers each person's needs, routines and help them with daily tasks.}\\[0.6em]
+  Coco is a service company: it provides digital everyday assistance through \textbf{AI agents acting as employees},
+  supervised by me as founder and care coordinator. Users get a mobile app, set up once by the family and opened with one tap.\par
+  \vspace{0.3em}
   \centering
   \begin{tikzpicture}[
-      chip/.style={fill=card,rounded corners=8pt,align=center,font=\small,
-                   inner xsep=7pt,inner ysep=4pt},
-      spoke/.style={-{Stealth[length=2mm]},soft,semithick,shorten >=2pt}]
-    % planned features around a hub, centred on the slide
-    \node[circle,fill=accent,text=white,align=center,font=\small\bfseries,
-          text width=2.2cm,inner sep=3pt] (hub) at (7,-2.25) {What are we planning to do?};
-    \foreach \a/\t in {114/{chat by text or\\hands-free voice},66/companionship,36/{health detection\\and alert},
-                       0/scam detection,-36/navigation,-72/reminders,-108/music playing,
-                       -144/email checking,180/web search,144/video playing}{
-      \node[chip] (f\a) at ($(7,-2.25)+(\a:5.05cm and 2.35cm)$) {\t};
-      \draw[spoke] (hub) -- (f\a);
+      chip/.style={fill=card,rounded corners=7pt,align=center,font=\footnotesize,
+                   inner xsep=6pt,inner ysep=3pt},
+      hub/.style={circle,fill=accent,text=white,align=center,font=\small,text width=1.85cm,inner sep=1pt},
+      spoke/.style={-{Stealth[length=1.8mm]},soft,semithick,shorten >=1pt}]
+    % front office
+    \node[hub] (fo) at (3.55,-2.2) {\textbf{Front office}\\[-1pt]{\tiny talks to users}};
+    \foreach \a/\t in {90/Companion,50/Reminders,10/Voice,-30/Scam guard,-62/Web search,
+                       -118/Video helper,-150/Navigator,170/Mail helper,130/Family liaison}{
+      \node[chip] (f\a) at ($(3.55,-2.2)+(\a:2.6cm and 1.95cm)$) {\t};
+      \draw[spoke] (fo) -- (f\a);
+    }
+    % back office
+    \node[hub] (bo) at (10.5,-2.2) {\textbf{Back office}\\[-1pt]{\tiny runs the company}};
+    \foreach \a/\t in {90/Engineer,30/Code review,-30/{QA\\[-2pt]\scriptsize evaluation runs},-90/{Scam analyst\\[-2pt]\scriptsize scam-trend warnings},
+                       -150/Support,150/{Research \&\\[-2pt]marketing}}{
+      \node[chip] (b\a) at ($(10.5,-2.2)+(\a:2.65cm and 1.9cm)$) {\t};
+      \draw[spoke] (bo) -- (b\a);
     }
   \end{tikzpicture}
 \end{frame}
@@ -170,47 +177,47 @@
 
 % 5. design
 \begin{frame}[t]{Design: one agent core, with memory and tools}
-  \vspace{0.2em}
+  \vspace*{-0.15cm}
   \centering
   \begin{tikzpicture}[
-      box/.style={fill=card,rounded corners=5pt,align=center,font=\small,minimum height=1cm,inner sep=4pt},
-      link/.style={<->,>=stealth,semithick}]
-    \node[box,text width=3.5cm] (app) at (-5,0) {\agent{iPhone app}{thin: text and voice}};
-    \node[box,dark,text width=3.5cm] (core) at (0,0) {\agent{Python back end}{agent logic, API key}};
-    \node[box,text width=3.5cm] (llm) at (5,0) {\agent{LLM + speech APIs}{OpenAI for now}};
-    \node[box,text width=6.2cm] (mem) at (-3.45,-2) {\agent{Memory \textcolor{soft}{\mdseries (planned, always on)}}{personal profile \textbullet{} recent events\\[-2pt] health info (protected) \textbullet{} short-term reminders\\[-2pt] GBrain first, custom module as fallback}};
-    \node[box,text width=6.2cm] (tools) at (3.45,-2) {\agent{Tools \textcolor{soft}{\mdseries (planned)}}{on the iPhone: reminders, calendar, music\\[-2pt] online: weather, web search\\[-2pt] must work the same in China and Germany}};
+      box/.style={fill=card,rounded corners=6pt,align=center,font=\small,minimum height=1.05cm,
+                  text width=3.6cm,inner sep=4pt},
+      panel/.style={fill=card,rounded corners=6pt,align=left,font=\small,text width=6.05cm,
+                    minimum height=1.85cm,inner sep=7pt,anchor=north},
+      link/.style={{Stealth[length=2mm]}-{Stealth[length=2mm]},semithick},
+      down/.style={-{Stealth[length=2mm]},semithick},
+      sec/.style={anchor=south west,inner sep=0pt,font=\small\bfseries,text=soft},
+      step/.style={}]
+    % architecture
+    \node[box] (app) at (-5,0) {\agent{iPhone app}{thin: text and voice}};
+    \node[box,dark] (core) at (0,0) {\agent{Python back end}{agent logic, API key}};
+    \node[box] (llm) at (5,0) {\agent{LLM + speech APIs}{OpenAI for now}};
+    \node[sec] at ([yshift=0.2cm]app.north west) {Architecture};
     \draw[link] (app) -- (core);
     \draw[link] (core) -- (llm);
-    \draw[link] (core.south) ++(-0.5,0) -- (mem.north);
-    \draw[link] (core.south) ++(0.5,0) -- (tools.north);
-    % how one request runs
+    \node[panel] (mem) at (-3.45,-1.35) {%
+      \textbf{Memory} {\textcolor{soft}{(planned, always on)}}\par\vspace{2pt}
+      {\scriptsize\textbullet\ personal profile, recent events\par
+       \textbullet\ health info (separate, protected)\par
+       \textbullet\ short-term reminders\par
+       \textcolor{soft}{GBrain first, custom module as fallback}}};
+    \node[panel] (tools) at (3.45,-1.35) {%
+      \textbf{Tools} {\textcolor{soft}{(planned)}}\par\vspace{2pt}
+      {\scriptsize\textbullet\ on the iPhone: reminders, calendar, music\par
+       \textbullet\ online: weather, web search\par
+       \textcolor{soft}{must work the same in China and Germany}}};
+    \draw[down] (core.south) -- ++(0,-0.3) -| (mem.north);
+    \draw[down] (core.south) -- ++(0,-0.3) -| (tools.north);
+    \fill (core.south) ++(0,-0.3) circle (1.6pt);
+    % workflow
     \foreach \i/\t in {0/understand goal,1/retrieve memories,2/plan,3/call\\tools,4/check results,5/confirm sensitive,6/respond,7/update memory}{
-      \node[chip] (c\i) at ({-6.02+1.72*\i},-4.05) {\t};
+      \node[chip,minimum height=1.05cm] (c\i) at ({-6.02+1.72*\i},-4.9) {\t};
     }
     \foreach \i [evaluate=\i as \j using int(\i+1)] in {0,...,6}{
-      \draw[->,>=stealth] (c\i) -- (c\j);
+      \draw[-{Stealth[length=1.6mm]}] (c\i) -- (c\j);
     }
+    \node[sec] at ([yshift=0.2cm]c0.north west) {Workflow: how one request runs};
   \end{tikzpicture}
-\end{frame}
-
-% 6. development plan
-\begin{frame}[t]{Development plan}
-  \vspace{0.5em}
-  \begin{tikzpicture}[
-      plan/.style={card,font=\footnotesize,inner sep=5pt},
-      when/.style={font=\bfseries\footnotesize,anchor=south west,inner sep=0pt}]
-    \draw[very thick] (0.1,0) -- (13.9,0);
-    \foreach \x/\w/\f in {0/by 15 Nov/black,3.55/Nov -- Dec/white,7.1/mid Dec + Christmas/white,10.65/January/white}{
-      \filldraw[fill=\f,draw=black,very thick] (\x+0.14,0) circle (0.11);
-      \node[when] at (\x,0.2) {\w};
-    }
-    \node[plan,dark] at (0,-0.3) {\topbox{2.95cm}{3.3cm}{\textbf{Basic agent}\\[0.3em]text and voice chat\\[0.5em]mostly done}};
-    \node[plan] at (3.55,-0.3) {\topbox{2.95cm}{3.3cm}{\textbf{Memory + basic tools}\\[0.3em]long-term memory; calendar, reminders, weather, Apple Music, web search\\[0.5em]work in China and Germany}};
-    \node[plan] at (7.1,-0.3) {\topbox{2.95cm}{3.3cm}{\textbf{Evaluation}\\[0.3em]base, long-term memory and hallucination tasks\\[0.5em]improve the score by reading the conversation logs}};
-    \node[plan] at (10.65,-0.3) {\topbox{2.95cm}{3.3cm}{\textbf{Advanced} (if memory works)\\[0.3em]scam detection, email, family liaison, WeChat/WhatsApp, Bilibili/YouTube, Baidu/Google Maps; then their tasks}};
-  \end{tikzpicture}\\[0.6em]
-  {\footnotesize\textcolor{soft}{Evaluation adapted from CAR-bench: simulated older user + Coco + evaluator, each task run 3 times. The first run is the baseline.}}
 \end{frame}
 
 % evaluation (one slide)
@@ -241,42 +248,60 @@
   {\footnotesize\textcolor{soft}{Each task runs 3 times. The first run is the baseline.}}
 \end{frame}
 
+% 6. development plan
+\begin{frame}[t]{Development plan}
+  \vspace{0.5em}
+  \begin{tikzpicture}[
+      plan/.style={card,font=\footnotesize,inner sep=5pt},
+      when/.style={font=\bfseries\footnotesize,anchor=south west,inner sep=0pt}]
+    \draw[very thick] (0.1,0) -- (13.9,0);
+    \foreach \x/\w/\f in {0/by 15 Nov/black,3.55/Nov -- Dec/white,7.1/mid Dec + Christmas/white,10.65/January/white}{
+      \filldraw[fill=\f,draw=black,very thick] (\x+0.14,0) circle (0.11);
+      \node[when] at (\x,0.2) {\w};
+    }
+    \node[plan,dark] at (0,-0.3) {\topbox{2.95cm}{3.3cm}{\textbf{Basic agent}\\[0.3em]text and voice chat\\[0.5em]mostly done}};
+    \node[plan] at (3.55,-0.3) {\topbox{2.95cm}{3.3cm}{\textbf{Memory + basic tools}\\[0.3em]long-term memory; calendar, reminders, weather, Apple Music, web search\\[0.5em]work in China and Germany}};
+    \node[plan] at (7.1,-0.3) {\topbox{2.95cm}{3.3cm}{\textbf{Evaluation}\\[0.3em]base, long-term memory and hallucination tasks\\[0.5em]improve the score by reading the conversation logs}};
+    \node[plan] at (10.65,-0.3) {\topbox{2.95cm}{3.3cm}{\textbf{Advanced} (if memory works)\\[0.3em]scam detection, email, family liaison, WeChat/WhatsApp, Bilibili/YouTube, Baidu/Google Maps; then their tasks}};
+  \end{tikzpicture}
+\end{frame}
+
 % 7. status
-\begin{frame}[c]{Status: Coco runs on a real iPhone}
-  \begin{columns}[c,onlytextwidth]
-    \begin{column}{0.62\textwidth}
-      \centering
-      \shot{text-mode}\hspace{0.2em}%
-      \shot{voice-listening}\hspace{0.2em}%
-      \shot{voice-talking}
-    \end{column}
-    \begin{column}{0.37\textwidth}
-      \begin{tikzpicture}
-        \node[card,dark,text width=4.45cm] (a) at (0,0) {%
-          \textbf{Working now}\par\vspace{0.3em}\small
-          \bul{text chat}
-          \bul{voice: just talk, Coco answers out loud, then listens again}};
-        \node[card,text width=4.45cm,anchor=north west] at ([yshift=-0.25cm]a.south west) {%
-          \textbf{Not yet}\par\vspace{0.3em}\small
-          \bul{long-term memory, tools}
-          \bul{evaluation tasks}
-          \bul{English only, server still on my Mac}};
-      \end{tikzpicture}
-    \end{column}
-  \end{columns}
+\begin{frame}[t]{Status: Coco runs on a real iPhone}
+  \vspace*{-0.2cm}
+  \begin{tikzpicture}
+    % three phone screenshots, rounded, with captions
+    \foreach \x/\img/\cap in {0/text-mode/text chat,2.87/voice-listening/listening,5.74/voice-talking/talking}{
+      \begin{scope}
+        \clip[rounded corners=8pt] (\x,0) rectangle ++(2.62,-5.7);
+        \node[anchor=north west,inner sep=0pt] at (\x,0) {\includegraphics[height=5.7cm]{\img}};
+      \end{scope}
+      \draw[soft!60,rounded corners=8pt,line width=0.5pt] (\x,0) rectangle ++(2.62,-5.7);
+      \node[font=\footnotesize,text=soft] at (\x+1.31,-5.98) {\cap};
+    }
+    % right column
+    \node[card,dark,text width=4.85cm] (a) at (8.65,0) {%
+      \textbf{Working now}\par\vspace{0.3em}\small
+      \bul{text chat}
+      \bul{voice: just talk, Coco answers out loud, then listens again}};
+    \node[card,text width=4.85cm,anchor=north west] (b) at ([yshift=-0.18cm]a.south west) {%
+      \textbf{Not yet}\par\vspace{0.3em}\small
+      \bul{long-term memory, tools}
+      \bul{evaluation tasks}
+      \bul{English only, server on my Mac}};
+  \end{tikzpicture}
 \end{frame}
 
 % 8. what's next
-% TODO: confirm the 2-week goals, add feedback points if wanted
 \begin{frame}[t]{What's next}
-  \vspace{0.6em}
+  \vspace*{-0.2cm}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.70\textwidth}
       \begin{tikzpicture}
         \node[card,dark,text width=8.7cm] (a) at (0,0) {%
           \textbf{Until 27 November}\\[0.5em]
-          \textbf{Long-term memory:} try open-source GBrain, custom module as fallback\\[0.5em]
-          \textbf{First basic tools:} \textcolor{red!55!white}{[TO CONFIRM: which ones?]}};
+          \textbf{Long-term memory:} try open-source GBrain, and start building our own LTM system\\[0.5em]
+          \textbf{First basic tools:} simple ones first, e.g.\ setting a reminder};
         \node[card,text width=8.7cm,anchor=north west] at ([yshift=-0.3cm]a.south west) {%
           \textbf{Then}\\[0.5em]
           finish the basic tools\\[0.3em]
@@ -289,6 +314,8 @@
       \includegraphics[width=\textwidth]{panda-thinking}
     \end{column}
   \end{columns}
+  \vfill\vspace{0.35em}
+  \noindent{\small\color{soft}Code: \href{https://github.com/renxingyu0822-cmd/Coco}{github.com/renxingyu0822-cmd/Coco}}\par\vspace{0.1cm}
 \end{frame}
 
 \end{document}
