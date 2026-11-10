@@ -40,6 +40,11 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
     `https://65-108-248-13.sslip.io` (free sslip.io name, Let's Encrypt certificate, renews by itself).
     Firewall: 80 + 443 open. **For now only `/health` gets through**; `/chat`, `/speak`, `/transcribe` answer 403
     until the app↔server password (step 6) exists. http → https redirect works. **Step 5 done.**
+  - Step 6: app password. Server checks header `X-Coco-Key` on `/chat`, `/speak`, `/transcribe`
+    (`server/app/auth.py`, password = `COCO_APP_PASSWORD` in the server's `.env`; not set on the Mac = no check).
+    App sends it from `ios/Coco/Secrets.swift` (git-ignored; new checkout → create it, see `ChatService.swift`).
+    Server updated via `git pull` + `systemctl restart coco`; Caddy now lets everything through.
+    Tested over the internet: no password → 401, with password → chat + speak work. **Step 6 done.**
   - Mac: `~/.ssh/config` → shortcut `ssh coco`; passphrase stored in the macOS Keychain
     (`ssh-add --apple-use-keychain`), so Claude can run server commands too.
 

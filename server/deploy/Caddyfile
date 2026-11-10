@@ -8,16 +8,12 @@
 # Address: sslip.io is a free name that points to the IP inside it
 # (65-108-248-13.sslip.io -> 65.108.248.13). Own domain maybe later.
 #
+# Everything goes through; Coco checks the app password herself
+# (server/app/auth.py) on /chat, /speak, /transcribe.
+#
 # After editing (on the server):  systemctl reload caddy
 # ─────────────────────────────────────────────────────────────
 
 65-108-248-13.sslip.io {
-	# for now only /health goes through; /chat, /speak, /transcribe stay
-	# closed until the app<->server password (step 6) is in place
-	handle /health {
-		reverse_proxy 127.0.0.1:8000
-	}
-	handle {
-		respond "Not open yet" 403
-	}
+	reverse_proxy 127.0.0.1:8000
 }
