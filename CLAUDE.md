@@ -52,7 +52,9 @@ not Apple's on-device speech.
   will use an English app — keep a German output mode in mind for later.)
 - **LLM:** OpenAI / OpenAI-compatible API, model chosen after early tests.
 - **Architecture:** thin iPhone app + Python back end. The API key lives ONLY in the back end, never in the app.
-- **Back end runs on my Mac for now**; moves to an EU-hosted cloud server later (GDPR, health data).
+- **Back end runs on my Mac for now**; moving to an EU cloud server (GDPR, health data), started 10 Nov:
+  Hetzner Cloud, server `coco` (CX23, Ubuntu 26.04, Helsinki), login via SSH key only. The Mac stays the
+  playground and the Friday demo backup; the app switches to the server only once it fully works.
 - **Memory (Nov/Dec):** try open-source GBrain first, custom memory module as fallback.
   Four memory types: personal profile, recent events, health info (separate + protected), short-term reminders.
   Memory is **always on** (no switch to turn it off).

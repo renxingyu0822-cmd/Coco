@@ -16,6 +16,35 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-10
+**Did:**
+- **Online server, step 1–2 (in progress).** Plan: rent server → log in + lock down → Python env + code from
+  GitHub + `.env` by hand → keep Coco running (service) → HTTPS → password between app and server → app points
+  to the server (Mac address kept as backup).
+  - Hetzner Cloud account (2FA on, recovery key stored outside the repo). €25 prepayment to verify the account
+    (should show up as credit).
+  - SSH key made on the Mac (`~/.ssh/id_ed25519`, with passphrase), public half added to Hetzner as `dafei-mac`.
+  - Server `coco`: CX23 (2 vCPU, 4 GB RAM, 40 GB, x86), Ubuntu 26.04, Helsinki, IPv4 + IPv6, €7.13/month.
+  - Logged in via SSH as root; installing updates (`apt update && apt upgrade`).
+
+**Found:**
+- Hetzner's create page preselects an expensive type (CPX22 Regular Performance, ~€20/month). Pick it by hand.
+- Cost-Optimized servers had run out in Nuremberg and Falkenstein; Helsinki had CX23. Reloading the page resets
+  the location.
+- Voiceprint ("speaker verification") is possible with open-source models (SpeechBrain ECAPA, Resemblyzer,
+  pyannote, 3D-Speaker). Apple doesn't give apps its own speaker recognition, but our own model is allowed.
+- PyTorch has no new versions for Intel Macs after 2.2.2 (works with our Python 3.12); on the Linux server
+  the newest version works.
+
+**Decided:**
+- Deploy now, not wait. The Friday demo still runs from the Mac until the online server fully works.
+- Helsinki instead of Germany: still EU (GDPR), and cheap types were available there.
+- Voiceprint idea: if we build it, on the server (next to `/transcribe`), not on the iPhone. What Coco should
+  do with it (only save memories from the real user? ignore TV/visitors? scam guard?) is still open.
+  Voiceprints are biometric data (GDPR / PIPL) → needs consent.
+
+---
+
 ## 2026-11-09
 **Did:**
 - Slides for the first presentation (Fri 13 Nov, due to Dren Thu 4 pm): LaTeX Beamer in
