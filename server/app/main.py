@@ -14,17 +14,20 @@
 #   "app.main" = this file, ":app" = the `app` variable below.
 # ─────────────────────────────────────────────────────────────
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 
 from . import chat, voice          # the "." means: from this same folder (app/)
+from .auth import check_password
 from .settings import MODEL
 
 # the server itself
 app = FastAPI(title="Coco")
 
-# plug in the endpoints that live in other files
-app.include_router(chat.router)   # adds /chat
-app.include_router(voice.router)  # adds /speak + /transcribe
+# plug in the endpoints that live in other files.
+# Depends(check_password) = run the password check (auth.py) before each of them
+locked = [Depends(check_password)]
+app.include_router(chat.router, dependencies=locked)   # adds /chat
+app.include_router(voice.router, dependencies=locked)  # adds /speak + /transcribe
 
 
 # "are you alive?" check. Cheap: no OpenAI call, costs nothing.

@@ -27,5 +27,8 @@ STT_MODEL = os.getenv("OPENAI_STT_MODEL", "gpt-4o-mini-transcribe")  # STT = spe
 # (and with an accent it sometimes guesses wrong, e.g. Chinese). Later: "de" for German.
 STT_LANGUAGE = os.getenv("OPENAI_STT_LANGUAGE", "en")
 
+# password the app must send (see auth.py). Empty = no check (fine on the Mac, never on the online server)
+APP_PASSWORD = os.getenv("COCO_APP_PASSWORD", "")
+
 # the shared OpenAI connection. It finds OPENAI_API_KEY from .env by itself.
 client = OpenAI()

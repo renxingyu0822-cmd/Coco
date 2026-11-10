@@ -5,6 +5,12 @@
 //  Talks to our Python server: sends the conversation, gets Coco's reply.
 //  Same thing server/chat_cli.py does, just in Swift.
 //
+//  Every request carries the app password (header X-Coco-Key), so the online
+//  server knows it's our app (see server/app/auth.py). The password lives in
+//  Secrets.swift, which is git-ignored (public repo!). New checkout? Create
+//  ios/Coco/Secrets.swift with:
+//      enum Secrets { static let appPassword = "<same as COCO_APP_PASSWORD on the server>" }
+//
 
 import Foundation
 
@@ -13,16 +19,23 @@ enum ChatService {
     // and in Xcode Preview. Check it on the Mac with: scutil --get LocalHostName
     static let baseURL = URL(string: "http://dafeideMacBook-Pro.local:8000")!
 
+    // a POST request to one of the server's addresses, with the app password attached
+    private static func post(_ path: String) -> URLRequest {
+        var req = URLRequest(url: baseURL.appendingPathComponent(path))
+        req.httpMethod = "POST"
+        req.setValue(Secrets.appPassword, forHTTPHeaderField: "X-Coco-Key")
+        req.timeoutInterval = 30
+        return req
+    }
+
     // what the server expects / sends back (same shapes as in main.py)
     private struct Message: Codable { let role: String; let content: String }
     private struct Request: Codable { let messages: [Message] }
     private struct Reply: Codable { let reply: String }
 
     static func send(_ history: [ChatMessage]) async throws -> String {
-        var req = URLRequest(url: baseURL.appendingPathComponent("chat"))
-        req.httpMethod = "POST"
+        var req = post("chat")
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.timeoutInterval = 30
 
         let body = Request(messages: history.map {
             Message(role: $0.fromUser ? "user" : "assistant", content: $0.text)
@@ -40,10 +53,8 @@ enum ChatService {
     private struct SpeakRequest: Codable { let text: String }
 
     static func speak(_ text: String) async throws -> Data {
-        var req = URLRequest(url: baseURL.appendingPathComponent("speak"))
-        req.httpMethod = "POST"
+        var req = post("speak")
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.timeoutInterval = 30
         req.httpBody = try JSONEncoder().encode(SpeakRequest(text: text))
 
         let (data, resp) = try await URLSession.shared.data(for: req)
@@ -57,9 +68,7 @@ enum ChatService {
     private struct TranscribeReply: Codable { let text: String }
 
     static func transcribe(_ fileURL: URL) async throws -> String {
-        var req = URLRequest(url: baseURL.appendingPathComponent("transcribe"))
-        req.httpMethod = "POST"
-        req.timeoutInterval = 30
+        var req = post("transcribe")
 
         // upload as a "form with a file" (multipart), like a file upload on a website.
         // the boundary is just a unique separator line between the parts.

@@ -3,6 +3,8 @@
 .env.*
 !.env.example
 
+ios/Coco/Secrets.swift
+
 # python
 __pycache__/
 *.pyc
