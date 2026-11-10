@@ -15,9 +15,16 @@
 import Foundation
 
 enum ChatService {
-    // the Mac's network name (doesn't change like an IP does). Works from the iPhone on the same Wi-Fi/hotspot,
-    // and in Xcode Preview. Check it on the Mac with: scutil --get LocalHostName
-    static let baseURL = URL(string: "http://dafeideMacBook-Pro.local:8000")!
+    // ── which server the app talks to: flip this one line to switch ──
+    //   true  = online server (Hetzner, Helsinki). Works anywhere, Wi-Fi or mobile data, Mac can be off.
+    //   false = the Mac (backup). Only on the same Wi-Fi/hotspot, and the Mac's server must run (`coco`).
+    static let useOnlineServer = true
+
+    static let onlineURL = URL(string: "https://65-108-248-13.sslip.io")!
+    // the Mac's network name (doesn't change like an IP does). Check it with: scutil --get LocalHostName
+    static let macURL = URL(string: "http://dafeideMacBook-Pro.local:8000")!
+
+    static let baseURL = useOnlineServer ? onlineURL : macURL
 
     // a POST request to one of the server's addresses, with the app password attached
     private static func post(_ path: String) -> URLRequest {

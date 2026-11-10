@@ -34,8 +34,10 @@ Where the proposal and this file disagree, **this file wins** (it's newer).
 
 ## Current goal (first presentation: Fri 13 Nov 2026)
 The demo is **done**: chat with Coco on my iPhone, by text and hands-free voice (see Status).
-Still open before Friday: test the iPhone-hotspot setup (university Wi-Fi may block it), reinstall the app
-shortly before (7-day limit), decide on a backup (the Simulator doesn't work on this Mac).
+Since 10 Nov the app talks to the **online server** (works on mobile data, Mac can be off).
+Still open before Friday: reinstall the app shortly before (7-day limit). Backup if the online server fails:
+flip `useOnlineServer` to `false` in `ios/Coco/ChatService.swift` → back to the Mac (then hotspot needed,
+university Wi-Fi may block it; still untested). The Simulator doesn't work on this Mac.
 **Voice brought forward (decided 7 Nov):** OpenAI speech via the server (`/transcribe` + `/speak`),
 not Apple's on-device speech.
 
@@ -52,9 +54,12 @@ not Apple's on-device speech.
   will use an English app — keep a German output mode in mind for later.)
 - **LLM:** OpenAI / OpenAI-compatible API, model chosen after early tests.
 - **Architecture:** thin iPhone app + Python back end. The API key lives ONLY in the back end, never in the app.
-- **Back end runs on my Mac for now**; moving to an EU cloud server (GDPR, health data), started 10 Nov:
-  Hetzner Cloud, server `coco` (CX23, Ubuntu 26.04, Helsinki), login via SSH key only. The Mac stays the
-  playground and the Friday demo backup; the app switches to the server only once it fully works.
+- **Back end online since 10 Nov** (EU, GDPR): Hetzner Cloud, server `coco` (CX23, Ubuntu 26.04, Helsinki),
+  `https://65-108-248-13.sslip.io`. Login `ssh coco` (SSH key only). Setup files in `server/deploy/`
+  (systemd service + Caddy for HTTPS). App ↔ server password: header `X-Coco-Key` (`server/app/auth.py`,
+  app side in git-ignored `ios/Coco/Secrets.swift`). The Mac stays the playground and the backup.
+  **Update the server:** push to GitHub (only when I say so), then on the server
+  `cd /opt/coco/Coco && sudo -u coco git pull && systemctl restart coco`.
 - **Memory (Nov/Dec):** try open-source GBrain first, custom memory module as fallback.
   Four memory types: personal profile, recent events, health info (separate + protected), short-term reminders.
   Memory is **always on** (no switch to turn it off).
@@ -104,3 +109,4 @@ Coco/
 - [x] Running on iPhone over home Wi-Fi (server address: `http://dafeideMacBook-Pro.local:8000`,
       bundle ID `com.renxingyu0822.Coco`, free Apple ID → reinstall from Xcode every 7 days)
 - [x] Voice: hands-free voice chat (OpenAI speech), panda design, English only
+- [x] Online server (Hetzner, HTTPS, app password); app uses it, tested on mobile data (10 Nov)

@@ -45,6 +45,9 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
     App sends it from `ios/Coco/Secrets.swift` (git-ignored; new checkout → create it, see `ChatService.swift`).
     Server updated via `git pull` + `systemctl restart coco`; Caddy now lets everything through.
     Tested over the internet: no password → 401, with password → chat + speak work. **Step 6 done.**
+  - Step 7: app switched to the online server (`useOnlineServer = true` in `ChatService.swift`; `false` = back
+    to the Mac). Tested on the iPhone **with Wi-Fi off (mobile data)**: text + voice chat work.
+    **Step 7 done → Coco runs online, the Mac can be off.**
   - Mac: `~/.ssh/config` → shortcut `ssh coco`; passphrase stored in the macOS Keychain
     (`ssh-add --apple-use-keychain`), so Claude can run server commands too.
 
