@@ -29,6 +29,12 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
   - Firewall (`ufw`): only SSH allowed in for now (80/443 come with the HTTPS step). Check: `ufw status`.
   - Password logins off (`/etc/ssh/sshd_config.d/00-coco.conf`: `PasswordAuthentication no`); root only with
     the key (`prohibit-password`). Tested login from a second window. **Step 2 done.**
+  - Step 3: `python3-venv` + `git` installed; own limited user `coco` (no login, home `/opt/coco`);
+    repo cloned to `/opt/coco/Coco`; `.venv` + requirements (same versions as the Mac, on Python 3.14);
+    `.env` with a **separate key `coco-server`** (expires never), file readable only by `coco`.
+    Test: `/health` + `/chat` answered on the server (only from inside, firewall still closed). **Step 3 done.**
+  - Mac: `~/.ssh/config` → shortcut `ssh coco`; passphrase stored in the macOS Keychain
+    (`ssh-add --apple-use-keychain`), so Claude can run server commands too.
 
 **How to log in to the server** (from the Mac's terminal):
 ```
