@@ -33,6 +33,9 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
     repo cloned to `/opt/coco/Coco`; `.venv` + requirements (same versions as the Mac, on Python 3.14);
     `.env` with a **separate key `coco-server`** (expires never), file readable only by `coco`.
     Test: `/health` + `/chat` answered on the server (only from inside, firewall still closed). **Step 3 done.**
+  - Step 4: systemd service (`server/deploy/coco.service` → `/etc/systemd/system/coco.service`), runs as `coco`,
+    only on 127.0.0.1:8000, no `--reload`. Tested: killed on purpose → back in seconds; server reboot → starts
+    by herself. Commands: `systemctl status|restart coco`, `journalctl -u coco -f`. **Step 4 done.**
   - Mac: `~/.ssh/config` → shortcut `ssh coco`; passphrase stored in the macOS Keychain
     (`ssh-add --apple-use-keychain`), so Claude can run server commands too.
 

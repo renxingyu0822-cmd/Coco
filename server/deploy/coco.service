@@ -1,0 +1,36 @@
+# ─────────────────────────────────────────────────────────────
+# coco.service — keeps Coco running on the online server (systemd)
+#
+# Lives on the server at /etc/systemd/system/coco.service
+# Starts Coco at boot, restarts her if she crashes.
+#
+# Handy commands (on the server):
+#   systemctl status coco      is she running?
+#   systemctl restart coco     restart (e.g. after git pull)
+#   journalctl -u coco -f      watch her log live (Ctrl+C to stop)
+# ─────────────────────────────────────────────────────────────
+
+[Unit]
+Description=Coco back end (FastAPI)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# run as the limited "coco" user, never as root
+User=coco
+Group=coco
+WorkingDirectory=/opt/coco/Coco/server
+# only reachable from inside the server; the HTTPS front door (step 5) passes requests in.
+# no --reload here: that's only for the Mac while coding
+ExecStart=/opt/coco/Coco/server/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=3
+
+# extra safety: Coco can't gain more rights or write outside her own folder
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
