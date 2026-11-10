@@ -25,7 +25,20 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
     (should show up as credit).
   - SSH key made on the Mac (`~/.ssh/id_ed25519`, with passphrase), public half added to Hetzner as `dafei-mac`.
   - Server `coco`: CX23 (2 vCPU, 4 GB RAM, 40 GB, x86), Ubuntu 26.04, Helsinki, IPv4 + IPv6, €7.13/month.
-  - Logged in via SSH as root; installing updates (`apt update && apt upgrade`).
+  - Logged in via SSH as root; installed updates (`apt update && apt upgrade -y`), rebooted for the new kernel.
+  - Firewall (`ufw`): only SSH allowed in for now (80/443 come with the HTTPS step). Check: `ufw status`.
+  - Password logins off (`/etc/ssh/sshd_config.d/00-coco.conf`: `PasswordAuthentication no`); root only with
+    the key (`prohibit-password`). Tested login from a second window. **Step 2 done.**
+
+**How to log in to the server** (from the Mac's terminal):
+```
+ssh root@65.108.248.13
+```
+- Works only from a computer with the private key `~/.ssh/id_ed25519` (Hetzner name: `dafei-mac`).
+  It asks for the key's passphrase. Passphrase, 2FA recovery key and API key are never written here.
+- `root@coco:~#` = you're on the server. `exit` = back to the Mac.
+- Lose the key → no way in by SSH; then use the Hetzner Console (web) → server → "Console", or rebuild.
+- Hetzner Console: console.hetzner.com, project "Coco", server `coco`.
 
 **Found:**
 - Hetzner's create page preselects an expensive type (CPX22 Regular Performance, ~€20/month). Pick it by hand.
