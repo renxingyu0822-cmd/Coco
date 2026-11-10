@@ -56,6 +56,19 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
    `cd /opt/coco/Coco && sudo -u coco git pull && systemctl restart coco`, then checks `/health` and a test chat.
 - The server's `.env` (API key, app password) is never in git; changes to it are made on the server by hand.
 - New Python packages → also `sudo -u coco .venv/bin/pip install -r requirements.txt` on the server.
+
+**Hiccup after going online (open):** for a few minutes the app hung on "Coco is thinking…", then showed
+"can't reach my brain". The server was fine: those requests never arrived (server log), and the Mac's
+first test also timed out once, then everything worked again. Likely a short network or name-lookup
+(sslip.io) problem between phone and server. If it happens again: note the time + Wi-Fi or mobile data,
+check `journalctl -u coco`. Possible fixes: app retries by itself, shorter wait, own domain instead of sslip.io.
+- Bots already knock on the server (`GET /` → 404 in the log): normal for any public server, they can't use
+  Coco without the app password.
+- `/docs` (FastAPI's test page) is public too; it shows the addresses but can't be used without the password.
+  Could be hidden later.
+
+**Found (front end):** the app doesn't need deploying to a server; it runs on the phone. Xcode + cable for now
+(7 days). TestFlight / App Store (Apple Developer Program, €99/year) later, when other people should try Coco.
   - Mac: `~/.ssh/config` → shortcut `ssh coco`; passphrase stored in the macOS Keychain
     (`ssh-add --apple-use-keychain`), so Claude can run server commands too.
 
