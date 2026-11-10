@@ -48,6 +48,14 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
   - Step 7: app switched to the online server (`useOnlineServer = true` in `ChatService.swift`; `false` = back
     to the Mac). Tested on the iPhone **with Wi-Fi off (mobile data)**: text + voice chat work.
     **Step 7 done → Coco runs online, the Mac can be off.**
+
+**How the server gets new code** (not automatic; Claude does it when asked):
+1. Change + test the code on the Mac, commit.
+2. Push to GitHub, **only after my OK**.
+3. Claude logs in over SSH (`ssh coco`, works because the key's passphrase is in the Mac's Keychain) and runs
+   `cd /opt/coco/Coco && sudo -u coco git pull && systemctl restart coco`, then checks `/health` and a test chat.
+- The server's `.env` (API key, app password) is never in git; changes to it are made on the server by hand.
+- New Python packages → also `sudo -u coco .venv/bin/pip install -r requirements.txt` on the server.
   - Mac: `~/.ssh/config` → shortcut `ssh coco`; passphrase stored in the macOS Keychain
     (`ssh-add --apple-use-keychain`), so Claude can run server commands too.
 
