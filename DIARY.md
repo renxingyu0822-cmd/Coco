@@ -36,6 +36,10 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
   - Step 4: systemd service (`server/deploy/coco.service` → `/etc/systemd/system/coco.service`), runs as `coco`,
     only on 127.0.0.1:8000, no `--reload`. Tested: killed on purpose → back in seconds; server reboot → starts
     by herself. Commands: `systemctl status|restart coco`, `journalctl -u coco -f`. **Step 4 done.**
+  - Step 5: HTTPS with Caddy (`server/deploy/Caddyfile` → `/etc/caddy/Caddyfile`), address
+    `https://65-108-248-13.sslip.io` (free sslip.io name, Let's Encrypt certificate, renews by itself).
+    Firewall: 80 + 443 open. **For now only `/health` gets through**; `/chat`, `/speak`, `/transcribe` answer 403
+    until the app↔server password (step 6) exists. http → https redirect works. **Step 5 done.**
   - Mac: `~/.ssh/config` → shortcut `ssh coco`; passphrase stored in the macOS Keychain
     (`ssh-add --apple-use-keychain`), so Claude can run server commands too.
 
