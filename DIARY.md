@@ -16,6 +16,33 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-16
+**Did:**
+- **Voiceprint, step 1 (install, Mac only):** speaker recognition model installed in `server/.venv` and tested.
+  Model: SpeechBrain ECAPA (`speechbrain/spkrec-ecapa-voxceleb`, free, ~85 MB, runs offline on our side,
+  no audio goes to OpenAI). Smoke test: 3 s of audio → voiceprint of 192 numbers in ~0.45 s on the Mac.
+  Model files live in the Hugging Face cache; `server/voiceprint_model/` (links to them) is git-ignored.
+  Not in `requirements.txt` yet and not on the server.
+
+**Found:**
+- Intel Mac version puzzle (PyTorch stops at 2.2.2). Working set:
+  `torch==2.2.2 torchaudio==2.2.2 numpy<2 (1.26.4) scipy==1.17.1 speechbrain==1.0.3 huggingface_hub<1 (0.36.2)
+  sentencepiece==0.2.2`.
+  - speechbrain 1.1.x needs a newer PyTorch (`torch.amp.custom_fwd` missing) → 1.0.3.
+  - speechbrain 1.0.3 + huggingface_hub 2.x → `use_auth_token` error → huggingface_hub < 1.
+  - newest sentencepiece has no Intel Mac build → 0.2.2; newest scipy needs numpy 2 → 1.17.1.
+  - The Linux server can use current versions; pins there may differ.
+
+**Decided:**
+- Voiceprint comes **before** long-term memory and tools.
+- Purpose: **only remember the real user.** Coco still answers everyone; each voice message gets a speaker tag
+  (`user` / `other` + score); later the memory only saves `user` messages. Typed text counts as the user.
+  Before enrollment everything counts as the user.
+- Test on the Mac first (enroll ~3 sentences, compare clips of me vs. another voice, pick the threshold),
+  then build it into the server + app.
+
+---
+
 ## 2026-11-10
 **Did:**
 - **Online server, step 1–2 (in progress).** Plan: rent server → log in + lock down → Python env + code from
