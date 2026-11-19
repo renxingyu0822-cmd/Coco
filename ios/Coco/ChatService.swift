@@ -15,16 +15,29 @@
 import Foundation
 
 enum ChatService {
-    // ── which server the app talks to: flip this one line to switch ──
-    //   true  = online server (Hetzner, Helsinki). Works anywhere, Wi-Fi or mobile data, Mac can be off.
-    //   false = the Mac (backup). Only on the same Wi-Fi/hotspot, and the Mac's server must run (`coco`).
-    static let useOnlineServer = true
+    // ── which server the app talks to: picked in Settings (⚙️), the phone remembers it ──
+    //   "online" = online server (Hetzner, Helsinki). Works anywhere, Wi-Fi or mobile data, Mac can be off.
+    //   "mac"    = the Mac (playground/backup). Only on the same Wi-Fi/hotspot, and the Mac's server must run (`coco`).
+    static let serverKey = "server"        // name of the saved setting (SettingsView uses the same)
+    static let defaultServer = "mac"       // first launch: the Mac, for the voiceprint tests (Nov 19)
 
     static let onlineURL = URL(string: "https://65-108-248-13.sslip.io")!
     // the Mac's network name (doesn't change like an IP does). Check it with: scutil --get LocalHostName
     static let macURL = URL(string: "http://dafeideMacBook-Pro.local:8000")!
 
-    static let baseURL = useOnlineServer ? onlineURL : macURL
+    // read fresh every time, so a switch in Settings counts right away
+    static var baseURL: URL {
+        let choice = UserDefaults.standard.string(forKey: serverKey) ?? defaultServer
+        return choice == "online" ? onlineURL : macURL
+    }
+
+    // "are you there?" -> true if the server answers /health within a few seconds
+    static func isReachable(_ url: URL) async -> Bool {
+        var req = URLRequest(url: url.appendingPathComponent("health"))
+        req.timeoutInterval = 5
+        guard let (_, resp) = try? await URLSession.shared.data(for: req) else { return false }
+        return (resp as? HTTPURLResponse)?.statusCode == 200
+    }
 
     // a POST request to one of the server's addresses, with the app password attached
     private static func post(_ path: String) -> URLRequest {

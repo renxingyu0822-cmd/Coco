@@ -16,6 +16,23 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-19
+**Did:**
+- **Server switch in the app:** ⚙️ button top right (next to 🔊) opens Settings (`ios/Coco/SettingsView.swift`).
+  Server: **Online / My Mac**, saved on the phone (replaces the `useOnlineServer` line in `ChatService.swift`),
+  with a live "Connected / Can't reach it" check (`/health`). First launch defaults to **My Mac** (voiceprint tests).
+  Compiles; **not yet tested on the iPhone**. Settings will also hold the voice fingerprint.
+
+**Found:**
+- Two Xcodes on this Mac: `~/Downloads/Xcode.app` (26.3, the real one) and `/Applications/Xcode.app` (13.4,
+  old, "project is damaged"). Terminal builds need `DEVELOPER_DIR=~/Downloads/Xcode.app/Contents/Developer`.
+
+**Decided:**
+- Voiceprint will be tested in the app (Settings → Voice fingerprint: record 3 sentences, "Is it me?" test,
+  delete), against the Mac server first. Fingerprint screen records WAV (no ffmpeg on the Mac for m4a).
+
+---
+
 ## 2026-11-16
 **Did:**
 - **Voiceprint, step 1 (install, Mac only):** speaker recognition model installed in `server/.venv` and tested.

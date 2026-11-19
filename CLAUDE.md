@@ -36,7 +36,7 @@ Where the proposal and this file disagree, **this file wins** (it's newer).
 The demo is **done**: chat with Coco on my iPhone, by text and hands-free voice (see Status).
 Since 10 Nov the app talks to the **online server** (works on mobile data, Mac can be off).
 Still open before Friday: reinstall the app shortly before (7-day limit). Backup if the online server fails:
-flip `useOnlineServer` to `false` in `ios/Coco/ChatService.swift` → back to the Mac (then hotspot needed,
+in the app ⚙️ Settings → Server → **My Mac** (since 19 Nov, no reinstall needed; then hotspot needed,
 university Wi-Fi may block it; still untested). The Simulator doesn't work on this Mac.
 **Voice brought forward (decided 7 Nov):** OpenAI speech via the server (`/transcribe` + `/speak`),
 not Apple's on-device speech.
@@ -81,7 +81,9 @@ Coco/
 
 ## Dev environment
 - Intel MacBook. VS Code + Claude Code extension for everything.
-- Xcode only to build/run the iOS app. (Xcode's own Claude Agent doesn't work on Intel Macs — don't rely on it.)
+- Xcode only to build/run the iOS app. The real Xcode (26.x) is `~/Downloads/Xcode.app`; `/Applications/Xcode.app` is
+  an old 13.4 that can't open the project. Terminal builds: `DEVELOPER_DIR=~/Downloads/Xcode.app/Contents/Developer xcodebuild …`.
+  (Xcode's own Claude Agent doesn't work on Intel Macs — don't rely on it.)
 - Test device: my iPhone. iOS app target: iPhone first, Apple Watch later for reminders.
 
 ## How I want to work

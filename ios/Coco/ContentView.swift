@@ -6,7 +6,7 @@
 //
 //  Text mode                         Voice mode
 //  ┌──────────────────────┐          ┌──────────────────────┐
-//  │ Coco             🔊  │          │ (✕) Stop voice chat  │
+//  │ Coco          🔊 ⚙️  │         │ (✕) Stop voice chat  │
 //  │ [C][panda] Tap Coco  │          │  bubbles …           │
 //  │  bubbles …           │          │     [ panda ]        │
 //  │ [Type a message…] ↑  │          │  Listening… just talk│
@@ -46,6 +46,7 @@ struct ContentView: View {
     @State private var recorder = VoiceRecorder()
     @State private var inConversation = false  // voice mode on?
     @State private var phase = Phase.idle
+    @State private var showSettings = false    // ⚙️ screen open?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -67,6 +68,7 @@ struct ContentView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: inConversation)  // smooth switch between modes
+        .sheet(isPresented: $showSettings) { SettingsView() }
     }
 
     // ── text mode: header ──
@@ -86,6 +88,18 @@ struct ContentView: View {
                     .background(Circle().fill(Color(.secondarySystemBackground)))
             }
             .accessibilityLabel(voiceOn ? "Voice on" : "Voice off")
+
+            // ⚙️ settings (server switch, later voice fingerprint)
+            Button {
+                showSettings = true
+            } label: {
+                Image(systemName: "gearshape.fill")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(Color.accentColor)
+                    .frame(width: 48, height: 48)
+                    .background(Circle().fill(Color(.secondarySystemBackground)))
+            }
+            .accessibilityLabel("Settings")
         }
         .padding(.horizontal)
         .padding(.vertical, 6)
