@@ -16,6 +16,21 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-23
+**Did:**
+- **Text box + keyboard, like WhatsApp** (tested on the iPhone, works):
+  - Box empties after sending: clear `input`, and once more 0.1 s later (the keyboard can write the text back
+    right after we clear it).
+  - Tap the chat or drag it down → keyboard goes away (`scrollDismissesKeyboard` + tap → `@FocusState` off).
+  - Tap the text box → chat scrolls to the newest message above the keyboard (after ~0.3 s).
+- Server switch (19 Nov) tested on the iPhone too.
+
+**Corrections:**
+- The 22 Nov fix (swap in a fresh text box via `.id`) made the keyboard drop and pop back after each send.
+  Replaced by the "clear twice" fix above.
+
+---
+
 ## 2026-11-22
 **Did:**
 - App reinstalled (7-day limit had run out → "not trusted").
