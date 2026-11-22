@@ -40,6 +40,8 @@ struct ContentView: View {
         ChatMessage(fromUser: false, text: "Hello! I'm Coco. How are you today?")
     ]
     @State private var input = ""
+    @State private var fieldID = UUID()          // new id = brand-new (empty) text box, see sendTyped
+    @FocusState private var typing: Bool         // keyboard on the text box?
     @State private var waiting = false  // true while Coco is "thinking" (shows the grey bubble)
     @State private var voiceOn = true   // read Coco's replies aloud?
     @State private var voice = VoicePlayer()
@@ -222,6 +224,8 @@ struct ContentView: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
                 .background(Capsule().fill(Color(.secondarySystemBackground)))
+                .focused($typing)
+                .id(fieldID)
 
             RoundButton(systemName: "arrow.up", enabled: !trimmed.isEmpty && !waiting, action: sendTyped)
                 .accessibilityLabel("Send")
@@ -234,7 +238,12 @@ struct ContentView: View {
     // ── typed message ──
     private func sendTyped() {
         let text = trimmed
+        // iOS bug: a multi-line text box sometimes ignores input = "" while the keyboard is on it.
+        // so: clear it AND swap in a fresh box, then put the keyboard back on the new one
+        let keepKeyboard = typing
         input = ""
+        fieldID = UUID()
+        if keepKeyboard { DispatchQueue.main.async { typing = true } }
         Task {
             if let reply = await ask(text), voiceOn {
                 if let mp3 = try? await ChatService.speak(reply) { await voice.play(mp3) }

@@ -16,6 +16,18 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-22
+**Did:**
+- App reinstalled (7-day limit had run out → "not trusted").
+- "Can't reach my Mac": the Mac server had stopped (Mac asleep/restarted). Started again; reminder: type `coco`
+  on the Mac before using "My Mac". Mac was on a 10.2.x.x network (maybe not home Wi-Fi; shared networks can
+  block phone ↔ Mac).
+- **Bug fix:** typed message stayed in the text box after sending (whole message). Known iOS bug with multi-line
+  text boxes ignoring `input = ""`. Fix: after sending, swap in a fresh empty box (`.id`) and keep the keyboard
+  on it (`@FocusState`). Compiles; **not yet tested on the iPhone**.
+
+---
+
 ## 2026-11-19
 **Did:**
 - **Server switch in the app:** ⚙️ button top right (next to 🔊) opens Settings (`ios/Coco/SettingsView.swift`).
