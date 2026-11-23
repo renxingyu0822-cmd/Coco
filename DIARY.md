@@ -7,12 +7,33 @@ Public repo: no personal data here.
 
 | When | What | Status |
 |---|---|---|
-| by 15 Nov | Basic question-answering agent (text + voice chat) | ✅ mostly done |
-| Nov – Dec | Voiceprint (added 16 Nov, before memory) ✅ + long-term memory + basic tools for China and Germany: calendar, reminders, weather (🟡 started 23 Nov), Apple Music, web search | ⬜ |
+| by 15 Nov | Basic question-answering agent (text + voice chat) | ✅ done |
+| Nov – Dec | Voiceprint (added 16 Nov, before memory) ✅ + long-term memory + basic tools for China and Germany: calendar, reminders, weather ✅ (23 Nov), Apple Music, web search | 🟡 in progress |
 | mid Dec + Christmas | Tasks: base (tools work?), long-term memory (memory works?), hallucination ("broken twins" of base tasks). First run = baseline, improve via conversation logs. | ⬜ |
 | January | Advanced: scam detection, email, Family liaison, China/Germany pairs (WeChat/WhatsApp, Bilibili/YouTube, Baidu/Google Maps). Then their tasks. | ⬜ |
 
 Marketing/business plan (first market, interviews, trust model): separate, not planned yet.
+
+---
+
+## 2026-11-23 — where we stand (end of session 16–23 Nov)
+**Working now (Mac + online server, tested on the iPhone):**
+- Text + hands-free voice chat; ⚙️ Settings: About you (name, she/he/they, town), server switch Online / My Mac.
+- **Voiceprint:** set up + "Is it me?" in Settings; every voice message tagged user / someone else (cut-off 0.35);
+  Coco treats visitors/TV differently and keeps the user's private things private; honest if asked.
+- **Weather tool** (Open-Meteo) with weather card; admits when the service is down (`WEATHER_TOOL_DOWN=1`).
+- Keyboard like WhatsApp. Everything pushed; online server up to date.
+
+**Open points (not decided yet):**
+- Grey speaker labels in the chat still visible (my choice for now; hide later: `Bubble.showSpeakerLabel`).
+- Typed messages always count as the user → a visitor could type to get private info.
+- "Just my name" + a title (Mr./Mrs.) → Coco sometimes still says he/she.
+- Every conversation's content goes through OpenAI (voice + text); only the fingerprint stays on our server.
+- Mac server stops when the Mac sleeps/restarts → `coco` before using "My Mac".
+- First request after a server restart is slow (voice model loads, ~6 s online, ~25 s Mac).
+- `ios/Coco.xcodeproj/xcshareddata/` (Xcode scheme, probably the logging setting) not in git yet.
+- No diary entry about the 13 Nov presentation (how it went, feedback).
+- Still to do from the plan: long-term memory, reminders, calendar, Apple Music, web search.
 
 ---
 

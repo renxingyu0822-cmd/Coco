@@ -44,7 +44,7 @@ not Apple's on-device speech.
 ## Development plan (decided 8 Nov; marketing/business plan is separate, see "Open points")
 | When | What |
 |---|---|
-| by 15 Nov | Basic question-answering agent (text + voice chat — mostly done) |
+| by 15 Nov | Basic question-answering agent (text + voice chat — done) |
 | rest of Nov + Dec | Basic tools that work in both China and Germany (calendar, weather, Apple Music, reminders, web search) + long-term memory |
 | mid Dec + Christmas break | Design + run tasks: **base** (do the tools work?), **long-term memory** (does memory work?), **hallucination** (as "broken twins" of base tasks, e.g. weather tool down; plus no-tool ones like medical advice). Improve the score by reading the conversation logs. |
 | January (if memory works) | Advanced features that need skills: scam detection, email, Family liaison, and the China/Germany pairs (WeChat/WhatsApp, Bilibili/YouTube, Baidu/Google Maps). Then their tasks, improve the score again. |
