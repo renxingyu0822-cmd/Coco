@@ -72,7 +72,9 @@ not Apple's on-device speech.
   Town = default place for the weather. Moves to the server-side profile when long-term memory exists.
 - **Memory (Nov/Dec):** try open-source GBrain first, custom memory module as fallback.
   Four memory types: personal profile, recent events, health info (separate + protected), short-term reminders.
-  Memory is **always on** (no switch to turn it off).
+  Memory is **always on** (no switch to turn it off). Only what the real user said is saved (voiceprint).
+  **24 Nov:** for the sample, ONE GBrain on the online server (single user, not tried yet). Later for real users:
+  one separate store per user on the server (needs a user ID first). Research notes: DIARY 24 Nov.
 - **Evaluation (Dec):** adapted from CAR-bench (the student version is at
   github.com/renxingyu0822-cmd/Car_Bench_Jet2Holiday): simulated older user + Coco + evaluator, rule-based + LLM-judge
   checks, each task run k=3 times (Pass^3 / Pass@3). Task types: base, long-term memory, hallucination.

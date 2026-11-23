@@ -16,6 +16,50 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-24 (long-term memory: GBrain research + decisions)
+**Did:**
+- Looked into **GBrain** (github.com/garrytan/gbrain, by Garry Tan / Y Combinator, April 2026). Only from its
+  README + articles, **not tried yet**.
+
+**Found — what GBrain is:**
+- Open source, **MIT licence** (free, also commercially; keep the licence notice if we copy code).
+- A memory store for AI agents: memories are **Markdown pages** (one per person / company / project) with
+  **links** between them (a small wiki / knowledge graph). Markdown is the source; a database is the index:
+  PGLite (Postgres in WASM, default, no server, up to ~50K pages) or Postgres + pgvector.
+- **Writing:** the agent "remembers" by writing/updating pages; optional automatic capture of facts/names from
+  conversations; **nightly clean-up ("dream cycle")**: merge duplicate people pages, fix citations, find
+  contradictions.
+- **Reading:** hybrid search = **keyword + vector (by meaning) + reranker**, plus **graph** walks along links for
+  relationship questions; `think` = summary with sources + what it *doesn't* know. Keyword works without API key;
+  vector search needs an embeddings provider (OpenAI, Voyage, … also Alibaba/Zhipu for China).
+- **Access:** command line or MCP (`gbrain serve`). No Python library / REST API mentioned.
+- **Stack:** TypeScript on **Bun** (not on npm; the npm "gbrain" is unrelated). Always-on setup described with
+  8 GB+ RAM (our server: 4 GB). New releases **many times a day** → pin a version.
+- **Users:** personal brain by default; "company brain" mode for 10–50 people; README: access control is
+  "not a universal no-leak guarantee". Text goes to the configured cloud providers.
+
+**Found — fit for Coco:**
+- Good: people pages + links = "my son lives in Beijing" (→ "too early to call my son?"); nightly clean-up suits
+  older users who repeat themselves; "say what you don't know".
+- Hard: built for one person, not many separate users; no "health info separate + protected"; second program
+  next to our Python server; server RAM; fast-changing; our rules (voiceprint: only the real user's words,
+  visitors) must be enforced by us before anything reaches the memory.
+- Memory on the **phone** discussed: GBrain can't run on an iPhone. Coco's own memory could (privacy, users
+  apart), but: OpenAI still sees memories in use, phone lost = memory gone (iCloud backup), no nightly jobs,
+  evaluation runs on the server, family can't reach it. Middle way (phone stores, server decides) noted.
+
+**Decided:**
+- **Later, for real users: B = one separate store per user on the server** (own folder per user, health info as
+  its own, encryptable file; "delete me" = delete the folder). Needs a **user ID** first (app creates ID + secret
+  on first launch; today all phones share one app password and there's one voiceprint for everybody).
+- **For now (we're building a sample): set multi-user aside, build ONE GBrain on the online server**
+  (single user). Still to check in practice: install Bun + GBrain, speed per lookup, RAM next to the voice model,
+  how Python talks to it (CLI or MCP).
+
+**Next (my call):** slides for the second presentation. Memory work pauses until then.
+
+---
+
 ## 2026-11-24 (clock: Coco knows the time)
 **Did:**
 - **Coco knows the date and time.** The app sends the phone's time zone (`user_timezone`, e.g. Europe/Berlin)
