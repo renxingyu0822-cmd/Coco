@@ -5,7 +5,8 @@
 //  The weather as a picture, shown under Coco's answer:
 //
 //  ┌──────────────────────────────────┐
-//  │ ☁️  Hanover · Tomorrow, Tue 24 Nov │
+//  │ ☁️  Hanover                       │
+//  │     Tomorrow, Tue 24             │
 //  │     Overcast                     │
 //  │  3°        Low -1° · High 3°     │
 //  │  💧 0 % rain    💨 8 km/h         │
@@ -47,13 +48,18 @@ struct WeatherCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // picture + where/when + what
+            // (city big, the day below it: on one line it got cut off, "Today, Mon 23 N…")
             HStack(alignment: .top, spacing: 14) {
-                Image(systemName: Self.symbol(code: info.now?.code ?? info.code, isDay: info.now?.is_day ?? true))
-                    .symbolRenderingMode(.multicolor)
+                let icon = Self.icon(code: info.now?.code ?? info.code, isDay: info.now?.is_day ?? true)
+                Image(systemName: icon.name)
+                    .symbolRenderingMode(.palette)          // our own colours (Apple's multicolor = white clouds,
+                    .foregroundStyle(icon.colors[0], icon.colors[1], icon.colors[2])  // invisible on the grey card)
                     .font(.system(size: 46))
-                    .frame(width: 56)
+                    .frame(width: 60)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("\(info.city) · \(dayLabel)")
+                    Text(info.city)
+                        .font(.title2.bold())
+                    Text(dayLabel)
                         .font(.headline)
                     Text((info.now?.weather ?? info.weather).capitalizedFirst)
                         .font(.title3)
@@ -99,30 +105,33 @@ struct WeatherCard: View {
 
     private func degrees(_ c: Double) -> String { "\(Int(c.rounded()))°" }
 
-    // "tomorrow, Tuesday 24 November" -> "Tomorrow, Tue 24 Nov"; "Friday 27 November" -> "Fri 27 Nov"
+    // "tomorrow, Tuesday 24 November" -> "Tomorrow, Tue 24"; "Friday 27 November" -> "Fri 27" (no month: short)
     private var dayLabel: String {
-        info.day.split(separator: " ").map { word in
-            let w = String(word)
-            let long = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
-                        "January", "February", "March", "April", "June", "July", "August",
-                        "September", "October", "November", "December"]
-            return long.contains(w) ? String(w.prefix(3)) : w
-        }.joined(separator: " ").capitalizedFirst
+        let months = ["January", "February", "March", "April", "May", "June", "July", "August",
+                      "September", "October", "November", "December"]
+        let weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        return info.day.split(separator: " ").map(String.init)
+            .filter { !months.contains($0) }
+            .map { weekdays.contains($0) ? String($0.prefix(3)) : $0 }
+            .joined(separator: " ").capitalizedFirst
     }
 
-    // weather code (WMO, from Open-Meteo) -> Apple weather symbol
-    static func symbol(code: Int, isDay: Bool) -> String {
+    // weather code (WMO, from Open-Meteo) -> Apple weather symbol + colours for its layers
+    // (1st = main part, usually the cloud; 2nd = sun / rain / snow / stars; 3rd = extra, e.g. the bolt)
+    static func icon(code: Int, isDay: Bool) -> (name: String, colors: [Color]) {
+        let cloud = Color(.systemGray), sun = Color.orange, moon = Color.indigo
+        let rain = Color.blue, snow = Color.cyan
         switch code {
-        case 0, 1:       return isDay ? "sun.max.fill" : "moon.stars.fill"
-        case 2:          return isDay ? "cloud.sun.fill" : "cloud.moon.fill"
-        case 3:          return "cloud.fill"
-        case 45, 48:     return "cloud.fog.fill"
-        case 51...57:    return "cloud.drizzle.fill"
-        case 65, 82:     return "cloud.heavyrain.fill"
-        case 61...67, 80...82: return "cloud.rain.fill"
-        case 71...77, 85, 86:  return "cloud.snow.fill"
-        case 95...99:    return "cloud.bolt.rain.fill"
-        default:         return "cloud.fill"
+        case 0, 1:       return isDay ? ("sun.max.fill", [sun, sun, sun]) : ("moon.stars.fill", [moon, .yellow, .yellow])
+        case 2:          return isDay ? ("cloud.sun.fill", [cloud, sun, sun]) : ("cloud.moon.fill", [cloud, moon, moon])
+        case 3:          return ("cloud.fill", [cloud, cloud, cloud])
+        case 45, 48:     return ("cloud.fog.fill", [cloud, Color(.systemGray2), cloud])
+        case 51...57:    return ("cloud.drizzle.fill", [cloud, rain, rain])
+        case 65, 82:     return ("cloud.heavyrain.fill", [cloud, rain, rain])
+        case 61...67, 80...82: return ("cloud.rain.fill", [cloud, rain, rain])
+        case 71...77, 85, 86:  return ("cloud.snow.fill", [cloud, snow, snow])
+        case 95...99:    return ("cloud.bolt.rain.fill", [cloud, .yellow, rain])
+        default:         return ("cloud.fill", [cloud, cloud, cloud])
         }
     }
 }

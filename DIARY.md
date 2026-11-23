@@ -16,6 +16,16 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-24 (weather card fixes)
+**Did:**
+- Weather card: clouds were white on the light grey card (Apple's multicolor style) → almost invisible.
+  Now our own colours per symbol layer (`.palette`): clouds grey, sun orange, rain blue, snow cyan, moon indigo,
+  stars/bolt yellow. Heading was cut off ("Today, Mon 23 N…") → city on its own line (big), day below without
+  the month ("Today, Tue 24"). App-only change, works with both servers. Tested on the iPhone.
+- `docs/app-pictures/weather-card.jpg` replaced with the fixed card (README).
+
+---
+
 ## 2026-11-23 — where we stand (end of session 16–23 Nov)
 **Working now (Mac + online server, tested on the iPhone):**
 - Text + hands-free voice chat; ⚙️ Settings: About you (name, she/he/they, town), server switch Online / My Mac.
