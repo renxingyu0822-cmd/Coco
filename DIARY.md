@@ -16,6 +16,20 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-23 (voiceprint in voice chat)
+**Did:**
+- **Voiceprint connected to voice chat.** `/transcribe` now also checks who's talking, at the same time as
+  OpenAI's transcription (no extra wait): answer `{"text", "speaker": "user"|"other"|"unknown", "score"}`.
+  "unknown" = no fingerprint / no model / clip under 1 s / not wav; transcription never fails because of it.
+  Coco still answers everyone; the tag is for the memory later + logged (`voiceprint: chat message from …`).
+- App: voice chat records **WAV** now (was m4a). Grey label under voice bubbles: "🎙 you · 0.72" /
+  "🎙 someone else · 0.20" / "🎙 not checked". Switch: `Bubble.showSpeakerLabel` — **hide after testing**.
+
+**Test (voice chat, Mac server, cut-off 0.35):** me 0.72, 0.70 → you; Pam (TV) 0.20, 0.12 → someone else.
+Short "Yes." (computer voice) → not checked.
+
+---
+
 ## 2026-11-23 (voiceprint online)
 **Did:**
 - **Voiceprint deployed on the online server.** Pushed to GitHub, `git pull` on the server, installed the

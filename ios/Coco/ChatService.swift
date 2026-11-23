@@ -102,18 +102,23 @@ enum ChatService {
         req.httpBody = body
     }
 
-    // your recording in -> text out, via the server's /transcribe
-    private struct TranscribeReply: Codable { let text: String }
+    // your recording (wav) in -> text + who said it, via the server's /transcribe
+    //   speaker: "user" | "other" | "unknown" (no fingerprint yet, too short, ...); score: 0.82 or nil
+    struct Transcript: Codable {
+        let text: String
+        var speaker: String?
+        var score: Double?
+    }
 
-    static func transcribe(_ fileURL: URL) async throws -> String {
+    static func transcribe(_ fileURL: URL) async throws -> Transcript {
         var req = post("transcribe")
-        try attach([fileURL], field: "audio", type: "audio/m4a", to: &req)
+        try attach([fileURL], field: "audio", type: "audio/wav", to: &req)
 
         let (data, resp) = try await URLSession.shared.data(for: req)
         guard (resp as? HTTPURLResponse)?.statusCode == 200 else {
             throw URLError(.badServerResponse)
         }
-        return try JSONDecoder().decode(TranscribeReply.self, from: data).text
+        return try JSONDecoder().decode(Transcript.self, from: data)
     }
 
     // ── voiceprint (server/app/voiceprint.py) ──

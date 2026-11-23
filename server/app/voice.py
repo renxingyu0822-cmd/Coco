@@ -6,17 +6,20 @@
 #   POST /transcribe  your voice in (an audio file) -> text out
 #
 #   /speak       app sends {"text": "Hello!"}       -> gets mp3 audio, plays it
-#   /transcribe  app uploads the recording (m4a)    -> gets {"text": "Hi Coco..."}
+#   /transcribe  app uploads the recording (wav)    -> gets {"text": "Hi Coco...", "speaker": "user", "score": 0.82}
 #
 # How Coco should sound (warm, calm, a bit slow) is set in prompt.py
 # (VOICE_INSTRUCTIONS). Which voice: OPENAI_TTS_VOICE in .env.
 # ─────────────────────────────────────────────────────────────
+
+import asyncio
 
 from fastapi import APIRouter, File, HTTPException, Response, UploadFile
 from pydantic import BaseModel
 
 from .prompt import VOICE_INSTRUCTIONS
 from .settings import STT_LANGUAGE, STT_MODEL, TTS_MODEL, TTS_VOICE, client
+from .voiceprint import who_is_speaking
 
 # a "router" = a small group of endpoints; main.py plugs it into the server
 router = APIRouter()
@@ -50,23 +53,32 @@ def speak(req: SpeakRequest):
     return Response(content=audio.content, media_type="audio/mpeg")
 
 
-# ── /transcribe: your voice -> text ──
+# ── /transcribe: your voice -> text (+ who said it) ──
 # The app uploads the recording as a file (that's what python-multipart is for).
+# Two jobs at the same time, so it's not slower:
+#   OpenAI turns it into text, and our voiceprint checks if it's the user (voiceprint.py).
+# Answer: {"text": "...", "speaker": "user" | "other" | "unknown", "score": 0.82 or null}
 @router.post("/transcribe")
 async def transcribe(audio: UploadFile = File(...)):
     data = await audio.read()
     if not data:
         raise HTTPException(400, "empty recording")
 
-    try:
-        result = client.audio.transcriptions.create(
+    def to_text():
+        return client.audio.transcriptions.create(
             model=STT_MODEL,
-            # OpenAI wants (filename, bytes, type); the name's ending tells it the format (.m4a)
+            # OpenAI wants (filename, bytes, type); the name's ending tells it the format (.wav / .m4a)
             file=(audio.filename or "recording.m4a", data, audio.content_type or "audio/m4a"),
             language=STT_LANGUAGE,  # "en": don't guess the language (see settings.py)
         )
+
+    # to_thread = run in the background; gather = wait for both
+    text_job = asyncio.to_thread(to_text)
+    who_job = asyncio.to_thread(who_is_speaking, data)   # never fails, worst case "unknown"
+    try:
+        result, who = await asyncio.gather(text_job, who_job)
     except Exception as e:
         print("OpenAI transcribe error:", e)
         raise HTTPException(502, "Coco couldn't understand the recording.")
 
-    return {"text": result.text.strip()}
+    return {"text": result.text.strip(), **who}

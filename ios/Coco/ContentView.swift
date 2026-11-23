@@ -30,6 +30,8 @@ struct ChatMessage: Identifiable {
     let fromUser: Bool
     let text: String
     var isError = false  // error notes are shown, but never sent to the server
+    var speaker: String? = nil   // voice messages only: "user" / "other" / "unknown" (voiceprint)
+    var score: Double? = nil
 }
 
 // what the voice chat is doing right now
@@ -44,7 +46,7 @@ struct ContentView: View {
     @State private var waiting = false  // true while Coco is "thinking" (shows the grey bubble)
     @State private var voiceOn = true   // read Coco's replies aloud?
     @State private var voice = VoicePlayer()
-    @State private var recorder = VoiceRecorder()
+    @State private var recorder = VoiceRecorder(wav: true)   // wav: the server's voiceprint needs it
     @State private var inConversation = false  // voice mode on?
     @State private var phase = Phase.idle
     @State private var showSettings = false    // ⚙️ screen open?
@@ -261,9 +263,11 @@ struct ContentView: View {
     }
 
     // ask Coco: adds your bubble, waits for her reply, adds her bubble. nil = something failed.
-    private func ask(_ text: String) async -> String? {
+    // voice: the transcript, so the bubble knows who spoke. Typed: nil (always the user)
+    private func ask(_ text: String, voice transcript: ChatService.Transcript? = nil) async -> String? {
         guard !text.isEmpty, !waiting else { return nil }
-        messages.append(ChatMessage(fromUser: true, text: text))
+        messages.append(ChatMessage(fromUser: true, text: text,
+                                    speaker: transcript?.speaker, score: transcript?.score))
         waiting = true
         defer { waiting = false }
 
@@ -311,17 +315,17 @@ struct ContentView: View {
 
                 // 2. your voice -> text
                 phase = .thinking
-                let text: String
-                do { text = try await ChatService.transcribe(recorder.fileURL) } catch {
+                let heardText: ChatService.Transcript
+                do { heardText = try await ChatService.transcribe(recorder.fileURL) } catch {
                     print("Transcribe error:", error)
                     messages.append(ChatMessage(fromUser: false,
                         text: "Sorry, I couldn't hear that properly. Please try again.", isError: true))
                     break
                 }
-                if text.isEmpty { continue }  // nothing understood: just listen again
+                if heardText.text.isEmpty { continue }  // nothing understood: just listen again
 
-                // 3. ask Coco
-                guard let reply = await ask(text), inConversation else { break }
+                // 3. ask Coco (she answers everyone; who spoke is only noted, for the memory later)
+                guard let reply = await ask(heardText.text, voice: heardText), inConversation else { break }
 
                 // 4. Coco speaks; the mic stays off until she's done (so she doesn't hear herself)
                 if voiceOn {
@@ -406,19 +410,41 @@ struct RoundButton: View {
 struct Bubble: View {
     let message: ChatMessage
 
+    // small grey "🎙 you · 0.82" under voice messages. For testing the voiceprint; false = hidden
+    static let showSpeakerLabel = true
+
     var body: some View {
         HStack {
             if message.fromUser { Spacer(minLength: 40) }
 
-            Text(message.text)
-                .font(.title3)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .foregroundStyle(message.fromUser ? Color(.systemBackground) : .primary)
-                .background(message.fromUser ? Color.accentColor : Color(.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 20))
+            VStack(alignment: message.fromUser ? .trailing : .leading, spacing: 4) {
+                Text(message.text)
+                    .font(.title3)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .foregroundStyle(message.fromUser ? Color(.systemBackground) : .primary)
+                    .background(message.fromUser ? Color.accentColor : Color(.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+
+                if Self.showSpeakerLabel, let label = speakerLabel {
+                    Text(label)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 8)
+                }
+            }
 
             if !message.fromUser { Spacer(minLength: 40) }
+        }
+    }
+
+    private var speakerLabel: String? {
+        guard let speaker = message.speaker else { return nil }   // typed / Coco: no label
+        let score = message.score.map { String(format: " · %.2f", $0) } ?? ""
+        switch speaker {
+        case "user":  return "🎙 you" + score
+        case "other": return "🎙 someone else" + score
+        default:      return "🎙 not checked"    // no fingerprint yet, too short, ...
         }
     }
 }

@@ -22,6 +22,7 @@
 import io
 import json
 import os
+import threading
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
@@ -38,9 +39,16 @@ THRESHOLD = float(os.getenv("VOICEPRINT_THRESHOLD", "0.35"))
 MIN_SECONDS = 1.0   # shorter clips are too unreliable
 
 _model = None  # loaded on first use (takes a few seconds)
+_model_lock = threading.Lock()  # two messages at once -> still load the model only once
 
 
 def _get_model():
+    global _model
+    with _model_lock:
+        return _load_model()
+
+
+def _load_model():
     global _model
     if _model is None:
         try:
@@ -81,6 +89,22 @@ def _load():
     import torch
     with open(DATA_FILE) as f:
         return torch.tensor(json.load(f)["fingerprint"])
+
+
+def who_is_speaking(wav_bytes: bytes) -> dict:
+    """for voice chat (voice.py /transcribe): user or someone else? Never fails:
+    no fingerprint / no model / too short / not a wav -> "unknown". """
+    try:
+        saved = _load()
+        if saved is None:
+            return {"speaker": "unknown", "score": None}
+        score = float(_fingerprint(wav_bytes) @ saved)
+        speaker = "user" if score >= THRESHOLD else "other"
+        print(f"voiceprint: chat message from {speaker} (score {score:.3f})")
+        return {"speaker": speaker, "score": round(score, 3)}
+    except Exception as e:
+        print("voiceprint: skipped,", getattr(e, "detail", e))
+        return {"speaker": "unknown", "score": None}
 
 
 @router.get("/voiceprint")
