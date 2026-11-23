@@ -32,6 +32,23 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 - Each server keeps its own fingerprint (`server/data/voiceprint.json`) → set up the voice again with "Online".
 - Scratchpad clips were gone after a Mac restart; remade them with `say`.
 
+**Test results online** (fresh setup with my normal voice on the online server, cut-off 0.33). **For the next presentation.**
+
+| Who | Online (23 Nov) | Mac (23 Nov, earlier) |
+|---|---|---|
+| Me, normal | 0.88 ✓ | 0.74, 0.76 |
+| Me, weird / fake | 0.54 ✓ | 0.42, 0.53 |
+| Me, singing | 0.37 ✓ | 0.52 |
+| Michael | 0.07 | 0.03 |
+| Jim | 0.08 | 0.09 |
+| Pam | 0.31 | 0.25 |
+| Toby | 0.13 | 0.03 |
+| Angela | 0.28 | 0.21 |
+
+- All 8 right at 0.33. Normal voice very safe (0.88). Edges close: my singing 0.37 vs Pam 0.31.
+- Pam and Angela are the closest to my voice both times (realistic risk: TV running in the room).
+- OK for Coco's purpose: users talk normally; a mis-tagged odd message only means it isn't remembered.
+
 ---
 
 ## 2026-11-23 (voiceprint in the app)
