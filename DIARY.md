@@ -25,7 +25,7 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 - App: voice chat records **WAV** now (was m4a). Grey label under voice bubbles: "🎙 you · 0.72" /
   "🎙 someone else · 0.20" / "🎙 not checked". Switch: `Bubble.showSpeakerLabel` — **hide after testing**.
 
-**Test (voice chat, Mac server, cut-off 0.35):** me 0.72, 0.70 → you; Pam (TV) 0.20, 0.12 → someone else.
+**Online server tested too (works, me + Pam).** **Test (voice chat, Mac server, cut-off 0.35):** me 0.72, 0.70 → you; Pam (TV) 0.20, 0.12 → someone else.
 Short "Yes." (computer voice) → not checked.
 Screenshots for the presentation: `docs/app-pictures/voiceprint-you.jpg` (me, "you · 0.70") and
 `voiceprint-someone-else.jpg` (Pam from *The Office* on TV, "someone else · 0.20").
