@@ -115,7 +115,8 @@ Working now:
   every voice message is checked: the user, or someone else? Coco answers everyone, but treats
   visitors differently (friendly, no private details) and notices when it's just the TV.
   Emergencies count from anyone.
-- **Settings:** what Coco should call you, and how she refers to you to others (she / he / they / just the name).
+- **Settings:** what Coco should call you, how she refers to you to others (she / he / they / just the name),
+  and your town (for the weather when you don't say where).
 - **First tool: the weather.** Ask "Will it rain tomorrow?" or "What should I wear?" and Coco checks the
   forecast (any town, today up to 6 days ahead). If the weather service is down, she says so instead of guessing. The app shows
   the forecast as a weather card (picture, temperature, rain, wind) under her answer.

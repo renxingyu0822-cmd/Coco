@@ -16,6 +16,19 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-23 ("Your town")
+**Did:**
+- Settings → **About you**: name, "When Coco talks about you", and new **Your town**. Saved on the phone, sent
+  as `user_town` with each `/chat` (cleaned like the name, max 60 chars). Coco uses it for weather questions
+  without a place; if the user says they're somewhere else, she uses that place.
+- Tested (Mac curl + iPhone): town used for "umbrella tomorrow?", Beijing when travelling, asks when no town set.
+  Pushed + live on the online server.
+
+**Found:**
+- Data flow: the town goes to OpenAI (chat text) and Open-Meteo (place lookup). Town name only, no address.
+
+---
+
 ## 2026-11-23 (weather card + online)
 **Did:**
 - **Weather card in the app** (`ios/Coco/WeatherCard.swift`): under Coco's answer, in text and voice chat.

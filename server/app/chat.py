@@ -12,8 +12,8 @@
 #   speaker (optional, voice messages only) = who said it, from the voiceprint.
 #   We turn it into a short note in front of the text, so Coco can tell
 #   the user apart from visitors / the TV (rules: "Who is talking" in prompt.py).
-#   user_name / user_pronouns (optional, from the app's Settings) = how Coco calls the user
-#   and refers to them; added to the end of the system prompt.
+#   user_name / user_pronouns / user_town (optional, from the app's Settings) = how Coco calls
+#   the user, refers to them, and where they live; added to the end of the system prompt.
 #
 # Tools (tools/, e.g. the weather): the model may ask us to run one first;
 # we run it and give it the result, then it answers (the "tool loop" below).
@@ -75,16 +75,17 @@ class ChatRequest(BaseModel):   # what the app sends
     messages: list[Message]
     user_name: str | None = None       # what Coco should call the user (Settings → About you)
     user_pronouns: str | None = None   # "she/her", "he/him", "they/them", or none = just the name
+    user_town: str | None = None       # where the user lives (for "what's the weather?" without a place)
 
 
 PRONOUNS = {"she/her", "he/him", "they/them"}   # anything else is ignored
 
 
-def _clean_name(name: str | None) -> str:
-    # one short line, no brackets/quotes: nobody can sneak instructions in through the name field
+def _clean_name(name: str | None, max_len: int = 40) -> str:
+    # one short line, no brackets/quotes: nobody can sneak instructions in through a settings field
     name = " ".join((name or "").split())
     name = "".join(ch for ch in name if ch not in '[]{}<>"`')
-    return name[:40].strip()
+    return name[:max_len].strip()
 
 
 def _about_user(req: ChatRequest) -> str:
@@ -101,6 +102,10 @@ def _about_user(req: ChatRequest) -> str:
     elif name:
         lines.append(f"- When you talk about them to someone else, always say {name}. Never use he, him, "
                      "she or her for them, and don't guess from the name or a title like Mr. or Mrs.")
+    town = _clean_name(req.user_town, 60)
+    if town:
+        lines.append(f'- They live in "{town}". When they ask about the weather without saying where, '
+                     "use that town. If they say they are somewhere else, use that place instead.")
     if not lines:
         return ""
     return "\n\nAbout the person you look after:\n" + "\n".join(lines)

@@ -68,8 +68,8 @@ not Apple's on-device speech.
   Coco gets the tag ("[voice: someone else …]" note) and treats visitors/TV differently (rules in `prompt.py`,
   key rules repeated in the note in `chat.py`). Model loads offline once downloaded.
 - **Data flow:** voice + chat text go to **OpenAI**; the voice fingerprint stays **only on our server**.
-- **What Coco calls the user** (name + she/he/they): Settings → "What should Coco call you?", saved on the
-  phone, sent with each `/chat`. Moves to the server-side profile when long-term memory exists.
+- **About you** (name, she/he/they, town): Settings → About you, saved on the phone, sent with each `/chat`.
+  Town = default place for the weather. Moves to the server-side profile when long-term memory exists.
 - **Memory (Nov/Dec):** try open-source GBrain first, custom memory module as fallback.
   Four memory types: personal profile, recent events, health info (separate + protected), short-term reminders.
   Memory is **always on** (no switch to turn it off).

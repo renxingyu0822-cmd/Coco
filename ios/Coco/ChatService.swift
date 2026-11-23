@@ -56,11 +56,13 @@ enum ChatService {
         let messages: [Message]
         let user_name: String?
         let user_pronouns: String?
+        let user_town: String?
     }
 
     // names of the saved settings (SettingsView uses the same)
     static let userNameKey = "userName"
     static let userPronounsKey = "userPronouns"   // "" = just my name, or "she/her", "he/him", "they/them"
+    static let userTownKey = "userTown"           // where the user lives (weather without a place)
     // reply = Coco's words; cards = pictures from tools (e.g. weather). Unknown card types are skipped
     struct Reply: Decodable {
         let reply: String
@@ -90,12 +92,14 @@ enum ChatService {
         let saved = UserDefaults.standard
         let name = saved.string(forKey: userNameKey)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let pronouns = saved.string(forKey: userPronounsKey) ?? ""
+        let town = saved.string(forKey: userTownKey)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let body = Request(
             messages: history.map {
                 Message(role: $0.fromUser ? "user" : "assistant", content: $0.text, speaker: $0.speaker)
             },
             user_name: name.isEmpty ? nil : name,
-            user_pronouns: pronouns.isEmpty ? nil : pronouns
+            user_pronouns: pronouns.isEmpty ? nil : pronouns,
+            user_town: town.isEmpty ? nil : town
         )
         req.httpBody = try JSONEncoder().encode(body)
 

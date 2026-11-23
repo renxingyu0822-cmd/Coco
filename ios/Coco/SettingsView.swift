@@ -3,7 +3,7 @@
 //  Coco
 //
 //  The ⚙️ screen (top right on the chat screen).
-//  What Coco calls you (+ she/he/they), which server Coco talks to (online / my Mac),
+//  About you (name, she/he/they, town), which server Coco talks to (online / my Mac),
 //  and the voice fingerprint (VoiceprintView). All saved on the phone.
 //
 
@@ -14,6 +14,7 @@ struct SettingsView: View {
     @AppStorage(ChatService.serverKey) private var server = ChatService.defaultServer
     @AppStorage(ChatService.userNameKey) private var userName = ""
     @AppStorage(ChatService.userPronounsKey) private var userPronouns = ""
+    @AppStorage(ChatService.userTownKey) private var userTown = ""
     @Environment(\.dismiss) private var dismiss
 
     enum Status { case checking, ok, unreachable }
@@ -23,19 +24,28 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("e.g. Margaret, Mr. Schmidt, Oma", text: $userName)
-                        .textInputAutocapitalization(.words)
-                        .autocorrectionDisabled()
+                    LabeledContent("Your name") {
+                        TextField("e.g. Margaret, Oma", text: $userName)
+                            .multilineTextAlignment(.trailing)
+                            .textInputAutocapitalization(.words)
+                            .autocorrectionDisabled()
+                    }
                     Picker("When Coco talks about you", selection: $userPronouns) {
                         Text("Just my name").tag("")
                         Text("she / her").tag("she/her")
                         Text("he / him").tag("he/him")
                         Text("they / them").tag("they/them")
                     }
+                    LabeledContent("Your town") {
+                        TextField("e.g. Hannover, Beijing", text: $userTown)
+                            .multilineTextAlignment(.trailing)
+                            .textInputAutocapitalization(.words)
+                            .autocorrectionDisabled()
+                    }
                 } header: {
-                    Text("What should Coco call you?")
+                    Text("About you")
                 } footer: {
-                    Text("Coco uses your name now and then. \"When Coco talks about you\" is how she refers to you to other people, like a visitor.")
+                    Text("Coco uses your name now and then. \"When Coco talks about you\" is how she refers to you to other people, like a visitor. Your town is for the weather when you don't say where.")
                 }
 
                 Section {
