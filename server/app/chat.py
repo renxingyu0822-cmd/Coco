@@ -14,6 +14,9 @@
 #   user_name / user_pronouns (optional, from the app's Settings) = how Coco calls the user
 #   and refers to them; added to the end of the system prompt.
 #
+# Tools (tools/, e.g. the weather): the model may ask us to run one first;
+# we run it and give it the result, then it answers (the "tool loop" below).
+#
 # No memory yet: the server forgets everything after each answer,
 # that's why the app always sends the full conversation.
 # ─────────────────────────────────────────────────────────────
@@ -21,6 +24,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from . import tools                 # things Coco can do / look up (tools/)
 from .prompt import SYSTEM_PROMPT
 from .settings import MODEL, client
 
@@ -114,17 +118,29 @@ def chat(req: ChatRequest):
     if not history:
         raise HTTPException(400, "no messages")   # 400 = "your request is wrong"
 
+    messages = [{"role": "system", "content": SYSTEM_PROMPT + _about_user(req)}, *history]
+
+    # the tool loop: ask OpenAI; if the model wants a tool (e.g. get_weather), run it,
+    # hand back the result, ask again. Stops when the model answers in words.
+    # Max 3 rounds, so a confused model can't loop forever.
     try:
-        # ask OpenAI: personality first, then the conversation
-        resp = client.chat.completions.create(
-            model=MODEL,
-            messages=[{"role": "system", "content": SYSTEM_PROMPT + _about_user(req)}, *history],
-        )
+        for _ in range(3):
+            resp = client.chat.completions.create(model=MODEL, messages=messages, tools=tools.SCHEMAS)
+            msg = resp.choices[0].message   # OpenAI can give several answers ("choices"); we ask for one
+            if not msg.tool_calls:
+                return ChatReply(reply=msg.content)
+
+            # remember the model's request, then add one result per tool call
+            messages.append(msg.model_dump(exclude_none=True))
+            for call in msg.tool_calls:
+                messages.append({"role": "tool", "tool_call_id": call.id,
+                                 "content": tools.run(call.function.name, call.function.arguments)})
+
+        # still wants tools after 3 rounds: last try without tools, so we get words
+        resp = client.chat.completions.create(model=MODEL, messages=messages)
+        return ChatReply(reply=resp.choices[0].message.content)
     except Exception as e:
         # friendly message for the app, real error printed in the terminal / server.log
         print("OpenAI error:", e)
         raise HTTPException(502, "Coco can't think right now, try again in a moment.")
         # 502 = "a service behind me (OpenAI) failed"
-
-    # OpenAI can give several answers ("choices"); we only ask for one, take the first
-    return ChatReply(reply=resp.choices[0].message.content)

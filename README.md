@@ -116,6 +116,8 @@ Working now:
   visitors differently (friendly, no private details) and notices when it's just the TV.
   Emergencies count from anyone.
 - **Settings:** what Coco should call you, and how she refers to you to others (she / he / they / just the name).
+- **First tool: the weather.** Ask "Will it rain tomorrow?" or "What should I wear?" and Coco checks the
+  forecast (any town, today up to 6 days ahead). If the weather service is down, she says so instead of guessing.
 
 Coming next: see the development plan below.
 
@@ -132,3 +134,7 @@ Coming next: see the development plan below.
 **Evaluation** is adapted from [CAR-bench](https://arxiv.org/abs/2601.22027): a simulated older user (LLM with a persona)
 talks to Coco, an evaluator checks the conversation (rule-based + LLM-as-judge), and every task runs 3 times
 (Pass^3 = reliable, Pass@3 = solvable). The first run is the baseline.
+
+## Credits
+
+Weather data by [Open-Meteo.com](https://open-meteo.com/) (CC BY 4.0).

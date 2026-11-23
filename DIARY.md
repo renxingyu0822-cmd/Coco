@@ -8,11 +8,38 @@ Public repo: no personal data here.
 | When | What | Status |
 |---|---|---|
 | by 15 Nov | Basic question-answering agent (text + voice chat) | ✅ mostly done |
-| Nov – Dec | Voiceprint (added 16 Nov, before memory) + long-term memory + basic tools for China and Germany: calendar, reminders, weather, Apple Music, web search | ⬜ |
+| Nov – Dec | Voiceprint (added 16 Nov, before memory) ✅ + long-term memory + basic tools for China and Germany: calendar, reminders, weather (🟡 started 23 Nov), Apple Music, web search | ⬜ |
 | mid Dec + Christmas | Tasks: base (tools work?), long-term memory (memory works?), hallucination ("broken twins" of base tasks). First run = baseline, improve via conversation logs. | ⬜ |
 | January | Advanced: scam detection, email, Family liaison, China/Germany pairs (WeChat/WhatsApp, Bilibili/YouTube, Baidu/Google Maps). Then their tasks. | ⬜ |
 
 Marketing/business plan (first market, interviews, trust model): separate, not planned yet.
+
+---
+
+## 2026-11-23 (first tool: weather)
+**Did:**
+- **Weather tool** (server tool), data from **Open-Meteo** (free for non-commercial use, no key, worldwide,
+  credit "Weather data by Open-Meteo.com" → README Credits).
+  - `server/app/tools/weather.py`: place → coordinates (Open-Meteo geocoding) → forecast (7 days, place's local
+    time) → plain words (weather codes → "overcast", "light rain", …). Days: today / tomorrow / weekday / date.
+    Several towns of similar size (Springfield) → "ask which one". Never raises: errors come back as text.
+    `WEATHER_TOOL_DOWN=1` fakes an outage (broken twin for the evaluation).
+  - `server/app/tools/__init__.py`: list of tools + `run()`; `chat.py`: **tool loop** (model asks for a tool →
+    we run it → model answers; max 3 rounds). Tool calls logged as `tool: get_weather(...) -> ...`.
+  - `prompt.py` "Tools": never guess the weather, ask which town, admit errors, simple words + a practical tip.
+- Tested on the Mac (curl): Hannover tomorrow, Beijing "what to wear", no town → asks, Springfield → asks,
+  no-weather question → no tool, **service down → "I can't check the weather right now"** (no guessing).
+  ~2–4 s per weather answer (one extra OpenAI round).
+
+**Found:**
+- Mac's Python couldn't check HTTPS certificates (`CERTIFICATE_VERIFY_FAILED`) → use `truststore`
+  (already installed with openai, also on the server).
+- Open-Meteo lookup finds Chinese names (北京) only with `language=zh`; Coco is English-only for now.
+- Why not the iPhone's Weather app: apps can't read it; its data (WeatherKit) needs the paid Apple Developer
+  Program. Possible later; only the fetching part of the tool would change.
+
+**Decided:**
+- Open-Meteo for now (vs. QWeather / WeatherKit). "Your town" setting comes next, so Coco knows where "here" is.
 
 ---
 
