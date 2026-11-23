@@ -32,8 +32,13 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 **Found:**
 - Before this, Coco didn't know the date at all (the model has no clock) → would have guessed.
 - gpt-4o-mini sometimes still adds digits ("00:08"); "Is it Sunday already?" → "not Sunday yet" (odd but day correct).
+- Online test "Is it too early to call my son in Beijing?" ×11: 9× looked up Beijing, 1× offered to check first,
+  1× asked me for the time instead of using `get_time`; one answer said "a bit late there" and then 7 am.
 
 **Decided:**
+- Not fixing the tool description for now: the real case ("Is it too early to call my son?" without a place)
+  is a **long-term memory** question (Coco must remember where the son lives). Keep it as a memory test case.
+- Clock is live on the online server too.
 - Clock = A (time/date) now; B (timers/alarms, "pot on the stove") = the first phone tool, later.
 
 ---
