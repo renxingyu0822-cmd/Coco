@@ -22,6 +22,14 @@ The current prototype on an iPhone:
 | <img src="docs/app-pictures/text-mode.jpg" width="200" alt="Text chat"> | <img src="docs/app-pictures/voice-listening.jpg" width="200" alt="Voice chat, listening"> | <img src="docs/app-pictures/voice-thinking.jpg" width="200" alt="Voice chat, thinking"> | <img src="docs/app-pictures/voice-talking.jpg" width="200" alt="Voice chat, talking"> |
 | type, or tap the panda to talk | just talk, no button needed | Coco works on her answer | Coco answers out loud |
 
+**Voice recognition:** Coco knows whether the person she looks after is talking, or someone else
+(a visitor, the TV). The grey label under each voice message shows it (for testing):
+
+| The user | Someone else (the TV) |
+|:---:|:---:|
+| <img src="docs/app-pictures/voiceprint-you.jpg" width="260" alt="Voice recognised as the user"> | <img src="docs/app-pictures/voiceprint-someone-else.jpg" width="260" alt="Voice recognised as someone else"> |
+| recognised as the user (score 0.70) | a line from a TV show: someone else (0.20) |
+
 ## Why
 
 Many older adults live on their own and want to stay independent, but everyday life is full of small digital barriers:
@@ -47,7 +55,8 @@ Coco is an iPhone app (Apple Watch later for reminders), set up once by the fami
 **Front office**: agents that talk to the older person, built one by one:
 1. **Companion** with long-term memory
 2. **Everyday tools**: reminders (medication, appointments, "the pot on the stove"), calendar, weather, music, web search
-3. **Voice**: hands-free voice chat ✅
+3. **Voice**: hands-free voice chat ✅, and **voice recognition** ✅: Coco tells the user apart from visitors
+   and the TV, and keeps the user's private things private
 4. **Advanced helpers**: scam guard, email, family liaison, messaging, videos and maps (in versions for China and Germany)
 
 **Back office**: agents that run the company: engineer, code review, QA, and later a scam analyst and support.
@@ -60,15 +69,31 @@ Coco is an iPhone app (Apple Watch later for reminders), set up once by the fami
 - Emergencies ("I fell") are passed to family or emergency services (112).
 - Coco never enters passwords or makes payments.
 - Health information is used only for reminders, never for medical advice.
-- Conversations stay private.
+- Conversations stay private. Coco doesn't tell visitors how the user is doing, or anything about
+  their health, medication, appointments or family.
 
 ## Architecture
 
 ```
-iPhone app (SwiftUI)  ⇄  Python back end  ⇄  LLM API
+iPhone app (SwiftUI)  ⇄  Python back end (EU server)  ⇄  OpenAI API
+                              └─ voice recognition (runs on our server)
 ```
 
-The app stays thin. The API key and all agent logic live in the back end, which will later move to an EU-hosted server (GDPR).
+The app stays thin. The API key and all agent logic live in the back end, which runs on an EU server
+(Hetzner, Helsinki, GDPR). A Mac can run the same back end for development; the app switches between
+the two in its settings.
+
+**Where the data goes:**
+
+| What | Where |
+|---|---|
+| Voice recording | OpenAI (speech → text) + our server (voice recognition) |
+| Voice fingerprint (a list of numbers, never the audio) | only our server |
+| Chat text, the user's name | OpenAI (Coco's replies) |
+| Coco's spoken reply | made by OpenAI |
+
+Voice recognition uses the open-source model [SpeechBrain ECAPA](https://huggingface.co/speechbrain/spkrec-ecapa-voxceleb),
+running on our own server. No audio goes to a voice-recognition provider.
 
 ```
 ios/          SwiftUI app
@@ -84,6 +109,13 @@ Working now:
 - **Chat with Coco** in the iPhone app, by text, with her personality and safety rules.
 - **Hands-free voice chat:** tap the panda, just talk. Coco notices when you stop, answers out loud,
   then listens again (OpenAI speech-to-text and text-to-speech, through the back end).
+- **Online:** the back end runs on an EU server with HTTPS and an app password, so Coco works anywhere,
+  on Wi-Fi or mobile data.
+- **Voice recognition:** the user records 3 sentences once (Settings → Voice fingerprint). After that,
+  every voice message is checked: the user, or someone else? Coco answers everyone, but treats
+  visitors differently (friendly, no private details) and notices when it's just the TV.
+  Emergencies count from anyone.
+- **Settings:** what Coco should call you, and how she refers to you to others (she / he / they / just the name).
 
 Coming next: see the development plan below.
 
@@ -92,7 +124,8 @@ Coming next: see the development plan below.
 | When | What |
 |---|---|
 | **by 15 Nov** | Basic question-answering agent: text and voice chat ✅ |
-| **Nov – Dec** | Long-term memory + basic tools that work in both China and Germany: calendar, reminders, weather, Apple Music, web search |
+| **Nov** | Voice recognition (voiceprint) ✅ |
+| **Nov – Dec** | Long-term memory (only saves what the real user said) + basic tools that work in both China and Germany: calendar, reminders, weather, Apple Music, web search |
 | **mid Dec + Christmas** | Evaluation: design and run **base** tasks (do the tools work?), **long-term memory** tasks (does memory work?) and **hallucination** tasks (does Coco admit what she can't do?). Improve the score using the conversation logs. |
 | **January** | Advanced features: scam detection, email, family liaison, and country-specific pairs (WeChat / WhatsApp, Bilibili / YouTube, Baidu Maps / Google Maps). Then their tasks, and improve the score again. |
 
