@@ -27,7 +27,15 @@ final class VoiceRecorder {
     private var cancelled = false
 
     // where the recording goes (a temp file, overwritten each time)
-    let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("coco-recording.m4a")
+    let fileURL: URL
+    private let wav: Bool
+
+    // wav: true = plain WAV instead of m4a (the voiceprint needs it: the server can't unpack m4a)
+    init(wav: Bool = false) {
+        self.wav = wav
+        fileURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(wav ? "coco-voiceprint.wav" : "coco-recording.m4a")
+    }
 
     // asks for mic permission the first time (iPhone shows the popup once)
     func askPermission() async -> Bool {
@@ -43,7 +51,14 @@ final class VoiceRecorder {
         try session.setActive(true)
 
         // small file, still clear for speech: AAC, mono, 16 kHz
-        let settings: [String: Any] = [
+        // (or plain WAV, 16-bit: bigger, but needs no unpacking)
+        let settings: [String: Any] = wav ? [
+            AVFormatIDKey: Int(kAudioFormatLinearPCM),
+            AVSampleRateKey: 16_000,
+            AVNumberOfChannelsKey: 1,
+            AVLinearPCMBitDepthKey: 16,
+            AVLinearPCMIsFloatKey: false,
+        ] : [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
             AVSampleRateKey: 16_000,
             AVNumberOfChannelsKey: 1,

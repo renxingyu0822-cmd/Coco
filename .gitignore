@@ -34,3 +34,6 @@ server/server.log
 
 # voiceprint model (downloaded from Hugging Face, ~85 MB)
 server/voiceprint_model/
+
+# voiceprint fingerprint (biometric data, never in git)
+server/data/

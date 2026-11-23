@@ -84,29 +84,88 @@ enum ChatService {
         return data
     }
 
+    // upload files as a "form with files" (multipart), like a file upload on a website.
+    // the boundary is just a unique separator line between the parts.
+    private static func attach(_ files: [URL], field: String, type: String, to req: inout URLRequest) throws {
+        let boundary = "coco-\(UUID().uuidString)"
+        req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        var body = Data()
+        for file in files {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"\(field)\"; filename=\"\(file.lastPathComponent)\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: \(type)\r\n\r\n".data(using: .utf8)!)
+            body.append(try Data(contentsOf: file))
+            body.append("\r\n".data(using: .utf8)!)
+        }
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        req.httpBody = body
+    }
+
     // your recording in -> text out, via the server's /transcribe
     private struct TranscribeReply: Codable { let text: String }
 
     static func transcribe(_ fileURL: URL) async throws -> String {
         var req = post("transcribe")
-
-        // upload as a "form with a file" (multipart), like a file upload on a website.
-        // the boundary is just a unique separator line between the parts.
-        let boundary = "coco-\(UUID().uuidString)"
-        req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-
-        var body = Data()
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"audio\"; filename=\"recording.m4a\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: audio/m4a\r\n\r\n".data(using: .utf8)!)
-        body.append(try Data(contentsOf: fileURL))
-        body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
-        req.httpBody = body
+        try attach([fileURL], field: "audio", type: "audio/m4a", to: &req)
 
         let (data, resp) = try await URLSession.shared.data(for: req)
         guard (resp as? HTTPURLResponse)?.statusCode == 200 else {
             throw URLError(.badServerResponse)
         }
         return try JSONDecoder().decode(TranscribeReply.self, from: data).text
+    }
+
+    // ── voiceprint (server/app/voiceprint.py) ──
+
+    // the server's error text ("Recording too short…"), so we can show it as is
+    struct ServerError: LocalizedError {
+        let message: String
+        var errorDescription: String? { message }
+    }
+    private struct Detail: Codable { let detail: String }
+
+    // send a request, throw the server's own message if it says no
+    private static func run(_ req: URLRequest) async throws -> Data {
+        let (data, resp) = try await URLSession.shared.data(for: req)
+        let code = (resp as? HTTPURLResponse)?.statusCode ?? 0
+        guard code == 200 else {
+            let msg = (try? JSONDecoder().decode(Detail.self, from: data))?.detail
+            throw ServerError(message: msg ?? "Server error (\(code)).")
+        }
+        return data
+    }
+
+    private struct Enrolled: Codable { let enrolled: Bool }
+    struct VoiceCheck: Codable { let score: Double; let is_you: Bool; let threshold: Double }
+
+    // is a fingerprint saved?
+    static func voiceprintEnrolled() async throws -> Bool {
+        var req = post("voiceprint")
+        req.httpMethod = "GET"
+        return try JSONDecoder().decode(Enrolled.self, from: try await run(req)).enrolled
+    }
+
+    // a few wav clips of the user -> server saves the fingerprint
+    static func enrollVoiceprint(_ clips: [URL]) async throws {
+        var req = post("voiceprint/enroll")
+        req.timeoutInterval = 90    // first use loads the model on the server (~30 s on the Mac)
+        try attach(clips, field: "clips", type: "audio/wav", to: &req)
+        _ = try await run(req)
+    }
+
+    // one wav clip -> is it the user? + score
+    static func checkVoiceprint(_ clip: URL) async throws -> VoiceCheck {
+        var req = post("voiceprint/check")
+        req.timeoutInterval = 90
+        try attach([clip], field: "clip", type: "audio/wav", to: &req)
+        return try JSONDecoder().decode(VoiceCheck.self, from: try await run(req))
+    }
+
+    // forget the fingerprint
+    static func deleteVoiceprint() async throws {
+        var req = post("voiceprint")
+        req.httpMethod = "DELETE"
+        _ = try await run(req)
     }
 }

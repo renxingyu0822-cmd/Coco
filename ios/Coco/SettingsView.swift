@@ -3,8 +3,7 @@
 //  Coco
 //
 //  The ⚙️ screen (top right on the chat screen).
-//  For now: which server Coco talks to (online / my Mac).
-//  Next: voice fingerprint.
+//  Which server Coco talks to (online / my Mac), and the voice fingerprint (VoiceprintView).
 //
 
 import SwiftUI
@@ -34,6 +33,14 @@ struct SettingsView: View {
                     Text(server == "online"
                          ? "Works anywhere, Wi-Fi or mobile data."
                          : "Mac must be on the same Wi-Fi and the server running (type coco in the Mac's terminal).")
+                }
+
+                Section("Voice") {
+                    NavigationLink {
+                        VoiceprintView()
+                    } label: {
+                        Label("Voice fingerprint", systemImage: "waveform.badge.person.crop")
+                    }
                 }
             }
             .navigationTitle("Settings")

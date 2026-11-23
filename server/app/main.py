@@ -9,6 +9,7 @@
 #   POST /chat    -> chat.py    (text in, Coco's reply out)
 #   POST /speak   -> voice.py   (text in, Coco's voice out)
 #   POST /transcribe -> voice.py (your voice in, text out)
+#   /voiceprint/...  -> voiceprint.py (is this voice the user's?)
 #
 # Started by: uvicorn app.main:app  (see coco.sh / README)
 #   "app.main" = this file, ":app" = the `app` variable below.
@@ -16,7 +17,7 @@
 
 from fastapi import Depends, FastAPI
 
-from . import chat, voice          # the "." means: from this same folder (app/)
+from . import chat, voice, voiceprint   # the "." means: from this same folder (app/)
 from .auth import check_password
 from .settings import MODEL
 
@@ -28,6 +29,7 @@ app = FastAPI(title="Coco")
 locked = [Depends(check_password)]
 app.include_router(chat.router, dependencies=locked)   # adds /chat
 app.include_router(voice.router, dependencies=locked)  # adds /speak + /transcribe
+app.include_router(voiceprint.router, dependencies=locked)  # adds /voiceprint (who's talking?)
 
 
 # "are you alive?" check. Cheap: no OpenAI call, costs nothing.

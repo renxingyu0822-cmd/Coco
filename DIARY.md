@@ -8,11 +8,51 @@ Public repo: no personal data here.
 | When | What | Status |
 |---|---|---|
 | by 15 Nov | Basic question-answering agent (text + voice chat) | ✅ mostly done |
-| Nov – Dec | Long-term memory + basic tools for China and Germany: calendar, reminders, weather, Apple Music, web search | ⬜ |
+| Nov – Dec | Voiceprint (added 16 Nov, before memory) + long-term memory + basic tools for China and Germany: calendar, reminders, weather, Apple Music, web search | ⬜ |
 | mid Dec + Christmas | Tasks: base (tools work?), long-term memory (memory works?), hallucination ("broken twins" of base tasks). First run = baseline, improve via conversation logs. | ⬜ |
 | January | Advanced: scam detection, email, Family liaison, China/Germany pairs (WeChat/WhatsApp, Bilibili/YouTube, Baidu/Google Maps). Then their tasks. | ⬜ |
 
 Marketing/business plan (first market, interviews, trust model): separate, not planned yet.
+
+---
+
+## 2026-11-23 (voiceprint in the app)
+**Did:**
+- **Voiceprint, step 2–3: server + app** (works on the iPhone, **Mac server only**).
+  - Server `server/app/voiceprint.py`: `GET /voiceprint` (set up?), `POST /voiceprint/enroll` (3 wav clips →
+    fingerprint = average of 3), `POST /voiceprint/check` (1 clip → score + yes/no), `DELETE /voiceprint`.
+    Score = cosine similarity (1 = same, ~0 = unrelated). Cut-off `VOICEPRINT_THRESHOLD`, default 0.25.
+    Only the 192 numbers are kept (`server/data/voiceprint.json`, git-ignored), never the audio.
+    One fingerprint for now (no user accounts). Model loads on first use (~25 s on the Mac); without
+    torch/speechbrain the endpoints answer 503 instead of crashing (online server doesn't have them yet).
+    Extra packages listed in `server/requirements-voiceprint.txt` (Mac pins), not in `requirements.txt`.
+  - App: ⚙️ Settings → Voice → **Voice fingerprint** (`VoiceprintView.swift`): set up (read 3 sentences,
+    stops by itself at a pause), "Is it me?" (shows result + score), delete (with confirmation), privacy note.
+    Records WAV 16 kHz mono (`VoiceRecorder(wav: true)`).
+
+**Test results** (enrolled once with my normal voice, 3 sentences; cut-off 0.25):
+
+| Who | Score |
+|---|---|
+| Mac `say` voices (test before the app): same voice, new sentences | 0.84, 0.90 |
+| Mac `say` voices: other voices | 0.01, 0.04, **0.39** (similar female voice → wrongly "me") |
+| Me, normal voice | 0.74, 0.76 |
+| Me, singing | 0.52 |
+| Me, fake / weird voice | 0.42, 0.53 |
+| Friend | 0.09, 0.18 |
+| TV, *The Office*: Michael / Jim / Pam / Toby / Angela | 0.03 / 0.09 / **0.25** / 0.03 / 0.21 |
+| First round, not sure who (maybe me) | 0.49, 0.31, 0.21 |
+
+**Found:**
+- Real people separate well: others ≤ 0.25, me ≥ 0.42 (even disguised), normal voice ~0.75.
+  Changing my voice lowers the score but it still recognises me.
+- Pam (0.249) only just missed the 0.25 cut-off → 0.25 is too tight.
+- Computer voices are less reliable than real ones (one at 0.39).
+- Small test: 2 real people + 5 TV voices, ~17 tries. Keep tuning with more data.
+- The Mac server stops when the Mac sleeps / the terminal session ends → restart with `coco` before tests.
+
+**Decided:**
+- Nothing yet on the cut-off. Proposal: **0.33** (middle of the gap between 0.25 and 0.42); waiting for my OK.
 
 ---
 
