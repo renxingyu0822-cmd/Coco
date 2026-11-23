@@ -16,6 +16,22 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-23 (what Coco calls you)
+**Did:**
+- **Settings → "What should Coco call you?"**: name + "When Coco talks about you" (Just my name / she / he / they).
+  Saved on the phone, sent with each `/chat` (`user_name`, `user_pronouns`); `chat.py` adds an
+  "About the person you look after" part to the system prompt. Name cleaned (max 40 chars, no brackets/quotes/
+  line breaks). Tested on the Mac (curl) + iPhone with My Mac: works.
+- The "someone else" note now repeats the key rules itself (don't say how the user is / nothing private,
+  how to refer to them).
+
+**Found:**
+- gpt-4o-mini ignored rules that were only deep in the system prompt: told a visitor "Dafei is doing well"
+  (made up + private). Repeating the rule in the per-message note fixed it.
+- "Just my name" + a title ("Mr. Schmidt") → still sometimes "he". Picking a pronoun avoids it.
+
+---
+
 ## 2026-11-23 (Coco knows who's talking)
 **Did:**
 - **Coco now gets the voiceprint result.** App sends `speaker` with each voice message to `/chat`;

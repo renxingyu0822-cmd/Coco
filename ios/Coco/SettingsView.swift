@@ -3,7 +3,8 @@
 //  Coco
 //
 //  The ⚙️ screen (top right on the chat screen).
-//  Which server Coco talks to (online / my Mac), and the voice fingerprint (VoiceprintView).
+//  What Coco calls you (+ she/he/they), which server Coco talks to (online / my Mac),
+//  and the voice fingerprint (VoiceprintView). All saved on the phone.
 //
 
 import SwiftUI
@@ -11,6 +12,8 @@ import SwiftUI
 struct SettingsView: View {
     // saved on the phone, same key ChatService reads
     @AppStorage(ChatService.serverKey) private var server = ChatService.defaultServer
+    @AppStorage(ChatService.userNameKey) private var userName = ""
+    @AppStorage(ChatService.userPronounsKey) private var userPronouns = ""
     @Environment(\.dismiss) private var dismiss
 
     enum Status { case checking, ok, unreachable }
@@ -19,6 +22,22 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    TextField("e.g. Margaret, Mr. Schmidt, Oma", text: $userName)
+                        .textInputAutocapitalization(.words)
+                        .autocorrectionDisabled()
+                    Picker("When Coco talks about you", selection: $userPronouns) {
+                        Text("Just my name").tag("")
+                        Text("she / her").tag("she/her")
+                        Text("he / him").tag("he/him")
+                        Text("they / them").tag("they/them")
+                    }
+                } header: {
+                    Text("What should Coco call you?")
+                } footer: {
+                    Text("Coco uses your name now and then. \"When Coco talks about you\" is how she refers to you to other people, like a visitor.")
+                }
+
                 Section {
                     Picker("Server", selection: $server) {
                         Text("Online").tag("online")

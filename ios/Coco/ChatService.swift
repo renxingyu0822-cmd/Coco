@@ -51,16 +51,32 @@ enum ChatService {
     // what the server expects / sends back (same shapes as in main.py)
     // speaker: who said it (voiceprint), voice messages only; nil = typed (left out of the JSON)
     private struct Message: Codable { let role: String; let content: String; let speaker: String? }
-    private struct Request: Codable { let messages: [Message] }
+    // user_name / user_pronouns: from Settings → About you (nil = not set, left out)
+    private struct Request: Codable {
+        let messages: [Message]
+        let user_name: String?
+        let user_pronouns: String?
+    }
+
+    // names of the saved settings (SettingsView uses the same)
+    static let userNameKey = "userName"
+    static let userPronounsKey = "userPronouns"   // "" = just my name, or "she/her", "he/him", "they/them"
     private struct Reply: Codable { let reply: String }
 
     static func send(_ history: [ChatMessage]) async throws -> String {
         var req = post("chat")
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body = Request(messages: history.map {
-            Message(role: $0.fromUser ? "user" : "assistant", content: $0.text, speaker: $0.speaker)
-        })
+        let saved = UserDefaults.standard
+        let name = saved.string(forKey: userNameKey)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let pronouns = saved.string(forKey: userPronounsKey) ?? ""
+        let body = Request(
+            messages: history.map {
+                Message(role: $0.fromUser ? "user" : "assistant", content: $0.text, speaker: $0.speaker)
+            },
+            user_name: name.isEmpty ? nil : name,
+            user_pronouns: pronouns.isEmpty ? nil : pronouns
+        )
         req.httpBody = try JSONEncoder().encode(body)
 
         let (data, resp) = try await URLSession.shared.data(for: req)
