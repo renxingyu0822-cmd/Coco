@@ -51,6 +51,10 @@ def _get_model():
 def _load_model():
     global _model
     if _model is None:
+        # model already downloaded -> offline mode: never contact Hugging Face again
+        # (otherwise it asks "is my copy still current?" at every start). Must be set before the import.
+        if os.path.exists(os.path.join(MODEL_DIR, "hyperparams.yaml")):
+            os.environ["HF_HUB_OFFLINE"] = "1"
         try:
             from speechbrain.inference.speaker import SpeakerRecognition
         except ImportError:

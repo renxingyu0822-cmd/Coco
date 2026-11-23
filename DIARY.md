@@ -16,6 +16,29 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-23 (where the data goes)
+**Did:**
+- Voiceprint model loads **offline** once downloaded (`HF_HUB_OFFLINE=1` set in `voiceprint.py` before the
+  import): no more "is my copy current?" check with Hugging Face at each start. Fresh server still downloads once.
+- Pushed everything + updated the online server (voiceprint in chat, visitor rules, name + pronouns, offline).
+
+**Found — where the data goes** (for the presentation / privacy slide):
+
+| What | Where it goes |
+|---|---|
+| Voice recording | **OpenAI** (speech → text) + **our server** (voiceprint) |
+| Voice fingerprint (192 numbers) | **only our server** (Mac / Helsinki), never the audio |
+| Chat text | **OpenAI** (Coco's replies) |
+| Speaker note, name, pronouns | **OpenAI**, as part of the chat text |
+| Coco's spoken reply | made by **OpenAI** |
+
+- SpeechBrain is open-source software, not a service: the model runs on our machine, no audio goes to
+  SpeechBrain or Hugging Face.
+- The voiceprint is private, but **every conversation's content still passes through OpenAI** (chosen on purpose
+  for now). Later options: OpenAI's EU data options, or a local speech-to-text model.
+
+---
+
 ## 2026-11-23 (what Coco calls you)
 **Did:**
 - **Settings → "What should Coco call you?"**: name + "When Coco talks about you" (Just my name / she / he / they).

@@ -65,6 +65,11 @@ not Apple's on-device speech.
   Purpose: later the long-term memory only saves what the real user said; Coco still answers everyone.
   Cut-off 0.35. Each server keeps its own fingerprint. Voice chat tags each message user / other / unknown
   (23 Nov); grey label in the chat for testing (`Bubble.showSpeakerLabel`, hide later).
+  Coco gets the tag ("[voice: someone else …]" note) and treats visitors/TV differently (rules in `prompt.py`,
+  key rules repeated in the note in `chat.py`). Model loads offline once downloaded.
+- **Data flow:** voice + chat text go to **OpenAI**; the voice fingerprint stays **only on our server**.
+- **What Coco calls the user** (name + she/he/they): Settings → "What should Coco call you?", saved on the
+  phone, sent with each `/chat`. Moves to the server-side profile when long-term memory exists.
 - **Memory (Nov/Dec):** try open-source GBrain first, custom memory module as fallback.
   Four memory types: personal profile, recent events, health info (separate + protected), short-term reminders.
   Memory is **always on** (no switch to turn it off).
@@ -119,3 +124,4 @@ Coco/
 - [x] Online server (Hetzner, HTTPS, app password); app uses it, tested on mobile data (10 Nov)
 - [x] Settings ⚙️: server switch Online / My Mac (19 Nov)
 - [x] Voiceprint: set up + "Is it me?" in the app, on the Mac and the online server (23 Nov)
+- [x] Voiceprint in voice chat: Coco knows user vs. visitor/TV; name + pronouns in Settings (23 Nov)
