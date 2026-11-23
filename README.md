@@ -30,6 +30,11 @@ The current prototype on an iPhone:
 | <img src="docs/app-pictures/voiceprint-you.jpg" width="260" alt="Voice recognised as the user"> | <img src="docs/app-pictures/voiceprint-someone-else.jpg" width="260" alt="Voice recognised as someone else"> |
 | recognised as the user (score 0.70) | a line from a TV show: someone else (0.20) |
 
+**Weather:** ask about the weather and Coco checks the forecast; the app shows it as a card.
+The town comes from Settings when you don't say where.
+
+<img src="docs/app-pictures/weather-card.jpg" width="260" alt="Weather card: Is it cold outside?">
+
 ## Why
 
 Many older adults live on their own and want to stay independent, but everyday life is full of small digital barriers:

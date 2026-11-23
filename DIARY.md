@@ -60,6 +60,8 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 - Prompt: for today say the temperature right now first, then the high (Beijing mix-up fixed); keep words short
   because the card shows the details.
 - Tested on the iPhone (My Mac): works. Then pushed + **weather tool and card live on the online server**.
+- Screenshots: `docs/app-pictures/weather-card.jpg` ("Is it cold outside?" → Hannover from "Your town", in README)
+  and `weather-card-now.jpg`.
 
 ---
 
