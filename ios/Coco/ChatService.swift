@@ -49,7 +49,8 @@ enum ChatService {
     }
 
     // what the server expects / sends back (same shapes as in main.py)
-    private struct Message: Codable { let role: String; let content: String }
+    // speaker: who said it (voiceprint), voice messages only; nil = typed (left out of the JSON)
+    private struct Message: Codable { let role: String; let content: String; let speaker: String? }
     private struct Request: Codable { let messages: [Message] }
     private struct Reply: Codable { let reply: String }
 
@@ -58,7 +59,7 @@ enum ChatService {
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         let body = Request(messages: history.map {
-            Message(role: $0.fromUser ? "user" : "assistant", content: $0.text)
+            Message(role: $0.fromUser ? "user" : "assistant", content: $0.text, speaker: $0.speaker)
         })
         req.httpBody = try JSONEncoder().encode(body)
 

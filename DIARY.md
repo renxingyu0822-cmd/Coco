@@ -16,6 +16,30 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-23 (Coco knows who's talking)
+**Did:**
+- **Coco now gets the voiceprint result.** App sends `speaker` with each voice message to `/chat`;
+  `chat.py` turns it into a hidden note in front of the text ("[voice: the user]" /
+  "[voice: someone else, not the user]"); typed / "unknown" = no note = the user.
+- Rules in `prompt.py` ("Who is talking"): someone else → friendly, may ask once who's there, general help ok,
+  **never shares the user's private things** (health, medication, reminders, appointments, family);
+  TV/radio → says lightly it sounded like the TV, carries on with the user; emergencies count from anyone (112);
+  if asked, explains the voice check honestly (not perfect).
+- Tested on the Mac with curl (TV line, visitor asking about medicine, visitor small talk, visitor reports a fall,
+  user asks "do you know my voice?") and on the iPhone with **My Mac**: works.
+
+**Found:**
+- First version of the prompt said "never mention a voice check" → Coco *denied* having one when asked.
+  Changed: honest if asked. (Boundary: users always know what's going on.)
+- White screen after installing = Xcode's debugger still attached (not a crash). Stop / quit Xcode,
+  open Coco from the home screen. Xcode's "logging system timed out" message is harmless.
+- Typed messages always count as the user (no voice to check) → a visitor could type. Open for later.
+
+**Decided:**
+- Speaker labels stay visible in the chat for now.
+
+---
+
 ## 2026-11-23 (voiceprint in voice chat)
 **Did:**
 - **Voiceprint connected to voice chat.** `/transcribe` now also checks who's talking, at the same time as
