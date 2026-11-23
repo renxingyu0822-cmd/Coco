@@ -30,7 +30,7 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
     stops by itself at a pause), "Is it me?" (shows result + score), delete (with confirmation), privacy note.
     Records WAV 16 kHz mono (`VoiceRecorder(wav: true)`).
 
-**Test results** (enrolled once with my normal voice, 3 sentences; cut-off 0.25):
+**Test results** (enrolled once with my normal voice, 3 sentences; cut-off 0.25). **For the next presentation.**
 
 | Who | Score |
 |---|---|
