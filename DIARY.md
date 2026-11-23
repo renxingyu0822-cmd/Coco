@@ -27,6 +27,8 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 - Tested (Mac curl + iPhone): "What time is it?" → "a quarter past midnight"; "Is tomorrow Monday?" →
   "No, tomorrow is Wednesday"; Beijing → "about seven in the morning, a bit early"; "rain this Saturday?" works.
 
+- Screenshot: `docs/app-pictures/clock.jpg` ("What time is it?" / "Is tomorrow Monday?"), in README.
+
 **Found:**
 - Before this, Coco didn't know the date at all (the model has no clock) → would have guessed.
 - gpt-4o-mini sometimes still adds digits ("00:08"); "Is it Sunday already?" → "not Sunday yet" (odd but day correct).
