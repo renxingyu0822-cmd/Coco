@@ -32,6 +32,7 @@ struct ChatMessage: Identifiable {
     var isError = false  // error notes are shown, but never sent to the server
     var speaker: String? = nil   // voice messages only: "user" / "other" / "unknown" (voiceprint)
     var score: Double? = nil
+    var weather: [WeatherInfo] = []   // Coco's replies: weather cards to show under the text
 }
 
 // what the voice chat is doing right now
@@ -274,9 +275,9 @@ struct ContentView: View {
         // the greeting is only on screen, the server doesn't need it, so send from the first user message on
         let history = messages.drop(while: { !$0.fromUser }).filter { !$0.isError }
         do {
-            let reply = try await ChatService.send(history)
-            messages.append(ChatMessage(fromUser: false, text: reply))
-            return reply
+            let answer = try await ChatService.send(history)
+            messages.append(ChatMessage(fromUser: false, text: answer.reply, weather: answer.weather))
+            return answer.reply
         } catch {
             print("Chat error:", error)  // details for us in Xcode's console
             messages.append(ChatMessage(fromUser: false,
@@ -425,6 +426,10 @@ struct Bubble: View {
                     .foregroundStyle(message.fromUser ? Color(.systemBackground) : .primary)
                     .background(message.fromUser ? Color.accentColor : Color(.secondarySystemBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 20))
+
+                ForEach(Array(message.weather.enumerated()), id: \.offset) { _, info in
+                    WeatherCard(info: info)
+                }
 
                 if Self.showSpeakerLabel, let label = speakerLabel {
                     Text(label)

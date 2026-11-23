@@ -134,7 +134,7 @@ def get_weather(place: str, day: str = "today") -> dict:
         d = _get(FORECAST_URL, {
             "latitude": where["latitude"], "longitude": where["longitude"],
             "timezone": "auto", "forecast_days": 7,   # auto = the place's own local time
-            "current": "temperature_2m,apparent_temperature,weather_code,wind_speed_10m",
+            "current": "temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day",
             "daily": "weather_code,temperature_2m_max,temperature_2m_min,"
                      "precipitation_probability_max,precipitation_sum,wind_speed_10m_max",
         })
@@ -155,9 +155,11 @@ def get_weather(place: str, day: str = "today") -> dict:
 
         result = {
             "place": ", ".join(x for x in (where["name"], where.get("admin1"), where.get("country")) if x),
+            "city": where["name"], "country": where.get("country", ""),   # short, for the app's card
             "local_time_there": local_now.replace("T", " "),
             "day": label,
             "weather": WEATHER_WORDS.get(daily["weather_code"][i], "unknown"),
+            "code": daily["weather_code"][i],   # the app picks the picture from it
             "low_c": daily["temperature_2m_min"][i],
             "high_c": daily["temperature_2m_max"][i],
             "chance_of_rain_percent": daily["precipitation_probability_max"][i],
@@ -168,7 +170,8 @@ def get_weather(place: str, day: str = "today") -> dict:
             c = d["current"]
             result["now"] = {"temperature_c": c["temperature_2m"], "feels_like_c": c["apparent_temperature"],
                              "weather": WEATHER_WORDS.get(c["weather_code"], "unknown"),
-                             "wind_kmh": c["wind_speed_10m"]}
+                             "wind_kmh": c["wind_speed_10m"],
+                             "code": c["weather_code"], "is_day": c["is_day"] == 1}
         return result
     except Exception as e:
         print("weather tool error:", e)

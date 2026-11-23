@@ -7,7 +7,8 @@
 #   Coco's reply as text.
 #
 #   app sends:  {"messages": [{"role": "user", "content": "Hi", "speaker": "user"}]}
-#   app gets:   {"reply": "Hello! How are you today?"}
+#   app gets:   {"reply": "Hello! How are you today?", "cards": []}
+#   cards = pictures for the app (e.g. a weather card), made from real tool results
 #   speaker (optional, voice messages only) = who said it, from the voiceprint.
 #   We turn it into a short note in front of the text, so Coco can tell
 #   the user apart from visitors / the TV (rules: "Who is talking" in prompt.py).
@@ -20,6 +21,8 @@
 # No memory yet: the server forgets everything after each answer,
 # that's why the app always sends the full conversation.
 # ─────────────────────────────────────────────────────────────
+
+import json
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -105,6 +108,7 @@ def _about_user(req: ChatRequest) -> str:
 
 class ChatReply(BaseModel):     # what we send back
     reply: str
+    cards: list[dict] = []     # pictures for the app, e.g. {"type": "weather", ...} (tools/__init__.py)
 
 
 # ── the endpoint ──
@@ -123,22 +127,25 @@ def chat(req: ChatRequest):
     # the tool loop: ask OpenAI; if the model wants a tool (e.g. get_weather), run it,
     # hand back the result, ask again. Stops when the model answers in words.
     # Max 3 rounds, so a confused model can't loop forever.
+    cards = []
     try:
         for _ in range(3):
             resp = client.chat.completions.create(model=MODEL, messages=messages, tools=tools.SCHEMAS)
             msg = resp.choices[0].message   # OpenAI can give several answers ("choices"); we ask for one
             if not msg.tool_calls:
-                return ChatReply(reply=msg.content)
+                return ChatReply(reply=msg.content, cards=cards)
 
             # remember the model's request, then add one result per tool call
             messages.append(msg.model_dump(exclude_none=True))
             for call in msg.tool_calls:
-                messages.append({"role": "tool", "tool_call_id": call.id,
-                                 "content": tools.run(call.function.name, call.function.arguments)})
+                result = tools.run(call.function.name, call.function.arguments)
+                messages.append({"role": "tool", "tool_call_id": call.id, "content": json.dumps(result)})
+                if c := tools.card(call.function.name, result):
+                    cards.append(c)
 
         # still wants tools after 3 rounds: last try without tools, so we get words
         resp = client.chat.completions.create(model=MODEL, messages=messages)
-        return ChatReply(reply=resp.choices[0].message.content)
+        return ChatReply(reply=resp.choices[0].message.content, cards=cards)
     except Exception as e:
         # friendly message for the app, real error printed in the terminal / server.log
         print("OpenAI error:", e)

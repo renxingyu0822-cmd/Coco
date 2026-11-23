@@ -16,6 +16,19 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-23 (weather card + online)
+**Did:**
+- **Weather card in the app** (`ios/Coco/WeatherCard.swift`): under Coco's answer, in text and voice chat.
+  Apple weather symbol (colour, moon at night), city + day, big temperature (now for today + "feels like",
+  else the day's high), low/high, rain chance, wind, credit "Weather data: Open-Meteo.com".
+- Server: `/chat` answers `{"reply", "cards": [{"type": "weather", ...}]}`. Cards are built from the **real tool
+  result** (`tools.card()`), never from the model's words. Errors → no card. Older app versions ignore cards.
+- Prompt: for today say the temperature right now first, then the high (Beijing mix-up fixed); keep words short
+  because the card shows the details.
+- Tested on the iPhone (My Mac): works. Then pushed + **weather tool and card live on the online server**.
+
+---
+
 ## 2026-11-23 (first tool: weather)
 **Did:**
 - **Weather tool** (server tool), data from **Open-Meteo** (free for non-commercial use, no key, worldwide,

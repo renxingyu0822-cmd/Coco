@@ -117,7 +117,8 @@ Working now:
   Emergencies count from anyone.
 - **Settings:** what Coco should call you, and how she refers to you to others (she / he / they / just the name).
 - **First tool: the weather.** Ask "Will it rain tomorrow?" or "What should I wear?" and Coco checks the
-  forecast (any town, today up to 6 days ahead). If the weather service is down, she says so instead of guessing.
+  forecast (any town, today up to 6 days ahead). If the weather service is down, she says so instead of guessing. The app shows
+  the forecast as a weather card (picture, temperature, rain, wind) under her answer.
 
 Coming next: see the development plan below.
 

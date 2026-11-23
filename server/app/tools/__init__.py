@@ -19,12 +19,20 @@ FUNCTIONS = {
 }
 
 
-def run(name: str, arguments: str) -> str:
-    """run one tool call from the model, always return text (JSON) for the model"""
+def run(name: str, arguments: str) -> dict:
+    """run one tool call from the model, always returns a dict (errors as {"error": ...})"""
     try:
         args = json.loads(arguments or "{}")
         result = FUNCTIONS[name](**args)
     except Exception as e:   # unknown tool, wrong inputs, ...
         result = {"error": f"Tool {name} failed: {e}"}
     print(f"tool: {name}({arguments}) -> {json.dumps(result)[:300]}")  # handy in server.log
-    return json.dumps(result)
+    return result
+
+
+def card(name: str, result: dict) -> dict | None:
+    """a picture for the app (e.g. the weather card), built from the REAL tool result,
+    never from the model's words. None = no card (errors, tools without a card)"""
+    if name == "get_weather" and "error" not in result:
+        return {"type": "weather", **result}
+    return None

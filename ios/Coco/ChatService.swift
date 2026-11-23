@@ -61,9 +61,29 @@ enum ChatService {
     // names of the saved settings (SettingsView uses the same)
     static let userNameKey = "userName"
     static let userPronounsKey = "userPronouns"   // "" = just my name, or "she/her", "he/him", "they/them"
-    private struct Reply: Codable { let reply: String }
+    // reply = Coco's words; cards = pictures from tools (e.g. weather). Unknown card types are skipped
+    struct Reply: Decodable {
+        let reply: String
+        let weather: [WeatherInfo]
 
-    static func send(_ history: [ChatMessage]) async throws -> String {
+        private enum Keys: String, CodingKey { case reply, cards }
+        private struct Card: Decodable {
+            let weather: WeatherInfo?
+            private enum Keys: String, CodingKey { case type }
+            init(from decoder: Decoder) throws {
+                let type = try decoder.container(keyedBy: Keys.self).decode(String.self, forKey: .type)
+                weather = type == "weather" ? try? WeatherInfo(from: decoder) : nil
+            }
+        }
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: Keys.self)
+            reply = try c.decode(String.self, forKey: .reply)
+            let cards = (try? c.decode([Card].self, forKey: .cards)) ?? []   // older server: no cards
+            weather = cards.compactMap(\.weather)
+        }
+    }
+
+    static func send(_ history: [ChatMessage]) async throws -> Reply {
         var req = post("chat")
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
@@ -83,7 +103,7 @@ enum ChatService {
         guard (resp as? HTTPURLResponse)?.statusCode == 200 else {
             throw URLError(.badServerResponse)
         }
-        return try JSONDecoder().decode(Reply.self, from: data).reply
+        return try JSONDecoder().decode(Reply.self, from: data)
     }
 
     // text in -> Coco's voice out (mp3 data), via the server's /speak
