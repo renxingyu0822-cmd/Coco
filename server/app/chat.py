@@ -14,6 +14,7 @@
 #   the user apart from visitors / the TV (rules: "Who is talking" in prompt.py).
 #   user_name / user_pronouns / user_town (optional, from the app's Settings) = how Coco calls
 #   the user, refers to them, and where they live; added to the end of the system prompt.
+#   user_timezone (from the phone) -> "Right now it is Tuesday 24 November, 14:05" in the system prompt.
 #
 # Tools (tools/, e.g. the weather): the model may ask us to run one first;
 # we run it and give it the result, then it answers (the "tool loop" below).
@@ -76,6 +77,7 @@ class ChatRequest(BaseModel):   # what the app sends
     user_name: str | None = None       # what Coco should call the user (Settings → About you)
     user_pronouns: str | None = None   # "she/her", "he/him", "they/them", or none = just the name
     user_town: str | None = None       # where the user lives (for "what's the weather?" without a place)
+    user_timezone: str | None = None   # the phone's time zone, e.g. "Europe/Berlin" (Coco has no clock)
 
 
 PRONOUNS = {"she/her", "he/him", "they/them"}   # anything else is ignored
@@ -127,7 +129,8 @@ def chat(req: ChatRequest):
     if not history:
         raise HTTPException(400, "no messages")   # 400 = "your request is wrong"
 
-    messages = [{"role": "system", "content": SYSTEM_PROMPT + _about_user(req)}, *history]
+    system = SYSTEM_PROMPT + _about_user(req) + tools.clock.now_line(req.user_timezone)
+    messages = [{"role": "system", "content": system}, *history]
 
     # the tool loop: ask OpenAI; if the model wants a tool (e.g. get_weather), run it,
     # hand back the result, ask again. Stops when the model answers in words.

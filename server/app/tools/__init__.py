@@ -8,14 +8,15 @@
 
 import json
 
-from . import weather
+from . import clock, weather
 
 # what the model sees (name, what it's for, inputs)
-SCHEMAS = [weather.SCHEMA]
+SCHEMAS = [weather.SCHEMA, clock.SCHEMA]
 
 # name -> our Python function
 FUNCTIONS = {
     "get_weather": weather.get_weather,
+    "get_time": clock.get_time,
 }
 
 

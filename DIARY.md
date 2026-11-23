@@ -8,11 +8,31 @@ Public repo: no personal data here.
 | When | What | Status |
 |---|---|---|
 | by 15 Nov | Basic question-answering agent (text + voice chat) | ✅ done |
-| Nov – Dec | Voiceprint (added 16 Nov, before memory) ✅ + long-term memory + basic tools for China and Germany: calendar, reminders, weather ✅ (23 Nov), Apple Music, web search | 🟡 in progress |
+| Nov – Dec | Voiceprint (added 16 Nov, before memory) ✅ + long-term memory + basic tools for China and Germany: calendar, reminders, weather ✅ (23 Nov), clock/time ✅ (24 Nov), Apple Music, web search | 🟡 in progress |
 | mid Dec + Christmas | Tasks: base (tools work?), long-term memory (memory works?), hallucination ("broken twins" of base tasks). First run = baseline, improve via conversation logs. | ⬜ |
 | January | Advanced: scam detection, email, Family liaison, China/Germany pairs (WeChat/WhatsApp, Bilibili/YouTube, Baidu/Google Maps). Then their tasks. | ⬜ |
 
 Marketing/business plan (first market, interviews, trust model): separate, not planned yet.
+
+---
+
+## 2026-11-24 (clock: Coco knows the time)
+**Did:**
+- **Coco knows the date and time.** The app sends the phone's time zone (`user_timezone`, e.g. Europe/Berlin)
+  with every `/chat`; the server adds "Right now it is Tuesday 24 November 2026, 00:08 …" to the system prompt
+  (`tools/clock.py` `now_line()`), so no extra round trip. No/unknown time zone → Coco says she can't see the time.
+- **Tool `get_time(place)`** for the time elsewhere ("too early to call my son in Beijing?"); reuses the weather
+  tool's place lookup (Open-Meteo knows each town's time zone).
+- Prompt "Time and date": never guess, use it for today/tomorrow/weekend, say times the friendly way.
+- Tested (Mac curl + iPhone): "What time is it?" → "a quarter past midnight"; "Is tomorrow Monday?" →
+  "No, tomorrow is Wednesday"; Beijing → "about seven in the morning, a bit early"; "rain this Saturday?" works.
+
+**Found:**
+- Before this, Coco didn't know the date at all (the model has no clock) → would have guessed.
+- gpt-4o-mini sometimes still adds digits ("00:08"); "Is it Sunday already?" → "not Sunday yet" (odd but day correct).
+
+**Decided:**
+- Clock = A (time/date) now; B (timers/alarms, "pot on the stove") = the first phone tool, later.
 
 ---
 

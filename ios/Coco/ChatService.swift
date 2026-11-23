@@ -57,6 +57,7 @@ enum ChatService {
         let user_name: String?
         let user_pronouns: String?
         let user_town: String?
+        let user_timezone: String     // the phone's time zone ("Europe/Berlin"): Coco has no clock
     }
 
     // names of the saved settings (SettingsView uses the same)
@@ -99,7 +100,8 @@ enum ChatService {
             },
             user_name: name.isEmpty ? nil : name,
             user_pronouns: pronouns.isEmpty ? nil : pronouns,
-            user_town: town.isEmpty ? nil : town
+            user_town: town.isEmpty ? nil : town,
+            user_timezone: TimeZone.current.identifier
         )
         req.httpBody = try JSONEncoder().encode(body)
 

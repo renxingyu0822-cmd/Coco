@@ -126,3 +126,4 @@ Coco/
 - [x] Voiceprint: set up + "Is it me?" in the app, on the Mac and the online server (23 Nov)
 - [x] Voiceprint in voice chat: Coco knows user vs. visitor/TV; name + pronouns in Settings (23 Nov)
 - [x] First tool: weather (Open-Meteo, server tool) + weather card in the app, Mac + online (23 Nov)
+- [x] Clock: Coco knows date/time (phone's time zone) + `get_time` for other places (24 Nov)

@@ -59,7 +59,7 @@ Coco is an iPhone app (Apple Watch later for reminders), set up once by the fami
 
 **Front office**: agents that talk to the older person, built one by one:
 1. **Companion** with long-term memory
-2. **Everyday tools**: weather ✅, reminders (medication, appointments, "the pot on the stove"), calendar, music, web search
+2. **Everyday tools**: weather ✅, time and date ✅, reminders (medication, appointments, "the pot on the stove"), calendar, music, web search
 3. **Voice**: hands-free voice chat ✅, and **voice recognition** ✅: Coco tells the user apart from visitors
    and the TV, and keeps the user's private things private
 4. **Advanced helpers**: scam guard, email, family liaison, messaging, videos and maps (in versions for China and Germany)
@@ -125,6 +125,8 @@ Working now:
 - **First tool: the weather.** Ask "Will it rain tomorrow?" or "What should I wear?" and Coco checks the
   forecast (any town, today up to 6 days ahead). The app shows it as a weather card (picture, temperature,
   rain, wind) under her answer. If the weather service is down, she says so instead of guessing.
+- **Time and date:** Coco knows what time and day it is for the user (from the phone's time zone), and the
+  time elsewhere ("Is it too early to call my son in Beijing?").
 
 Coming next: see the development plan below.
 
