@@ -54,7 +54,7 @@ Coco is an iPhone app (Apple Watch later for reminders), set up once by the fami
 
 **Front office**: agents that talk to the older person, built one by one:
 1. **Companion** with long-term memory
-2. **Everyday tools**: reminders (medication, appointments, "the pot on the stove"), calendar, weather, music, web search
+2. **Everyday tools**: weather ✅, reminders (medication, appointments, "the pot on the stove"), calendar, music, web search
 3. **Voice**: hands-free voice chat ✅, and **voice recognition** ✅: Coco tells the user apart from visitors
    and the TV, and keeps the user's private things private
 4. **Advanced helpers**: scam guard, email, family liaison, messaging, videos and maps (in versions for China and Germany)
@@ -118,8 +118,8 @@ Working now:
 - **Settings:** what Coco should call you, how she refers to you to others (she / he / they / just the name),
   and your town (for the weather when you don't say where).
 - **First tool: the weather.** Ask "Will it rain tomorrow?" or "What should I wear?" and Coco checks the
-  forecast (any town, today up to 6 days ahead). If the weather service is down, she says so instead of guessing. The app shows
-  the forecast as a weather card (picture, temperature, rain, wind) under her answer.
+  forecast (any town, today up to 6 days ahead). The app shows it as a weather card (picture, temperature,
+  rain, wind) under her answer. If the weather service is down, she says so instead of guessing.
 
 Coming next: see the development plan below.
 
@@ -129,7 +129,7 @@ Coming next: see the development plan below.
 |---|---|
 | **by 15 Nov** | Basic question-answering agent: text and voice chat ✅ |
 | **Nov** | Voice recognition (voiceprint) ✅ |
-| **Nov – Dec** | Long-term memory (only saves what the real user said) + basic tools that work in both China and Germany: calendar, reminders, weather, Apple Music, web search |
+| **Nov – Dec** | Long-term memory (only saves what the real user said) + basic tools that work in both China and Germany: weather ✅, calendar, reminders, Apple Music, web search |
 | **mid Dec + Christmas** | Evaluation: design and run **base** tasks (do the tools work?), **long-term memory** tasks (does memory work?) and **hallucination** tasks (does Coco admit what she can't do?). Improve the score using the conversation logs. |
 | **January** | Advanced features: scam detection, email, family liaison, and country-specific pairs (WeChat / WhatsApp, Bilibili / YouTube, Baidu Maps / Google Maps). Then their tasks, and improve the score again. |
 
