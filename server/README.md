@@ -40,5 +40,5 @@ cd server
 - `POST /chat` with `{"messages": [{"role": "user", "content": "Hi"}]}` → `{"reply": "..."}`
 - Voiceprint (`app/voiceprint.py`, wav clips): `GET /voiceprint` → `{"enrolled": true}`,
   `POST /voiceprint/enroll` (field `clips`, 2+ files), `POST /voiceprint/check` (field `clip`) →
-  `{"score": 0.74, "is_you": true, "threshold": 0.33}`, `DELETE /voiceprint`.
+  `{"score": 0.74, "is_you": true, "threshold": 0.4}`, `DELETE /voiceprint`.
   Needs extra packages: `requirements-voiceprint-mac.txt` (Intel Mac) or `requirements-voiceprint-server.txt` (Linux).

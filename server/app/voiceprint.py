@@ -31,9 +31,10 @@ SERVER_DIR = os.path.join(os.path.dirname(__file__), "..")
 DATA_FILE = os.path.join(SERVER_DIR, "data", "voiceprint.json")  # git-ignored
 MODEL_DIR = os.path.join(SERVER_DIR, "voiceprint_model")         # git-ignored, downloaded once
 
-# above this = same person. Set from the 23 Nov tests (see DIARY): others scored <= 0.25,
-# me >= 0.42 even when disguised -> 0.33 sits in the middle of the gap. (SpeechBrain's default was 0.25.)
-THRESHOLD = float(os.getenv("VOICEPRINT_THRESHOLD", "0.33"))
+# above this = same person. From the 23 Nov tests (see DIARY): others up to 0.31 (Pam),
+# my normal voice 0.74-0.88. 0.4 = safer against similar voices; odd voices (singing) may fail.
+# History: 0.25 (SpeechBrain default) -> 0.33 -> 0.4
+THRESHOLD = float(os.getenv("VOICEPRINT_THRESHOLD", "0.4"))
 MIN_SECONDS = 1.0   # shorter clips are too unreliable
 
 _model = None  # loaded on first use (takes a few seconds)
