@@ -52,7 +52,7 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 - The Mac server stops when the Mac sleeps / the terminal session ends → restart with `coco` before tests.
 
 **Decided:**
-- Nothing yet on the cut-off. Proposal: **0.33** (middle of the gap between 0.25 and 0.42); waiting for my OK.
+- Cut-off raised from 0.25 to **0.33** (middle of the gap between 0.25 and 0.42).
 
 ---
 
