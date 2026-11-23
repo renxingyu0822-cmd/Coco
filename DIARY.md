@@ -16,6 +16,24 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-23 (voiceprint online)
+**Did:**
+- **Voiceprint deployed on the online server.** Pushed to GitHub, `git pull` on the server, installed the
+  voiceprint packages (CPU-only PyTorch, +1.5 GB disk, 33 GB left), restarted Coco.
+  Tested over the internet with the `say` clips + app password: same scores as on the Mac
+  (me 0.90 / 0.84, others 0.04 / 0.39 / 0.00), ~1 s per check, no password → 401, chat still works.
+  Test fingerprint deleted afterwards.
+- Package lists split: `requirements-voiceprint-mac.txt` (old pins, Intel Mac) and
+  `requirements-voiceprint-server.txt` (current versions, Linux). README + CLAUDE.md updated.
+
+**Found:**
+- Server can use current versions: torch 2.15 (CPU), speechbrain 1.1.2, huggingface_hub 2.4 → no pin juggling.
+  Model loads in ~6 s there (Mac ~25 s); after each restart the first voiceprint request is slower.
+- Each server keeps its own fingerprint (`server/data/voiceprint.json`) → set up the voice again with "Online".
+- Scratchpad clips were gone after a Mac restart; remade them with `say`.
+
+---
+
 ## 2026-11-23 (voiceprint in the app)
 **Did:**
 - **Voiceprint, step 2–3: server + app** (works on the iPhone, **Mac server only**).

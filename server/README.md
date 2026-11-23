@@ -11,6 +11,7 @@ Server code is in `app/`:
 - `app/settings.py` — reads `.env`, model names, shared OpenAI connection
 - `app/chat.py` — `/chat`
 - `app/voice.py` — `/speak` + `/transcribe`
+- `app/voiceprint.py` — `/voiceprint` (is it the user's voice?)
 - `app/prompt.py` — Coco's personality + how her voice should sound
 
 Outside `app/` (not part of the server):
@@ -37,3 +38,7 @@ cd server
 - `POST /speak` with `{"text": "Hello"}` → mp3 audio
 - `POST /transcribe` with an audio file upload (field `audio`, e.g. m4a) → `{"text": "..."}`
 - `POST /chat` with `{"messages": [{"role": "user", "content": "Hi"}]}` → `{"reply": "..."}`
+- Voiceprint (`app/voiceprint.py`, wav clips): `GET /voiceprint` → `{"enrolled": true}`,
+  `POST /voiceprint/enroll` (field `clips`, 2+ files), `POST /voiceprint/check` (field `clip`) →
+  `{"score": 0.74, "is_you": true, "threshold": 0.33}`, `DELETE /voiceprint`.
+  Needs extra packages: `requirements-voiceprint-mac.txt` (Intel Mac) or `requirements-voiceprint-server.txt` (Linux).

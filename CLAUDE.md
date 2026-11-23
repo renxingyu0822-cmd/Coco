@@ -60,6 +60,10 @@ not Apple's on-device speech.
   app side in git-ignored `ios/Coco/Secrets.swift`). The Mac stays the playground and the backup.
   **Update the server:** push to GitHub (only when I say so), then on the server
   `cd /opt/coco/Coco && sudo -u coco git pull && systemctl restart coco`.
+- **Voiceprint (decided 16 Nov, live on both servers 23 Nov):** speaker recognition with SpeechBrain ECAPA, runs on
+  our own servers (no audio to OpenAI), only the fingerprint numbers are stored. App: ⚙️ → Voice fingerprint.
+  Purpose: later the long-term memory only saves what the real user said; Coco still answers everyone.
+  Cut-off 0.33. Each server keeps its own fingerprint. Not yet connected to the voice chat.
 - **Memory (Nov/Dec):** try open-source GBrain first, custom memory module as fallback.
   Four memory types: personal profile, recent events, health info (separate + protected), short-term reminders.
   Memory is **always on** (no switch to turn it off).
@@ -112,3 +116,5 @@ Coco/
       bundle ID `com.renxingyu0822.Coco`, free Apple ID → reinstall from Xcode every 7 days)
 - [x] Voice: hands-free voice chat (OpenAI speech), panda design, English only
 - [x] Online server (Hetzner, HTTPS, app password); app uses it, tested on mobile data (10 Nov)
+- [x] Settings ⚙️: server switch Online / My Mac (19 Nov)
+- [x] Voiceprint: set up + "Is it me?" in the app, on the Mac and the online server (23 Nov)

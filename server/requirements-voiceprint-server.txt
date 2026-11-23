@@ -1,0 +1,14 @@
+# Extra packages for the voiceprint (app/voiceprint.py), ONLINE SERVER (Linux, Python 3.14) version.
+# Installed 23 Nov 2026. CPU-only PyTorch (~200 MB instead of 2-3 GB with graphics card stuff).
+# Install (on the server, in /opt/coco/Coco/server):
+#   sudo -u coco .venv/bin/pip install -r requirements-voiceprint-server.txt
+# Intel Mac: requirements-voiceprint-mac.txt
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.15.0+cpu
+torchaudio==2.11.1+cpu
+speechbrain==1.1.2
+huggingface_hub==2.4.0
+numpy==2.5.5
+scipy==1.18.1
+sentencepiece==0.2.3
+soundfile==0.14.0

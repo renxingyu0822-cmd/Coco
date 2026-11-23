@@ -1,0 +1,12 @@
+# Extra packages for the voiceprint (app/voiceprint.py). Big (~1 GB), so kept apart from requirements.txt.
+# INTEL MAC version (PyTorch stops at 2.2.2 there, so everything else is old too), see DIARY 2026-11-16.
+# Install: .venv/bin/pip install -r requirements-voiceprint-mac.txt
+# Online server (Linux): requirements-voiceprint-server.txt
+torch==2.2.2
+torchaudio==2.2.2
+numpy<2
+scipy==1.17.1
+speechbrain==1.0.3
+huggingface_hub<1
+sentencepiece==0.2.2
+soundfile

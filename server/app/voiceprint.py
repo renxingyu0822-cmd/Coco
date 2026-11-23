@@ -15,7 +15,7 @@
 # Only one fingerprint for now (no user accounts yet).
 #
 # torch + speechbrain are big and only installed on the Mac so far
-# (see requirements-voiceprint.txt). They're loaded on first use, so the server
+# (requirements-voiceprint-mac.txt / -server.txt). They're loaded on first use, so the server
 # still starts without them; then these endpoints answer 503.
 # ─────────────────────────────────────────────────────────────
 
