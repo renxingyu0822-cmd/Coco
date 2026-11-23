@@ -63,7 +63,7 @@ not Apple's on-device speech.
 - **Voiceprint (decided 16 Nov, live on both servers 23 Nov):** speaker recognition with SpeechBrain ECAPA, runs on
   our own servers (no audio to OpenAI), only the fingerprint numbers are stored. App: ⚙️ → Voice fingerprint.
   Purpose: later the long-term memory only saves what the real user said; Coco still answers everyone.
-  Cut-off 0.4. Each server keeps its own fingerprint. Not yet connected to the voice chat.
+  Cut-off 0.35. Each server keeps its own fingerprint. Not yet connected to the voice chat.
 - **Memory (Nov/Dec):** try open-source GBrain first, custom memory module as fallback.
   Four memory types: personal profile, recent events, health info (separate + protected), short-term reminders.
   Memory is **always on** (no switch to turn it off).

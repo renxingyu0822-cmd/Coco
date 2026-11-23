@@ -48,7 +48,8 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 - All 8 right at 0.33. Normal voice very safe (0.88). Edges close: my singing 0.37 vs Pam 0.31.
 - Pam and Angela are the closest to my voice both times (realistic risk: TV running in the room).
 - OK for Coco's purpose: users talk normally; a mis-tagged odd message only means it isn't remembered.
-- **Decided:** cut-off raised **0.33 → 0.4** (more room above Pam 0.31; my singing 0.37 would now count as "not me", fine).
+- **Decided:** cut-off **0.33 → 0.35** (a bit more room above Pam 0.31; my singing 0.37 still just passes).
+  Briefly set to 0.4 (also deployed online), then changed my mind to 0.35.
 
 ---
 
