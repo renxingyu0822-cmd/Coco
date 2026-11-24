@@ -16,6 +16,24 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 
 ---
 
+## 2026-11-24 (slides for the second presentation)
+**Did:**
+- Second presentation (**Fri 27 Nov 2026**): `docs/slides/presentation_2/coco.tex` (+ PDF), same style as the first,
+  11 slides: recap, language (English demo now, Chinese models for real users), which Chinese models, voiceprint
+  (how / safe / test chart incl. *The Office* / what Coco can do), how tools work (diagram), weather + clock,
+  GBrain research + decision, next two weeks. Title page: a "2" on the panda's head.
+- Research for the language slide: chat = Qwen (Alibaba) or DeepSeek (both OpenAI-compatible → settings change);
+  speech→text = Qwen3-ASR / Doubao Seed-ASR 2.0 (dialects), open source Paraformer/SenseVoice (FunASR);
+  text→speech = CosyVoice (open source), Qwen3-TTS, Doubao Seed-TTS 2.0. China needs CAC-filed models (no foreign
+  model filed as of 2025); OpenAI API reportedly blocked in mainland China (second-hand). Speech needs an adapter.
+
+**Found:**
+- Accuracy claims are mostly vendor-reported, none about older speakers. iFlytek not checked.
+- `\note` is taken in Beamer, `step` in TikZ (again!). PDF pages can be checked as PNG with a small PDFKit script.
+- Not in the slides: instructors' priorities "meet real older users" and "trust model" (still open).
+
+---
+
 ## 2026-11-24 (long-term memory: GBrain research + decisions)
 **Did:**
 - Looked into **GBrain** (github.com/garrytan/gbrain, by Garry Tan / Y Combinator, April 2026). Only from its

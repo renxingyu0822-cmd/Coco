@@ -9,7 +9,7 @@
 \usetikzlibrary{positioning,calc,arrows.meta}
 
 % >>> set the date of the talk here <<<
-\newcommand{\talkdate}{?? December 2026}
+\newcommand{\talkdate}{27 November 2026}
 
 % images live in the app, app-pictures and presentation_1 folders, no copies
 \graphicspath{{../../../ios/Coco/Assets.xcassets/panda-idle.imageset/}
@@ -83,7 +83,11 @@
     \end{column}
     \begin{column}{0.38\textwidth}
       \centering
-      \includegraphics[width=\textwidth]{panda-idle}
+      % panda with a big "2" on its head (second presentation)
+      \begin{tikzpicture}
+        \node[inner sep=0pt] (p) {\includegraphics[width=\linewidth]{panda-idle}};
+        \node[font=\fontsize{40}{40}\selectfont\bfseries] at ($(p.north west)!0.42!(p.north east)+(0,-0.05)$) {2};
+      \end{tikzpicture}
     \end{column}
   \end{columns}
 \end{frame}
