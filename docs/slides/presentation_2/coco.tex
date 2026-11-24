@@ -1,0 +1,374 @@
+% Coco, second presentation (status update 2)
+% build: cd docs/slides/presentation_2 && pdflatex coco.tex && pdflatex coco.tex
+% same look as presentation_1 (black and white, grey cards, bar left of the titles, panda)
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,arrows.meta}
+
+% >>> set the date of the talk here <<<
+\newcommand{\talkdate}{?? December 2026}
+
+% images live in the app, app-pictures and presentation_1 folders, no copies
+\graphicspath{{../../../ios/Coco/Assets.xcassets/panda-idle.imageset/}
+              {../../../ios/Coco/Assets.xcassets/panda-listening.imageset/}
+              {../../../ios/Coco/Assets.xcassets/panda-thinking.imageset/}
+              {../../../ios/Coco/Assets.xcassets/panda-talking.imageset/}
+              {../../app-pictures/}
+              {../presentation_1/}}
+
+% black and white + the app's soft grey cards
+\definecolor{card}{gray}{0.945}
+\definecolor{soft}{gray}{0.42}
+\definecolor{accent}{gray}{0.45} % highlight cards
+
+\setbeamersize{text margin left=1cm,text margin right=1cm}
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{frametitle}{fg=black,bg=white}
+\setbeamercolor{title}{fg=black}
+\setbeamercolor{structure}{fg=black}
+\setbeamerfont{frametitle}{series=\bfseries,size=\Large}
+\setbeamertemplate{itemize items}{\textbullet}
+
+% title with a thick bar on its left
+\setbeamertemplate{frametitle}{%
+  \vskip0.5cm{\usebeamerfont{frametitle}\rule[-0.22em]{3.5pt}{1.15em}\hspace{0.28cm}\insertframetitle\par}%
+  \vskip0.3cm}
+
+% page number bottom right
+\setbeamertemplate{footline}{%
+  \hfill\raisebox{0.1cm}{\textcolor{soft}{\scriptsize\insertframenumber}}\hspace{0.45cm}\vspace{0.2cm}}
+
+% no word breaks anywhere
+\AtBeginDocument{\hyphenpenalty=10000\exhyphenpenalty=10000}
+
+\tikzset{
+  card/.style={fill=card,rounded corners=6pt,inner sep=7pt,align=left,anchor=north west},
+  chip/.style={fill=card,rounded corners=4pt,align=center,font=\scriptsize,
+               text width=1.32cm,minimum height=0.95cm,inner sep=2pt},
+  dark/.style={fill=accent,text=white},
+}
+
+% card content that starts at the top, so cards in a row line up
+\newcommand{\topbox}[3]{\parbox[t][#2][t]{#1}{\raggedright #3}}
+% bullet whose wrapped lines stay indented
+\newcommand{\bul}[1]{\par\hangindent=0.85em\hangafter=1\noindent\textbullet\ #1\par\vspace{3pt}}
+% agent card: name + one small line
+\newcommand{\agent}[2]{\textbf{#1}\\[-1pt]{\scriptsize #2}}
+% phone screenshot, rounded corners + thin grey frame: \phone{x}{y}{height}{file}
+% (shows the top part of the screenshot; width = 0.578 x height, like an iPhone screen)
+\newcommand{\phone}[4]{%
+  \pgfmathsetmacro{\phw}{0.578*#3}%
+  \begin{scope}
+    \clip[rounded corners=7pt] (#1,#2) rectangle ++(\phw,-#3);
+    \node[anchor=north west,inner sep=0pt] at (#1,#2) {\includegraphics[width=\phw cm]{#4}};
+  \end{scope}
+  \draw[soft!60,rounded corners=7pt,line width=0.5pt] (#1,#2) rectangle ++(\phw,-#3);}
+% small grey line under a slide
+\newcommand{\smallnote}[1]{{\scriptsize\textcolor{soft}{#1}}}
+
+\begin{document}
+
+% ───────────────────────── 1. title ─────────────────────────
+\begin{frame}[plain]
+  \begin{columns}[c]
+    \begin{column}{0.56\textwidth}
+      {\fontsize{54}{58}\selectfont\bfseries Coco}\\[0.5em]
+      {\large A digital everyday-assistance service for older adults, staffed by AI agents}\\[0.9em]
+      \rule{1.3cm}{2pt}\\[0.7em]
+      {\small Status update 2\\ Ren, Xingyu\\ \textcolor{soft}{Frontier Systems 2026/27 \,$\cdot$\, \talkdate}}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{panda-idle}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ───────────────────────── 2. recap ─────────────────────────
+\begin{frame}[t]{Coco in one minute, and where we were}
+  \vspace*{-0.1cm}
+  \begin{tikzpicture}
+    % what coco is
+    \node[card,text width=5.6cm] (what) at (0,0) {\topbox{5.6cm}{4.75cm}{%
+      \textbf{What Coco is}\par\vspace{0.4em}\footnotesize
+      \bul{an AI helper in an iPhone app for \textbf{older adults living on their own}}
+      \bul{\textbf{paid by their adult children} (family plan)}
+      \bul{a company run by \textbf{AI agents as employees}}
+      \bul{for \textbf{Germany and China}}\par\vspace{0.2em}
+      \hfill\includegraphics[height=1.45cm]{panda-talking}}};
+    % 13 nov
+    \node[card,text width=3.05cm] (then) at (6.55,0) {\topbox{3.05cm}{4.75cm}{%
+      \textbf{13 Nov}\par{\scriptsize\textcolor{soft}{first presentation}}\par\vspace{0.4em}\footnotesize
+      \bul{text chat}
+      \bul{hands-free voice chat}
+      \bul{online on an EU server}
+      \bul{English only}}};
+    \draw[-{Stealth[length=2.5mm]},very thick,soft] (10.05,-2.4) -- (10.55,-2.4);
+    % today
+    \node[card,dark,text width=3.05cm] (now) at (10.75,0) {\topbox{3.05cm}{4.75cm}{%
+      \textbf{Today}\par{\scriptsize new since then}\par\vspace{0.4em}\footnotesize
+      \bul{voice recognition (voiceprint)}
+      \bul{first tools: weather, clock}
+      \bul{settings: name, town, server}
+      \bul{long-term memory: GBrain research}}};
+  \end{tikzpicture}\\[0.15em]
+  \smallnote{Instructors' feedback on 13 Nov: few older adults will use an English app. \,$\to$\, next slide}
+\end{frame}
+
+% ───────────────────────── 3. language: decision ─────────────────────────
+\begin{frame}[t]{English demo now, Chinese models for real users}
+  \vspace*{-0.1cm}
+  \begin{tikzpicture}
+    \node[card,text width=6.0cm] (now) at (0,0) {\topbox{6.0cm}{2.95cm}{%
+      \textbf{Now: an English demo}\par\vspace{0.3em}\footnotesize
+      \bul{I show Coco to everyone in this class, and nobody here speaks Mandarin}
+      \bul{one language keeps the demo and the evaluation simple}
+      \bul{everything is built so the language can be swapped}}};
+    \node[card,dark,text width=6.0cm] (later) at (7.25,0) {\topbox{6.0cm}{2.95cm}{%
+      \textbf{Later: real users in China}\par\vspace{0.3em}\footnotesize
+      \bul{when Coco is ready for real users, switch to \textbf{Chinese models}: chat, speech-to-text, text-to-speech}
+      \bul{Chinese models are good at Mandarin and dialects, and allowed in China}}};
+    \draw[-{Stealth[length=2.5mm]},very thick,soft] (6.55,-1.55) -- (7.1,-1.55);
+    % why it has to be chinese models in china
+    \node[card,text width=13.25cm] at (0,-3.6) {%
+      \textbf{Why not just keep OpenAI in China?}\par\vspace{0.3em}\footnotesize
+      \bul{OpenAI's API is reported to be blocked in mainland China}
+      \bul{AI services for the public in China must use models filed with the regulator (CAC); no foreign model was filed as of 2025}
+      \bul{personal data of Chinese users (PIPL) is easier to keep in China: Chinese provider, server in China}};
+  \end{tikzpicture}
+\end{frame}
+
+% ───────────────────────── 4. language: which models ─────────────────────────
+\begin{frame}[t]{Which Chinese models would replace OpenAI}
+  \vspace*{-0.3cm}
+  {\footnotesize Coco's back end already uses an \textbf{OpenAI-compatible} interface: the chat model is a settings change
+   (key, address, model name). Speech needs a small adapter.}\par\vspace{0.35em}
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tikzpicture}
+    \node[card,text width=13.25cm,inner sep=6pt] {%
+      \scriptsize
+      \begin{tabular}{@{}p{2.1cm}p{3.0cm}p{7.3cm}@{}}
+        & \textbf{Now (demo)} & \textbf{China (real users)} \\
+        \hline
+        \textbf{Chat (LLM)} & OpenAI gpt-4o-mini &
+          \textbf{Qwen} (Alibaba Cloud) or \textbf{DeepSeek}: both OpenAI-compatible.
+          Also Doubao (ByteDance), GLM (Zhipu), Kimi \\
+        \textbf{Speech $\to$ text} & OpenAI gpt-4o-mini-transcribe &
+          \textbf{Qwen3-ASR} (Alibaba, Mandarin + 22 dialects) or \textbf{Doubao Seed-ASR 2.0} (ByteDance, Cantonese, Sichuanese, Shanghainese \dots).
+          Open source: Paraformer / SenseVoice (FunASR) \\
+        \textbf{Text $\to$ speech} & OpenAI gpt-4o-mini-tts &
+          \textbf{CosyVoice} (Alibaba, open source, some dialects), Qwen3-TTS, or \textbf{Doubao Seed-TTS 2.0} \\
+        \textbf{Voiceprint} & SpeechBrain (ours) &
+          same model, to be tested on Mandarin; or 3D-Speaker (Alibaba, open source) \\
+        \textbf{Server} & EU (Helsinki) & in mainland China, e.g.\ Alibaba Cloud \\
+      \end{tabular}};
+  \end{tikzpicture}\\[0.25em]
+  \smallnote{Accuracy figures are mostly vendor-reported. Before real users: test with older speakers' voices and dialects.}
+\end{frame}
+
+% ───────────────────────── 5. voiceprint: what + safe ─────────────────────────
+\begin{frame}[t]{Voice recognition: does this voice belong to the user?}
+  \vspace*{-0.15cm}
+  \begin{tikzpicture}[
+      stepbox/.style={fill=card,rounded corners=5pt,align=center,font=\footnotesize,
+                   text width=2.25cm,minimum height=1.25cm,inner sep=3pt},
+      arr/.style={-{Stealth[length=2mm]},semithick}]
+    % how it works
+    \node[anchor=north west,inner sep=0pt,font=\small\bfseries,text=soft] at (0,0.15) {How it works};
+    \node[stepbox] (s1) at (1.15,-0.95) {\textbf{Set up once}\\[-1pt]{\scriptsize user reads 3 sentences}};
+    \node[stepbox] (s2) at (4.05,-0.95) {\textbf{Fingerprint}\\[-1pt]{\scriptsize voice $\to$ 192 numbers}};
+    \node[stepbox] (s3) at (6.95,-0.95) {\textbf{Every voice message}\\[-1pt]{\scriptsize $\to$ 192 numbers}};
+    \node[stepbox,dark] (s4) at (9.85,-0.95) {\textbf{Compare}\\[-1pt]{\scriptsize similarity score 0 \dots 1}};
+    \node[stepbox] (s5) at (12.75,-0.95) {\textbf{$\ge$ 0.35}\\[-1pt]{\scriptsize = the user}};
+    \foreach \a/\b in {s1/s2,s2/s3,s3/s4,s4/s5}{\draw[arr] (\a) -- (\b);}
+    % model
+    \node[card,text width=6.0cm] at (0,-2.05) {\topbox{6.0cm}{3.95cm}{%
+      \textbf{Open-source model}\par\vspace{0.35em}\footnotesize
+      \bul{\textbf{SpeechBrain ECAPA-TDNN} (\texttt{spkrec-ecapa-voxceleb}), Apache 2.0 licence}
+      \bul{trained on VoxCeleb: thousands of speakers' voices}
+      \bul{runs on \textbf{our own server}, about 1 second per check}}};
+    % safety
+    \node[card,dark,text width=6.0cm] at (7.25,-2.05) {\topbox{6.0cm}{3.95cm}{%
+      \textbf{Is it safe?}\par\vspace{0.35em}\footnotesize
+      \bul{no audio goes to a voice provider; the model runs on our server, offline}
+      \bul{we keep \textbf{only the 192 numbers}, never the recording}
+      \bul{one tap deletes it; HTTPS + app password}
+      \bul{biometric data (GDPR, PIPL): needs the user's consent}}};
+  \end{tikzpicture}
+\end{frame}
+
+% ───────────────────────── 6. voiceprint: test ─────────────────────────
+\begin{frame}[t]{How we tested it: me, a friend, and \emph{The Office}}
+  \vspace*{-0.25cm}
+  {\small I set up my voice once, then tried ``Is it me?'': my normal voice, a fake voice, singing,
+   a friend, and five characters from the TV series \emph{The Office} played into the phone.}\par\vspace{0.5em}
+  \centering
+  \begin{tikzpicture}[x=11.0cm,y=0.95cm,
+      other/.style={circle,draw=soft,fill=white,thick,inner sep=2.1pt},
+      me/.style={circle,fill=black,inner sep=2.4pt},
+      odd/.style={circle,fill=soft,inner sep=2.4pt},
+      lab/.style={font=\scriptsize,text=soft}]
+    % zones
+    \fill[card!55!white] (0,0.15) rectangle (0.345,3.25);
+    \fill[card] (0.355,0.15) rectangle (1,3.25);
+    \node[font=\scriptsize\bfseries,anchor=north west] at (0.005,3.2) {``Someone else''};
+    \node[font=\scriptsize\bfseries,anchor=north east] at (0.995,3.2) {``That's you''};
+    % axis
+    \draw[thick] (0,0) -- (1,0);
+    \foreach \t in {0,0.2,0.4,0.6,0.8,1.0}{ \draw (\t,0) -- (\t,-0.12) node[below,font=\scriptsize] {\t}; }
+    \node[lab,anchor=north] at (0.5,-0.5) {similarity score (1 = same voice)};
+    % cut-off
+    \draw[dashed,thick] (0.35,-0.05) -- (0.35,3.45);
+    \node[font=\scriptsize\bfseries,anchor=south] at (0.35,3.45) {cut-off 0.35};
+    % rows
+    \node[font=\small\bfseries,anchor=east] at (-0.01,2.45) {TV (\emph{The Office})};
+    \node[font=\small\bfseries,anchor=east] at (-0.01,1.6) {Friend};
+    \node[font=\small\bfseries,anchor=east] at (-0.01,0.75) {Me};
+    % Michael, Jim, Toby, Angela, Pam (Mac + online)
+    \foreach \v/\y in {0.03/2.35,0.07/2.55,0.09/2.35,0.08/2.15,0.03/2.55,0.13/2.45,0.21/2.45,0.28/2.35,0.25/2.55,0.31/2.45}{
+      \node[other] at (\v,\y) {}; }
+    \node[lab,anchor=south] at (0.31,2.62) {Pam};
+    \foreach \v in {0.09,0.18}{ \node[other] at (\v,1.6) {}; }
+    % me: normal voice (black), fake voice + singing (grey)
+    \foreach \v/\y in {0.74/0.75,0.76/0.95,0.88/0.75,0.70/0.95,0.72/0.55}{ \node[me] at (\v,\y) {}; }
+    \foreach \v/\y in {0.42/0.75,0.53/0.55,0.54/0.95,0.52/0.75,0.37/0.55}{ \node[odd] at (\v,\y) {}; }
+    \node[lab,anchor=south] at (0.79,1.05) {normal voice};
+    \node[lab,anchor=south] at (0.47,1.05) {fake voice, singing};
+  \end{tikzpicture}\\[0.25em]
+  \raggedright
+  \smallnote{27 tries on the Mac and the online server, all sorted correctly. Closest: Pam 0.31 vs.\ my singing 0.37. Small test: keep testing.}
+\end{frame}
+
+% ───────────────────────── 7. voiceprint: what coco does ─────────────────────────
+\begin{frame}[t]{What the voiceprint lets Coco do}
+  \vspace*{-0.2cm}
+  \begin{tikzpicture}
+    \phone{0}{0}{5.5}{voiceprint-you}
+    \phone{3.35}{0}{5.5}{voiceprint-someone-else}
+    \node[font=\scriptsize,text=soft] at (1.59,-5.75) {me $\to$ 0.70};
+    \node[font=\scriptsize,text=soft] at (4.94,-5.75) {Pam (TV) $\to$ 0.20};
+    % behaviour
+    \begin{scope}[every node/.style={card,text width=6.3cm,inner sep=5pt,font=\scriptsize}]
+      \node[dark] (b1) at (7.05,0) {\textbf{Knows who is talking}\par every voice message is tagged: the user, or someone else. Coco still answers everyone.};
+      \node[below=0.1cm of b1.south west,anchor=north west] (b2) {\textbf{Keeps private things private}\par a visitor asks ``What pills does she take?'' $\to$ ``I only talk about that with her.''};
+      \node[below=0.1cm of b2.south west,anchor=north west] (b3) {\textbf{Notices the TV}\par ``That sounded like the TV. Now, back to you!''};
+      \node[below=0.1cm of b3.south west,anchor=north west] (b4) {\textbf{Emergencies count from anyone}\par ``She fell!'' from a visitor $\to$ ``Call 112 right now.''};
+      \node[below=0.1cm of b4.south west,anchor=north west] {\textbf{Next: long-term memory}\par only saves what the \emph{real user} said, not the TV or visitors.};
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+% ───────────────────────── 8. how tools work ─────────────────────────
+\begin{frame}[t]{How a tool works: the model asks, our server does it}
+  \vspace*{-0.15cm}
+  \centering
+  \begin{tikzpicture}[
+      who/.style={fill=card,rounded corners=6pt,align=center,font=\small,text width=2.3cm,minimum height=1.1cm,inner sep=3pt},
+      msg/.style={font=\scriptsize,align=center,above,fill=white,inner sep=1.2pt},
+      arr/.style={-{Stealth[length=2mm]},semithick}]
+    \node[who] (app) at (0,0) {\agent{iPhone app}{}};
+    \node[who,dark] (srv) at (3.9,0) {\agent{Our server}{runs the tools}};
+    \node[who] (llm) at (7.8,0) {\agent{LLM}{decides, writes}};
+    \node[who] (svc) at (11.6,0) {\agent{Weather service}{Open-Meteo}};
+    % lifelines
+    \foreach \n in {app,srv,llm,svc}{ \draw[soft!50,thick] (\n.south) -- ++(0,-4.55); }
+    \draw[arr] (0,-0.95) -- node[msg] {1. ``Will it rain tomorrow?''} (3.9,-0.95);
+    \draw[arr] (3.9,-1.6) -- node[msg] {2. message + list of tools} (7.8,-1.6);
+    \draw[arr] (7.8,-2.25) -- node[msg] {3. ``run get\_weather(Hannover, tomorrow)''} (3.9,-2.25);
+    \draw[arr] (3.9,-2.9) -- node[msg,pos=0.6] {4. ask for the forecast} (11.6,-2.9);
+    \draw[arr] (11.6,-3.4) -- node[msg,pos=0.6] {5. ``overcast, 0\% rain, $-1$ to 3\textdegree C''} (3.9,-3.4);
+    \draw[arr] (3.9,-3.95) -- node[msg] {6. tool result} (7.8,-3.95);
+    \draw[arr] (7.8,-4.5) -- node[msg] {7. ``No rain, but wear a warm coat!'' + card} (0,-4.5);
+  \end{tikzpicture}\\[0.35em]
+  \raggedright\footnotesize
+  \begin{minipage}[t]{0.32\textwidth}\raggedright
+    \textbf{Safe:} the model never runs anything itself. A tool can only do what we programmed.
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.32\textwidth}\raggedright
+    \textbf{Where:} server tools (weather, web search) or phone tools (reminders, calendar, music).
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.32\textwidth}\raggedright
+    \textbf{Cost:} one extra round, about 2--4\,s. The card shows the real numbers, not the model's words.
+  \end{minipage}
+\end{frame}
+
+% ───────────────────────── 9. tools so far ─────────────────────────
+\begin{frame}[t]{First tools: weather and clock}
+  \vspace*{-0.2cm}
+  \begin{tikzpicture}
+    \phone{0}{0}{5.7}{weather-card}
+    \phone{3.5}{0}{5.7}{clock}
+    \begin{scope}[every node/.style={card,text width=6.0cm,inner sep=6pt,font=\footnotesize}]
+      \node[dark] (w) at (7.2,0) {\textbf{Weather} \textcolor{white!80!black}{(server tool)}\par\vspace{2pt}
+        Open-Meteo: free, no key, worldwide, \textbf{same for China and Germany}.
+        Any town, today up to 6 days ahead. Town from Settings if you don't say where. Shown as a card.};
+      \node[below=0.13cm of w.south west,anchor=north west] (c) {\textbf{Clock}\par\vspace{2pt}
+        the model has no clock: the app sends the phone's time zone, Coco knows date and time.
+        \texttt{get\_time} for other places: ``Too early to call my son in Beijing?''};
+      \node[below=0.13cm of c.south west,anchor=north west] {\textbf{``Broken twin'' test}\par\vspace{2pt}
+        weather service switched off on purpose $\to$ ``I'm sorry, I can't check the weather right now.''
+        No made-up forecast.};
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+% ───────────────────────── 10. gbrain ─────────────────────────
+\begin{frame}[t]{Long-term memory: what we found out about GBrain}
+  \vspace*{-0.2cm}
+  {\small Open-source memory for AI agents by Garry Tan (Y Combinator), April 2026, MIT licence.}\par\vspace{0.45em}
+  \begin{tikzpicture}
+    \node[card,text width=4.0cm] at (0,0) {\topbox{4.0cm}{3.75cm}{%
+      \textbf{How it stores}\par\vspace{0.35em}\footnotesize
+      \bul{one \textbf{Markdown page} per person, place, project}
+      \bul{pages \textbf{link} to each other: a small knowledge graph}
+      \bul{\textbf{nightly clean-up}: merge duplicates, find contradictions}}};
+    \node[card,text width=4.0cm] at (4.6,0) {\topbox{4.0cm}{3.75cm}{%
+      \textbf{How it finds}\par\vspace{0.35em}\footnotesize
+      \bul{keyword + \textbf{vector} search (by meaning)}
+      \bul{\textbf{graph}: follows links}
+      \bul{says what it \emph{doesn't} know}
+      \bul{used through a command line or MCP}}};
+    \node[card,dark,text width=4.0cm] at (9.2,0) {\topbox{4.0cm}{3.75cm}{%
+      \textbf{For Coco}\par\vspace{0.35em}\footnotesize
+      \bul{\textbf{good:} ``my son lives in Beijing'' = page + link}
+      \bul{\textbf{hard:} built for one person; TypeScript next to our Python; 8\,GB RAM; changes many times a day}}};
+    \node[card,text width=13.2cm] at (0,-4.35) {%
+      \textbf{Decision:} for the demo, \textbf{one GBrain on our server} (one user).
+      For real users later: \textbf{a separate memory per user} (health info in its own protected file), which needs a user ID first.};
+  \end{tikzpicture}
+\end{frame}
+
+% ───────────────────────── 11. next two weeks ─────────────────────────
+\begin{frame}[t]{Next two weeks}
+  \vspace*{-0.2cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.70\textwidth}
+      \begin{tikzpicture}
+        \node[card,dark,text width=8.7cm] (a) at (0,0) {%
+          \textbf{More tools}\\[0.4em]\small
+          \bul{\textbf{reminders and timers} (``the pot on the stove''): the first \emph{phone} tool}
+          \bul{\textbf{calendar} and \textbf{Apple Music}: built into the iPhone, work in China and Germany}
+          \bul{\textbf{web search}}};
+        \node[card,text width=8.7cm,anchor=north west] at ([yshift=-0.3cm]a.south west) {%
+          \textbf{Deploy GBrain and see how it works}\\[0.4em]\small
+          \bul{install one GBrain on our server, connect it to Coco}
+          \bul{only the real user's words go in (voiceprint)}
+          \bul{first memory test: ``Is it too early to call my son?''}
+          \bul{measure speed and memory use}};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.27\textwidth}
+      \centering
+      \vspace{0.6cm}
+      \includegraphics[width=\textwidth]{panda-thinking}
+    \end{column}
+  \end{columns}
+  \vfill\vspace{0.35em}
+  \noindent{\small\color{soft}Code: \href{https://github.com/renxingyu0822-cmd/Coco}{github.com/renxingyu0822-cmd/Coco}}\par\vspace{0.1cm}
+\end{frame}
+
+\end{document}
