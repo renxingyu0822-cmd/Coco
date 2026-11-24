@@ -221,9 +221,9 @@
 \begin{frame}[t]{How we tested it: me, a friend, and \emph{The Office}}
   \vspace*{-0.25cm}
   {\small I set up my voice once, then tried ``Is it me?'': my normal voice, a fake voice, singing,
-   a friend, and five characters from the TV series \emph{The Office} played into the phone.}\par\vspace{0.5em}
+   a friend, and five characters from the TV series \emph{The Office} played into the phone.}\par\vspace{0.3em}
   \centering
-  \begin{tikzpicture}[x=11.0cm,y=0.88cm,
+  \begin{tikzpicture}[x=11.0cm,y=0.8cm,
       other/.style={circle,draw=soft,fill=white,thick,inner sep=2.1pt},
       me/.style={circle,fill=black,inner sep=2.4pt},
       odd/.style={circle,fill=soft,inner sep=2.4pt},
@@ -231,7 +231,7 @@
     % zones
     \fill[card!55!white] (0,0.15) rectangle (0.345,3.55);
     \fill[card] (0.355,0.15) rectangle (1,3.55);
-    \node[font=\scriptsize\bfseries,anchor=north west] at (0.06,3.5) {``Someone else''};
+    \node[font=\scriptsize\bfseries,anchor=south west] at (0.005,0.22) {``Someone else''};
     \node[font=\scriptsize\bfseries,anchor=north east] at (0.995,3.5) {``That's you''};
     % axis
     \draw[thick] (0,0) -- (1,0);
@@ -258,8 +258,14 @@
     \node[lab,anchor=south] at (0.47,1.05) {fake voice, singing};
   \end{tikzpicture}\\[0.25em]
   \raggedright
-  \smallnote{M Michael, J Jim, P Pam, T Toby, A Angela. 27 tries on the Mac and the online server, all sorted correctly.
-  Closest: Pam 0.31 vs.\ my singing 0.37. Small test: keep testing.}
+  \ifdefined\withfaces
+    \smallnote{27 tries on the Mac and the online server, all sorted correctly. Closest: Pam 0.31 vs.\ my singing 0.37.}\par
+    {\fontsize{5}{6}\selectfont\textcolor{soft}{Photos via Wikimedia Commons, cropped: Steve Carell, Paul Lieberstein by Kevin Paul (CC BY 4.0);
+    John Krasinski by Prime Video AU \& NZ (CC BY 3.0); Jenna Fischer by TDKR Chicago 101 (CC BY-SA 4.0); Angela Kinsey by Gage Skidmore (CC BY-SA 3.0).}}
+  \else
+    \smallnote{M Michael, J Jim, P Pam, T Toby, A Angela. 27 tries on the Mac and the online server, all sorted correctly.
+    Closest: Pam 0.31 vs.\ my singing 0.37. Small test: keep testing.}
+  \fi
 \end{frame}
 
 % ───────────────────────── 7. voiceprint: what coco does ─────────────────────────
