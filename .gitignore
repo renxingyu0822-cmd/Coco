@@ -37,3 +37,7 @@ server/voiceprint_model/
 
 # voiceprint fingerprint (biometric data, never in git)
 server/data/
+
+# slides with actors photos: local only (class use), not in the public repo
+docs/slides/presentation_2/faces/
+docs/slides/presentation_2/coco-faces.*

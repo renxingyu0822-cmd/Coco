@@ -1,5 +1,9 @@
 % Coco, second presentation (status update 2)
 % build: cd docs/slides/presentation_2 && pdflatex coco.tex && pdflatex coco.tex
+%   -> coco.pdf (public, in git): The Office characters as name badges
+% with faces (for the talk, local only): ./build-faces.sh -> coco-faces.pdf
+%   faces go in faces/michael.jpg, jim.jpg, pam.jpg, toby.jpg, angela.jpg (git-ignored: actors' photos,
+%   fine in class, but not for the public repo)
 % same look as presentation_1 (black and white, grey cards, bar left of the titles, panda)
 \documentclass[aspectratio=169,11pt]{beamer}
 
@@ -67,6 +71,18 @@
     \node[anchor=north west,inner sep=0pt] at (#1,#2) {\includegraphics[width=\phw cm]{#4}};
   \end{scope}
   \draw[soft!60,rounded corners=7pt,line width=0.5pt] (#1,#2) rectangle ++(\phw,-#3);}
+% a The Office character on the test chart: face (only in the local faces build) or a name badge
+% \officeface{x}{y}{file name}{initial}
+\newcommand{\officeface}[4]{%
+  \ifdefined\withfaces
+    \IfFileExists{faces/#3.jpg}{%
+      \node[circle,draw=soft,thick,inner sep=0pt,minimum size=0.52cm,
+            path picture={\node at (path picture bounding box.center)
+              {\includegraphics[height=0.56cm]{faces/#3.jpg}};}] at (#1,#2) {};}%
+      {\node[circle,draw=soft,thick,fill=white,inner sep=0pt,minimum size=0.44cm,font=\tiny\bfseries] at (#1,#2) {#4};}%
+  \else
+    \node[circle,draw=soft,thick,fill=white,inner sep=0pt,minimum size=0.44cm,font=\tiny\bfseries] at (#1,#2) {#4};
+  \fi}
 % small grey line under a slide
 \newcommand{\smallnote}[1]{{\scriptsize\textcolor{soft}{#1}}}
 
@@ -207,32 +223,34 @@
   {\small I set up my voice once, then tried ``Is it me?'': my normal voice, a fake voice, singing,
    a friend, and five characters from the TV series \emph{The Office} played into the phone.}\par\vspace{0.5em}
   \centering
-  \begin{tikzpicture}[x=11.0cm,y=0.95cm,
+  \begin{tikzpicture}[x=11.0cm,y=0.88cm,
       other/.style={circle,draw=soft,fill=white,thick,inner sep=2.1pt},
       me/.style={circle,fill=black,inner sep=2.4pt},
       odd/.style={circle,fill=soft,inner sep=2.4pt},
       lab/.style={font=\scriptsize,text=soft}]
     % zones
-    \fill[card!55!white] (0,0.15) rectangle (0.345,3.25);
-    \fill[card] (0.355,0.15) rectangle (1,3.25);
-    \node[font=\scriptsize\bfseries,anchor=north west] at (0.005,3.2) {``Someone else''};
-    \node[font=\scriptsize\bfseries,anchor=north east] at (0.995,3.2) {``That's you''};
+    \fill[card!55!white] (0,0.15) rectangle (0.345,3.55);
+    \fill[card] (0.355,0.15) rectangle (1,3.55);
+    \node[font=\scriptsize\bfseries,anchor=north west] at (0.06,3.5) {``Someone else''};
+    \node[font=\scriptsize\bfseries,anchor=north east] at (0.995,3.5) {``That's you''};
     % axis
     \draw[thick] (0,0) -- (1,0);
     \foreach \t in {0,0.2,0.4,0.6,0.8,1.0}{ \draw (\t,0) -- (\t,-0.12) node[below,font=\scriptsize] {\t}; }
     \node[lab,anchor=north] at (0.5,-0.5) {similarity score (1 = same voice)};
     % cut-off
-    \draw[dashed,thick] (0.35,-0.05) -- (0.35,3.45);
-    \node[font=\scriptsize\bfseries,anchor=south] at (0.35,3.45) {cut-off 0.35};
+    \draw[dashed,thick] (0.35,-0.05) -- (0.35,3.7);
+    \node[font=\scriptsize\bfseries,anchor=south] at (0.35,3.7) {cut-off 0.35};
     % rows
-    \node[font=\small\bfseries,anchor=east] at (-0.01,2.45) {TV (\emph{The Office})};
-    \node[font=\small\bfseries,anchor=east] at (-0.01,1.6) {Friend};
+    \node[font=\small\bfseries,anchor=east] at (-0.01,2.55) {TV (\emph{The Office})};
+    \node[font=\small\bfseries,anchor=east] at (-0.01,1.55) {Friend};
     \node[font=\small\bfseries,anchor=east] at (-0.01,0.75) {Me};
-    % Michael, Jim, Toby, Angela, Pam (Mac + online)
-    \foreach \v/\y in {0.03/2.35,0.07/2.55,0.09/2.35,0.08/2.15,0.03/2.55,0.13/2.45,0.21/2.45,0.28/2.35,0.25/2.55,0.31/2.45}{
-      \node[other] at (\v,\y) {}; }
-    \node[lab,anchor=south] at (0.31,2.62) {Pam};
-    \foreach \v in {0.09,0.18}{ \node[other] at (\v,1.6) {}; }
+    % The Office: two tries each (Mac, online); y nudged so faces don't overlap
+    \officeface{0.03}{3.05}{michael}{M}  \officeface{0.06}{2.4}{michael}{M}
+    \officeface{0.09}{2.8}{jim}{J}       \officeface{0.085}{2.05}{jim}{J}
+    \officeface{0.03}{2.55}{toby}{T}     \officeface{0.13}{2.4}{toby}{T}
+    \officeface{0.21}{2.8}{angela}{A}    \officeface{0.28}{2.2}{angela}{A}
+    \officeface{0.25}{2.8}{pam}{P}       \officeface{0.31}{2.55}{pam}{P}
+    \foreach \v in {0.09,0.18}{ \node[other] at (\v,1.55) {}; }
     % me: normal voice (black), fake voice + singing (grey)
     \foreach \v/\y in {0.74/0.75,0.76/0.95,0.88/0.75,0.70/0.95,0.72/0.55}{ \node[me] at (\v,\y) {}; }
     \foreach \v/\y in {0.42/0.75,0.53/0.55,0.54/0.95,0.52/0.75,0.37/0.55}{ \node[odd] at (\v,\y) {}; }
@@ -240,7 +258,8 @@
     \node[lab,anchor=south] at (0.47,1.05) {fake voice, singing};
   \end{tikzpicture}\\[0.25em]
   \raggedright
-  \smallnote{27 tries on the Mac and the online server, all sorted correctly. Closest: Pam 0.31 vs.\ my singing 0.37. Small test: keep testing.}
+  \smallnote{M Michael, J Jim, P Pam, T Toby, A Angela. 27 tries on the Mac and the online server, all sorted correctly.
+  Closest: Pam 0.31 vs.\ my singing 0.37. Small test: keep testing.}
 \end{frame}
 
 % ───────────────────────── 7. voiceprint: what coco does ─────────────────────────
