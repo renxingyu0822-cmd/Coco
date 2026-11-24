@@ -21,7 +21,7 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 - Second presentation (**Fri 27 Nov 2026**): `docs/slides/presentation_2/coco.tex` (+ PDF), same style as the first,
   11 slides: recap, language (English demo now, Chinese models for real users), which Chinese models, voiceprint
   (how / safe / test chart incl. *The Office* / what Coco can do), how tools work (diagram), weather + clock,
-  GBrain research + decision, next two weeks. Title page: a "2" on the panda's head.
+  GBrain research + decision, next two weeks.
 - Research for the language slide: chat = Qwen (Alibaba) or DeepSeek (both OpenAI-compatible → settings change);
   speech→text = Qwen3-ASR / Doubao Seed-ASR 2.0 (dialects), open source Paraformer/SenseVoice (FunASR);
   text→speech = CosyVoice (open source), Qwen3-TTS, Doubao Seed-TTS 2.0. China needs CAC-filed models (no foreign
