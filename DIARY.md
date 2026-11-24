@@ -31,6 +31,9 @@ Marketing/business plan (first market, interviews, trust model): separate, not p
 - Accuracy claims are mostly vendor-reported, none about older speakers. iFlytek not checked.
 - `\note` is taken in Beamer, `step` in TikZ (again!). PDF pages can be checked as PNG with a small PDFKit script.
 - Not in the slides: instructors' priorities "meet real older users" and "trust model" (still open).
+- Shortened to **8 slides for a 7-minute talk** (merged language, voiceprint and tool slides; much less text).
+  Chart shows *The Office* characters: letter badges in git, Office-era Wikimedia photos (CC) only in the local
+  `coco-faces.pdf` (`./build-faces.sh`; photos in git-ignored `faces/`).
 
 ---
 
